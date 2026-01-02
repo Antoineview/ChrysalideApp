@@ -27,8 +27,8 @@ export default function WelcomeScreen() {
       color={'#1E3035'}
       lottie={require('@/assets/lotties/uni-services.json')}
       title={t("ONBOARDING_SELECT_UNIVERSITIESERVICE")}
-      step={1}
-      totalSteps={3}
+      step={2}
+      totalSteps={2}
       elements={services}
       renderItem={({ item, index }) =>
         (item as SupportedUniversity).type === 'separator' ? (

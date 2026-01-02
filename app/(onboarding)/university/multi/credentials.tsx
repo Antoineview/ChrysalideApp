@@ -101,7 +101,7 @@ export default function MultiLoginWithCredentials() {
       store.addAccount(account)
       store.setLastUsedAccount(accountUUID)
 
-      setIsLoggingIn(false);
+      //setIsLoggingIn(false);
 
       return router.push({
         pathname: "../../end/color",
@@ -119,7 +119,7 @@ export default function MultiLoginWithCredentials() {
           withoutNavbar: true
         });
       }
-      setIsLoggingIn(false);
+      //setIsLoggingIn(false);
     }
   }
 

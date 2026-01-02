@@ -30,7 +30,6 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
             blurType="systemMaterial"
             direction="blurredTopClearBottom"
             startOffset={0}
-            reducedTransparencyFallbackColor="#00000000"
             style={{ width: "100%", height: "101%" }}
           />
         </View>

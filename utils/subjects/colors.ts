@@ -6,7 +6,10 @@ export function getSubjectColor(subject: string): string {
   const cleanedName = cleanSubjectName(subject)
   const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
   const subjectProperties = useAccountStore.getState().accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects[cleanedName]
-  if (subjectProperties && subjectProperties.color && subjectProperties.color !== "") {
+  if (subjectProperties && subjectProperties.color !== "") {
+    if (subjectProperties.color === undefined) {
+      return Colors[0]
+    }
     return subjectProperties.color;
   }
 
@@ -25,13 +28,9 @@ export function getSubjectColor(subject: string): string {
 export function getRandomColor(ignoredColors?: string[]) {
   if (ignoredColors && ignoredColors.length !== Colors.length) {
     const availableColors = Colors.filter(color => !ignoredColors.includes(color));
-    
-    if (availableColors.length > 0) {
-      return availableColors[Math.floor(Math.random() * availableColors.length)];
-    }
+    return availableColors[Math.floor(Math.random() * availableColors.length)];
   }
-
-  return Colors[Math.floor(Math.random() * Colors.length)];
+  return Colors[Math.floor(Math.random() * Colors.length)]
 }
 
 export const Colors = [

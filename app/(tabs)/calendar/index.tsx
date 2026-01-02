@@ -35,7 +35,7 @@ export default function TabOneScreen() {
     manualRefreshing,
     handleRefresh,
     isLoading
-  } = useTimetableData(weekNumber, date);
+  } = useTimetableData(weekNumber);
 
   const renderDay = useCallback(({ index }: { index: number }) => {
     const dayDate = getDateFromIndex(index);

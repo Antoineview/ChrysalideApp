@@ -42,7 +42,7 @@ export default function WelcomeScreen() {
       lottie={require('@/assets/lotties/school-services.json')}
       title={t("ONBOARDING_SELECT_SCHOOLSERVICE")}
       step={1}
-      totalSteps={3}
+      totalSteps={2}
       elements={services}
       renderItem={({ item, index }: { item: SupportedService, index: number }) => item.type === 'separator' ? (
         <View
@@ -55,27 +55,7 @@ export default function WelcomeScreen() {
             opacity: 0.4,
             marginHorizontal: 32,
           }}
-        >
-          <View
-            style={{
-              flex: 1,
-              height: 2,
-              borderRadius: 4,
-              backgroundColor: colors.text,
-              opacity: 0.5
-            }}
-          />
-          <Typography variant='title' inline>ou</Typography>
-          <View
-            style={{
-              flex: 1,
-              height: 2,
-              borderRadius: 4,
-              backgroundColor: colors.text,
-              opacity: 0.5
-            }}
-          />
-        </View>
+        />
       ) :
         (
           <Reanimated.View

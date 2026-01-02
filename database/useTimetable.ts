@@ -12,7 +12,7 @@ import { getDateRangeOfWeek } from "./useHomework";
 import { safeWrite } from "./utils/safeTransaction";
 import { getICalEventsForWeek } from "@/services/local/ical";
 
-export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, date: Date = new Date()) {
+export function useTimetable(refresh = 0, weekNumber: number | number[] = 0) {
   const database = useDatabase();
   const [timetable, setTimetable] = useState<SharedCourseDay[]>([]);
 
@@ -22,23 +22,23 @@ export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, dat
 
   useEffect(() => {
     const fetchTimetable = async () => {
-      const timetableFetched = await getCoursesFromCache(weeks, date.getFullYear());
+      const timetableFetched = await getCoursesFromCache(weeks);
       setTimetable(timetableFetched);
     };
     fetchTimetable();
-  }, [refresh, database, weeksKey, date.getFullYear()]);
+  }, [refresh, database, weeksKey]);
 
   useEffect(() => {
     const icalQuery = database.get('icals').query();
     const subscription = icalQuery.observe().subscribe(() => {
       const fetchTimetable = async () => {
-        const timetableFetched = await getCoursesFromCache(weeks, date.getFullYear());
+        const timetableFetched = await getCoursesFromCache(weeks);
         setTimetable(timetableFetched);
       };
       fetchTimetable();
     });
     return () => subscription.unsubscribe();
-  }, [database, weeksKey, date.getFullYear()]);
+  }, [database, weeksKey]);
 
   return timetable;
 }
@@ -140,7 +140,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   );
 }
 
-export async function getCoursesFromCache(weeks: number[], year: number): Promise<SharedCourseDay[]> {
+export async function getCoursesFromCache(weeks: number[]): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
     
@@ -148,7 +148,7 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
     let maxEnd = new Date(-8640000000000000);
     
     for (const w of weeks) {
-      const { start, end } = getDateRangeOfWeek(w, year);
+      const { start, end } = getDateRangeOfWeek(w);
       if (start < minStart) minStart = start;
       if (end > maxEnd) maxEnd = end;
     }

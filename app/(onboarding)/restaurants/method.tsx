@@ -40,7 +40,7 @@ export default function WelcomeScreen() {
       title={t("ONBOARDING_SELECT_RESTAURANTSERVICE")}
       color={"#60B400"}
       step={1}
-      totalSteps={3}
+      totalSteps={2}
       elements={services}
       renderItem={({ item, index }: { item: SupportedRestaurant, index: number }) => (
         <Reanimated.View
