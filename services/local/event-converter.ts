@@ -1,9 +1,7 @@
 import { Course as SharedCourse, CourseType } from '@/services/shared/timetable';
-
 import { ICalEvent } from './ical';
 import { parseADEDescription } from './parsers/ade-parser';
-import { isHyperplanningDescription,parseHyperplanningDescription } from './parsers/hyperplanning-parser';
-import { parseUR1Ical } from './parsers/schools/univrennes1_parser';
+import { parseHyperplanningDescription, isHyperplanningDescription } from './parsers/hyperplanning-parser';
 
 interface ConversionContext {
   icalId: string;
@@ -11,16 +9,12 @@ interface ConversionContext {
   isADE: boolean;
   isHyperplanning: boolean;
   intelligentParsing: boolean;
-  isSchool: boolean;
-  schoolName?: string;
 }
 
-export interface ParsedEventData {
-  summary?: string;
+interface ParsedEventData {
   type: string;
   teacher: string;
   group: string;
-  courseType?: string;
 }
 
 const DEFAULT_EVENT_DATA: ParsedEventData = {
@@ -29,29 +23,9 @@ const DEFAULT_EVENT_DATA: ParsedEventData = {
   group: 'Inconnu'
 };
 
-const SCHOOL_PARSERS = {
-  "UNIVRENNES1": parseUR1Ical
-}
-
-function parseEventData(event: ICalEvent, isADE: boolean, isHyperplanning: boolean, intelligentParsing: boolean, isSchool: boolean, schoolName?: string): ParsedEventData {
+function parseEventData(event: ICalEvent, isADE: boolean, isHyperplanning: boolean, intelligentParsing: boolean): ParsedEventData {
   if (!intelligentParsing) {
     return DEFAULT_EVENT_DATA;
-  }
-
-  if (isSchool && schoolName) {
-    const parser = SCHOOL_PARSERS[schoolName];
-    if (parser) {
-      const parsed = parser(event);
-      if (parsed) {
-        return {
-          summary: parsed.summary || DEFAULT_EVENT_DATA.summary,
-          type: parsed.type || DEFAULT_EVENT_DATA.type,
-          teacher: parsed.teacher || event.organizer || DEFAULT_EVENT_DATA.teacher,
-          group: parsed.group || DEFAULT_EVENT_DATA.group,
-          courseType: parsed.courseType || DEFAULT_EVENT_DATA.courseType
-        };
-      }
-    }
   }
 
   if (isHyperplanning || isHyperplanningDescription(event.description || '')) {
@@ -92,20 +66,16 @@ export function convertICalEventToSharedCourse(
   event: ICalEvent,
   context: ConversionContext
 ): SharedCourse {
-  const { summary, type, teacher, group, courseType } = parseEventData(
+  const { type, teacher, group } = parseEventData(
     event,
     context.isADE,
     context.isHyperplanning,
-    context.intelligentParsing,
-    context.isSchool,
-    context.schoolName
+    context.intelligentParsing
   );
-
-  console.log(summary)
 
   return {
     id: event.uid,
-    subject: summary || event.summary || 'Événement',
+    subject: event.summary || 'Événement',
     type: CourseType.ACTIVITY,
     from: event.dtstart || new Date(),
     to: calculateEventEndTime(event),
@@ -115,7 +85,7 @@ export function convertICalEventToSharedCourse(
     group,
     backgroundColor: '#4CAF50',
     status: undefined,
-    customStatus: courseType || context.icalTitle,
+    customStatus: context.icalTitle,
     url: '',
     createdByAccount: `ical_${context.icalId}`
   };

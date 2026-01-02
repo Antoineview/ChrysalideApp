@@ -1,9 +1,8 @@
-import { useTheme } from '@react-navigation/native';
-import { t } from 'i18next';
 import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+import { t } from 'i18next';
 
-import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
 import ChipButton from '@/ui/components/ChipButton';
 import Search from '@/ui/components/Search';
 import TabHeader from '@/ui/components/TabHeader';
@@ -54,8 +53,8 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
       title={
         <TabHeaderTitle
           leading={t('Tasks_Week')}
-          subtitle={selectedWeek === defaultWeek ? t('Tasks_ThisWeek') : undefined}
-          number={getWeekNumberFromDate(getDateRangeOfWeek(selectedWeek, new Date().getFullYear()).start).toString()}
+          subtitle={selectedWeek == defaultWeek ? t('Tasks_ThisWeek') : undefined}
+          number={selectedWeek.toString()}
           color='#C54CB3'
           onPress={onToggleWeekPicker}
           height={56}

@@ -1,12 +1,11 @@
 import { useCallback, useEffect } from 'react';
-
-import { getWeekNumberFromDate } from '@/database/useHomework';
 import { getManager, initializeAccountManager } from "@/services/shared";
-import { Grade, Period } from '@/services/shared/grade';
-import { useSettingsStore } from '@/stores/settings';
 import { useAlert } from '@/ui/components/AlertProvider';
-import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { log, warn } from '@/utils/logger/logger';
+import { getWeekNumberFromDate } from '@/database/useHomework';
+import { Grade, Period } from '@/services/shared/grade';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { useSettingsStore } from '@/stores/settings';
 
 export const useHomeData = () => {
   const alert = useAlert();
@@ -16,7 +15,7 @@ export const useHomeData = () => {
     const manager = getManager();
     const date = new Date();
     const weekNumber = getWeekNumberFromDate(date);
-    await manager.getWeeklyTimetable(weekNumber, date);
+    await manager.getWeeklyTimetable(weekNumber);
   }, []);
 
   const fetchGrades = useCallback(async () => {
@@ -38,12 +37,12 @@ export const useHomeData = () => {
     const currentPeriod = getCurrentPeriod(validPeriods);
 
     if (currentPeriod) {
-      const periodGrades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount);
-      periodGrades.subjects.forEach(subject => {
-        subject.grades.forEach(grade => {
-          grades.push(grade);
+        const periodGrades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount);
+        periodGrades.subjects.forEach(subject => {
+            subject.grades.forEach(grade => {
+                grades.push(grade);
+            });
         });
-      });
     }
   }, []);
 

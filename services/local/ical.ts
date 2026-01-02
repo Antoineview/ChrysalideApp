@@ -1,10 +1,9 @@
 import { Course as SharedCourse } from '@/services/shared/timetable';
-
+import { parseICalString } from './parsers/ical-event-parser';
+import { detectProvider } from './ical-utils';
+import { getAllIcals, updateProviderIfUnknown } from './ical-database';
 import { convertMultipleEvents } from './event-converter';
 import { filterEventsByWeek } from './event-filter';
-import { getAllIcals, updateProviderIfUnknown } from './ical-database';
-import { detectProvider } from './ical-utils';
-import { parseICalString } from './parsers/ical-event-parser';
 
 export interface ICalEvent {
   uid: string;
@@ -24,8 +23,6 @@ export interface ParsedICalData {
   isHyperplanning: boolean;
   provider?: string;
   url?: string;
-  isSchool?: boolean;
-  schoolName?: string;
 }
 
 export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
@@ -37,16 +34,14 @@ export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
 
     const icalString = await response.text();
     const { events, metadata } = parseICalString(icalString);
-    const { isADE, isHyperplanning, provider, isSchool, schoolName } = detectProvider(metadata.prodId, url);
+    const { isADE, isHyperplanning, provider } = detectProvider(metadata.prodId);
     return {
       events,
       calendarName: metadata.calendarName,
       isADE,
       isHyperplanning,
       provider,
-      url,
-      isSchool,
-      schoolName
+      url
     };
   } catch (error) {
     console.error('Error fetching or parsing iCal:', error);
@@ -79,9 +74,7 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
         icalTitle: ical.title,
         isADE: parsedData.isADE,
         isHyperplanning: parsedData.isHyperplanning,
-        intelligentParsing: (ical as any).intelligentParsing || false,
-        isSchool: parsedData.isSchool,
-        schoolName: parsedData.schoolName
+        intelligentParsing: (ical as any).intelligentParsing || false
       });
 
       allEvents.push(...convertedEvents);

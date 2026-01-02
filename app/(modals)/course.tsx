@@ -122,7 +122,6 @@ export default function CourseModal() {
         ListHeaderComponent={
           <ModalOverhead
             subject={getSubjectName(item.subject)}
-            title={item.customStatus || getStatusText(item.status)}
             color={subjectInfo.color}
             emoji={subjectInfo.emoji}
             subjectVariant="h3"

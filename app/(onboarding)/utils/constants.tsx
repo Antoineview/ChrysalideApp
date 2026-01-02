@@ -26,65 +26,12 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
 
   return [
     {
-      name: "pronote",
-      title: "PRONOTE",
-      type: "main",
-      image: require("@/assets/images/service_pronote.png"),
-      onPress: () => {
-        redirect({ pathname: './school/method', options: { service: Services.PRONOTE } });
-      },
-      variant: 'service' as const,
-      color: 'light' as const,
-    },
-    {
-      name: "ed",
-      title: "ÉcoleDirecte",
-      type: "main",
-      image: require("@/assets/images/service_ed.png"),
-      onPress: () => {
-        Alert.alert(
-          "🦋 École Directe est indisponible pour le moment.",
-          "Suite à des problèmes techniques, École Directe est actuellement indisponible. Nous travaillons pour résoudre ce problème et nous vous remercions de votre patience.",
-          [
-            {
-              text: "J'ai compris !",
-              onPress: () => { },
-              style: "default"
-            }
-          ]
-        )
-        //redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
-      },
-      variant: 'service' as const,
-      color: 'light' as const,
-    },
-    {
-      name: "skolengo",
-      title: "Skolengo",
-      type: "main",
-      image: require("@/assets/images/service_skolengo.png"),
-      onPress: () => {
-        redirect({ pathname: './school/method', options: { service: Services.SKOLENGO } });
-      },
-      variant: 'service' as const,
-      color: 'light' as const,
-    },
-    {
-      name: "separator",
-      title: "separator",
-      type: "separator",
-      image: require("@/assets/images/service_skolengo.png"),
-      onPress: () => { /* empty */ },
-      variant: 'service' as const,
-      color: 'light' as const,
-    },
-    {
       name: "university",
-      title: t("ONBOARDING_UNIVERSITY"),
+      title: "EPITA",
       type: "other",
-      icon: <Papicons name={"Star"} />,
+      image: require("@/assets/images/auriga.png"),
       onPress: () => {
-        redirect({ pathname: './university/method' });
+        redirect({ pathname: '../university/multi/aurigaAuth', options: { color: "#0060D6", university: "EPITA", url: "https://ionisepita-auth.np-auriga.nfrance.net/auth/realms/npionisepita/protocol/openid-connect/auth?client_id=np-front&redirect_uri=https%3A%2F%2Fauriga.epita.fr%2F%23%2FmainContent%2Fwelcome&state=b0d51531-8196-40d8-879a-65006e6a077c&response_mode=fragment&response_type=code&scope=openid&nonce=76fd097a-cf70-4f89-8a38-2f7e80b77475&prompt=login&code_challenge=8AH2655_0ZuKl4XeB_TOu0Jbr1HJQoJdPTzG_Rf4Yig&code_challenge_method=S256" } });
       },
       variant: 'primary' as const,
       style: { backgroundColor: theme.dark ? colors.border : "black" },
@@ -117,16 +64,6 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
 
   return [
     {
-      name: "iut-lannion",
-      title: "IUT de Lannion",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/univ_lannion.png"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: './lannion/credentials' });
-      },
-    },
-    {
       name: "univ-lorraine",
       title: "Université de Lorraine",
       hasLimitedSupport: false,
@@ -154,6 +91,16 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       type: "main",
       onPress: () => {
         redirect({ pathname: './multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
+      },
+    },
+    {
+      name: "iut-lannion",
+      title: "IUT de Lannion",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_lannion.png"),
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: './lannion/credentials' });
       },
     },
     {
@@ -215,7 +162,7 @@ export interface LoginMethod {
   onPress: () => void;
 }
 
-export function GetLoginMethods(redirect: (path: { pathname: RelativePathString }) => void): LoginMethod[] {
+/*export function GetLoginMethods(redirect: (path: { pathname: RelativePathString }) => void): LoginMethod[] {
   const { t } = useTranslation();
 
   return [
@@ -257,7 +204,7 @@ export function GetLoginMethods(redirect: (path: { pathname: RelativePathString 
     }
   ]
 }
-
+*/
 export interface SupportedRestaurant {
   name: string;
   title: string;
@@ -270,26 +217,6 @@ export interface SupportedRestaurant {
 export function GetSupportedRestaurants(redirect: (path: { pathname: string }) => void): SupportedRestaurant[] {
   return [
     {
-      name: "turboself",
-      title: "TurboSelf",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/turboself.png"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: '../turboself/credentials' });
-      }
-    },
-    {
-      name: "ard",
-      title: "ARD",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/ard.png"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: '../ard/credentials' });
-      }
-    },
-    {
       name: "izly",
       title: "Izly",
       hasLimitedSupport: false,
@@ -297,16 +224,6 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       type: "main",
       onPress: () => {
         redirect({ pathname: '../izly/credentials' });
-      }
-    },
-    {
-      name: "alise",
-      title: "Alise",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/alise.jpg"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: '../alise/credentials' });
       }
     }
   ]

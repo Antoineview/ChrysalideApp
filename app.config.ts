@@ -14,6 +14,15 @@ module.exports = {
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    
+    // --- AJOUT DE LA CONFIGURATION EAS ---
+    extra: {
+      eas: {
+        projectId: "73e30bf7-efe5-4d42-b06e-3ce3c0b38c0d"
+      }
+    },
+    // -------------------------------------
+
     splash: {
       image: "./assets/images/splash.png",
       resizeMode: "cover",
@@ -32,7 +41,6 @@ module.exports = {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
           },
         ],
-        CFBundleLocalizations: ["fr", "en", "br", "pt", "de", "es", "tr"],
         CADisableMinimumFrameDurationOnPhone: true,
       },
       supportsTablet: true,
@@ -65,7 +73,6 @@ module.exports = {
       "expo-router",
       "expo-font",
       "expo-video",
-      "expo-audio",
       "expo-localization",
       [
         "expo-image-picker",
