@@ -21,32 +21,24 @@ export default function WelcomeScreen() {
 
   return (
     <ViewContainer>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.background, justifyContent: "space-between" }]}>
         <Stack
           padding={32}
           backgroundColor="#0060D6"
           gap={0}
           hAlign={"center"}
-          vAlign={"end"}
+          vAlign={"center"}
           style={{
             width: "100%",
-            flex: 1,
+
             borderBottomLeftRadius: 42,
             borderBottomRightRadius: 42,
             borderCurve: "continuous",
-            paddingTop: insets.top + 20,
+            paddingTop: insets.top + 30,
             paddingBottom: 40,
           }}
         >
-          <Stack
-            vAlign={"center"}
-            hAlign={"center"}
-            style={{
-              flex: 1,
-              marginBottom: 16,
-            }}
-          ></Stack>
-          <Stack flex vAlign="start" hAlign="start" width="100%" gap={6}>
+          <Stack vAlign="start" hAlign="start" width="100%" gap={6}>
             <Typography
               variant="h1"
               style={{ color: "white", fontSize: 32, lineHeight: 34 }}

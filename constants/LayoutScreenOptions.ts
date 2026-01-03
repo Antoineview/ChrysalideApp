@@ -1,20 +1,21 @@
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 import "@/utils/i18n";
-import { t } from 'i18next';
-import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
+import { t } from "i18next";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 export const FONT_CONFIG = {
-  light: require('../assets/fonts/SNPro-Light.ttf'),
-  regular: require('../assets/fonts/SNPro-Regular.ttf'),
-  medium: require('../assets/fonts/SNPro-Medium.ttf'),
-  semibold: require('../assets/fonts/SNPro-Semibold.ttf'),
-  bold: require('../assets/fonts/SNPro-Bold.ttf'),
-  black: require('../assets/fonts/SNPro-Black.ttf'),
-  serif_light: require('../assets/fonts/NotoSerif-Light.ttf'),
-  serif_regular: require('../assets/fonts/NotoSerif-Regular.ttf'),
-  serif_medium: require('../assets/fonts/NotoSerif-Medium.ttf'),
-  serif_bold: require('../assets/fonts/NotoSerif-Bold.ttf'),
-  serif_black: require('../assets/fonts/NotoSerif-Black.ttf'),
+  light: require("../assets/fonts/RobotoFlex-Light.ttf"),
+  regular: require("../assets/fonts/RobotoFlex-Regular.ttf"),
+  medium: require("../assets/fonts/RobotoFlex-Medium.ttf"),
+  semibold: require("../assets/fonts/RobotoFlex-SemiBold.ttf"),
+  bold: require("../assets/fonts/RobotoFlex-Bold.ttf"),
+  black: require("../assets/fonts/RobotoFlex-Black.ttf"),
+  header: require("../assets/fonts/RobotoFlex-Header.ttf"),
+  serif_light: require("../assets/fonts/NotoSerif-Light.ttf"),
+  serif_regular: require("../assets/fonts/NotoSerif-Regular.ttf"),
+  serif_medium: require("../assets/fonts/NotoSerif-Medium.ttf"),
+  serif_bold: require("../assets/fonts/NotoSerif-Bold.ttf"),
+  serif_black: require("../assets/fonts/NotoSerif-Black.ttf"),
 } as const;
 
 export const STACK_SCREEN_OPTIONS = {
@@ -23,9 +24,10 @@ export const STACK_SCREEN_OPTIONS = {
 
 export const ALERT_SCREEN_OPTIONS = {
   headerShown: false,
-  presentation: 'formSheet' as const,
-  sheetAllowedDetents: Platform.OS === 'ios' ? 'fitToContents' as const : [0.9],
-  sheetCornerRadius: Platform.OS === 'ios' ? undefined : 32,
+  presentation: "formSheet" as const,
+  sheetAllowedDetents:
+    Platform.OS === "ios" ? ("fitToContents" as const) : [0.9],
+  sheetCornerRadius: Platform.OS === "ios" ? undefined : 32,
   sheetGrabberVisible: false,
   sheetExpandsWhenScrolledToEdge: false,
   sheetInitialDetentIndex: 0,

@@ -1,14 +1,16 @@
-import React from "react";
-import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View, StyleProp } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { screenOptions } from "@/utils/theme/ScreenOptions";
+import React from "react";
+import { DimensionValue, StyleProp, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
+
 import SkeletonView from "@/ui/components/SkeletonView";
+import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 const FONT_FAMILIES = {
   regular: "regular",
   medium: "medium",
   semibold: "semibold",
   bold: "bold",
+  header: "header",
 } as const;
 
 export const VARIANTS = StyleSheet.create({
@@ -45,7 +47,7 @@ export const VARIANTS = StyleSheet.create({
   },
   header: {
     fontSize: 19,
-    fontFamily: FONT_FAMILIES.bold,
+    fontFamily: FONT_FAMILIES.header,
     letterSpacing: 0.08,
     lineHeight: 22,
   },
@@ -56,32 +58,32 @@ export const VARIANTS = StyleSheet.create({
   },
   h1: {
     fontSize: 32,
-    fontFamily: FONT_FAMILIES.bold,
+    fontFamily: FONT_FAMILIES.header,
     lineHeight: 40,
   },
   h2: {
     fontSize: 28,
-    fontFamily: FONT_FAMILIES.bold,
+    fontFamily: FONT_FAMILIES.header,
     lineHeight: 34,
   },
   h3: {
     fontSize: 24,
-    fontFamily: FONT_FAMILIES.bold,
+    fontFamily: FONT_FAMILIES.header,
     lineHeight: 30,
   },
   h4: {
     fontSize: 20,
-    fontFamily: FONT_FAMILIES.bold,
+    fontFamily: FONT_FAMILIES.header,
     lineHeight: 26,
   },
   h5: {
     fontSize: 18,
-    fontFamily: FONT_FAMILIES.semibold,
+    fontFamily: FONT_FAMILIES.header,
     lineHeight: 32,
   },
   h6: {
     fontSize: 17,
-    fontFamily: FONT_FAMILIES.bold,
+    fontFamily: FONT_FAMILIES.header,
     lineHeight: 32,
   },
 });
@@ -133,22 +135,22 @@ export interface TypographyProps extends TextProps {
 }
 
 const arePropsEqual = (prev: TypographyProps, next: TypographyProps) => {
-  if (prev.children !== next.children) return false;
-  if (prev.variant !== next.variant) return false;
-  if (prev.color !== next.color) return false;
-  if (prev.align !== next.align) return false;
-  if (prev.weight !== next.weight) return false;
-  if (prev.italic !== next.italic) return false;
-  if (prev.inline !== next.inline) return false;
-  if (prev.nowrap !== next.nowrap) return false;
-  if (prev.skeleton !== next.skeleton) return false;
+  if (prev.children !== next.children) { return false; }
+  if (prev.variant !== next.variant) { return false; }
+  if (prev.color !== next.color) { return false; }
+  if (prev.align !== next.align) { return false; }
+  if (prev.weight !== next.weight) { return false; }
+  if (prev.italic !== next.italic) { return false; }
+  if (prev.inline !== next.inline) { return false; }
+  if (prev.nowrap !== next.nowrap) { return false; }
+  if (prev.skeleton !== next.skeleton) { return false; }
 
-  if (prev.style === next.style) return true;
+  if (prev.style === next.style) { return true; }
 
   if (Array.isArray(prev.style) && Array.isArray(next.style)) {
-    if (prev.style.length !== next.style.length) return false;
+    if (prev.style.length !== next.style.length) { return false; }
     for (let i = 0; i < prev.style.length; i++) {
-      if (prev.style[i] !== next.style[i]) return false;
+      if (prev.style[i] !== next.style[i]) { return false; }
     }
     return true;
   }

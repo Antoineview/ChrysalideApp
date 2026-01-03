@@ -11,7 +11,8 @@
     "lint": "eslint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "generate-fonts": "node scripts/generateFonts.js"
   },
   "jest": {
     "preset": "jest-expo"

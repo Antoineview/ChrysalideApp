@@ -1,0 +1,106 @@
+{
+  "description": "Variable font parameters for Roboto Flex. Run 'npm run generate-fonts' after editing to regenerate font files.",
+  "sourceFont": "../assets/fonts/RobotoFlex-Variable.ttf",
+  "outputDir": "../assets/fonts",
+
+  "styles": {
+    "light": {
+      "wght": 300,
+      "wdth": 100,
+      "slnt": 0,
+      "GRAD": 0,
+      "XOPQ": 96,
+      "XTRA": 468,
+      "YOPQ": 79,
+      "YTAS": 750,
+      "YTDE": -203,
+      "YTFI": 738,
+      "YTLC": 514,
+      "YTUC": 712
+    },
+    "regular": {
+      "wght": 400,
+      "wdth": 100,
+      "slnt": 0,
+      "GRAD": 0,
+      "XOPQ": 96,
+      "XTRA": 468,
+      "YOPQ": 79,
+      "YTAS": 750,
+      "YTDE": -203,
+      "YTFI": 738,
+      "YTLC": 514,
+      "YTUC": 712
+    },
+    "medium": {
+      "wght": 500,
+      "wdth": 100,
+      "slnt": 0,
+      "GRAD": 0,
+      "XOPQ": 96,
+      "XTRA": 468,
+      "YOPQ": 79,
+      "YTAS": 750,
+      "YTDE": -203,
+      "YTFI": 738,
+      "YTLC": 514,
+      "YTUC": 712
+    },
+    "semibold": {
+      "wght": 600,
+      "wdth": 100,
+      "slnt": 0,
+      "GRAD": 0,
+      "XOPQ": 96,
+      "XTRA": 468,
+      "YOPQ": 79,
+      "YTAS": 750,
+      "YTDE": -203,
+      "YTFI": 738,
+      "YTLC": 514,
+      "YTUC": 712
+    },
+    "bold": {
+      "wght": 700,
+      "wdth": 100,
+      "slnt": 0,
+      "GRAD": 0,
+      "XOPQ": 96,
+      "XTRA": 468,
+      "YOPQ": 79,
+      "YTAS": 750,
+      "YTDE": -203,
+      "YTFI": 738,
+      "YTLC": 514,
+      "YTUC": 712
+    },
+    "black": {
+      "wght": 900,
+      "wdth": 100,
+      "slnt": 0,
+      "GRAD": 0,
+      "XOPQ": 96,
+      "XTRA": 468,
+      "YOPQ": 79,
+      "YTAS": 750,
+      "YTDE": -203,
+      "YTFI": 738,
+      "YTLC": 514,
+      "YTUC": 712
+    },
+    "header": {
+      "wght": 700,
+      "wdth": 46,
+      "slnt": -10,
+      "GRAD": 0,
+      "XOPQ": 96,
+      "XTRA": 603,
+      "YOPQ": 79,
+      "YTAS": 750,
+      "YTDE": -203,
+      "YTFI": 738,
+      "YTLC": 514,
+      "YTUC": 760
+    }
+  }
+}
