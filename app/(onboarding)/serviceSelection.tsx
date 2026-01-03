@@ -27,7 +27,7 @@ export default function WelcomeScreen() {
 
   return (
     <OnboardingScrollingFlatList
-      color={'#D51A67'}
+      color={'#0060D6'}
       title={t("ONBOARDING_SELECT_SCHOOLSERVICE")}
       step={1}
       totalSteps={2}
