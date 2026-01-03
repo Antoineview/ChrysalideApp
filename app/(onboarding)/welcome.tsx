@@ -83,6 +83,18 @@ export default function WelcomeScreen() {
             size="large"
             style={{ height: 40 }}
           />
+          <Typography
+            style={{
+              textAlign: "center",
+              fontSize: 11,
+              opacity: 0.6,
+              marginTop: 10,
+              width: "100%",
+              color: "#444",
+            }}
+          >
+            {t("ONBOARDING_MAINTAINED_BY")}
+          </Typography>
         </Stack>
       </View>
     </ViewContainer>
