@@ -1,11 +1,10 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import * as Linking from "expo-linking";
-import { router, useFocusEffect } from "expo-router";
-import LottieView from "lottie-react-native";
+import { router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image,StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Button from "@/ui/components/Button";
@@ -17,17 +16,8 @@ export default function WelcomeScreen() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const animation = React.useRef<LottieView>(null);
   const { t } = useTranslation();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (animation.current) {
-        animation.current.reset();
-        animation.current.play();
-      }
-    }, []),
-  );
 
   return (
     <ViewContainer>
@@ -55,35 +45,8 @@ export default function WelcomeScreen() {
               flex: 1,
               marginBottom: 16,
             }}
-          >
-            <LottieView
-              autoPlay={false}
-              loop={false}
-              ref={animation}
-              style={{
-                flex: 1,
-                aspectRatio: 1,
-                maxHeight: 250
-              }}
-              source={require("@/assets/lotties/onboarding.json")}
-            />
-          </Stack>
-          <Stack
-            flex
-            vAlign="start"
-            hAlign="start"
-            width="100%"
-            gap={6}
-          >
-            <Image
-              source={require("@/assets/logo.png")}
-              resizeMode="contain"
-              style={{
-                width: 136,
-                height: 36,
-                marginBottom: 2,
-              }}
-            />
+          ></Stack>
+          <Stack flex vAlign="start" hAlign="start" width="100%" gap={6}>
             <Typography
               variant="h1"
               style={{ color: "white", fontSize: 32, lineHeight: 34 }}
@@ -116,14 +79,12 @@ export default function WelcomeScreen() {
               backgroundColor: theme.dark ? colors.border : "black",
             }}
             size="large"
-            icon={
-              <Papicons name={"Butterfly"} />
-            }
+            icon={<Papicons name={"user"} />}
           />
           <Button
             title={t("ONBOARDING_HELP_BTN")}
             onPress={() => {
-              Linking.openURL("https://support.papillon.bzh");
+              Linking.openURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
             }}
             variant="ghost"
             color="text"

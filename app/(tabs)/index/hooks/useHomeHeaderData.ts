@@ -1,24 +1,27 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { getChatsFromCache } from '@/database/useChat';
-import { AccountManager, getManager, subscribeManagerUpdate } from '@/services/shared';
-import { Attendance } from '@/services/shared/attendance';
-import { Chat } from '@/services/shared/chat';
-import { Period } from '@/services/shared/grade';
-import { getCurrentPeriod } from '@/utils/grades/helper/period';
-import { useAccountStore } from '@/stores/account';
-import { Services } from '@/stores/account/types';
+import { useState, useEffect, useMemo, useRef } from "react";
+import { getChatsFromCache } from "@/database/useChat";
+import {
+  AccountManager,
+  getManager,
+  subscribeManagerUpdate,
+} from "@/services/shared";
+import { Attendance } from "@/services/shared/attendance";
+import { Chat } from "@/services/shared/chat";
+import { Period } from "@/services/shared/grade";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
 
 export const useHomeHeaderData = () => {
-  const accounts = useAccountStore((state) => state.accounts);
-  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
-  const account = accounts.find((a) => a.id === lastUsedAccount);
+  const accounts = useAccountStore(state => state.accounts);
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const account = accounts.find(a => a.id === lastUsedAccount);
 
   const availableCanteenCards = useMemo(
     () =>
       account?.services.filter(service =>
         [
           Services.TURBOSELF,
-          Services.ALISE,
           Services.ARD,
           Services.ECOLEDIRECTE,
           Services.IZLY,
@@ -35,7 +38,7 @@ export const useHomeHeaderData = () => {
     if (!attendances) return 0;
     let count = 0;
     attendances.forEach(att => {
-      if(att && "absences" in att) {
+      if (att && "absences" in att) {
         if (att.absences) count += att.absences.length;
       }
     });
@@ -53,7 +56,9 @@ export const useHomeHeaderData = () => {
     const updateAttendance = async (manager: AccountManager) => {
       const periods = await manager.getAttendancePeriods();
       const currentPeriod = getCurrentPeriod(periods);
-      const fetchedAttendances = await manager.getAttendanceForPeriod(currentPeriod.name);
+      const fetchedAttendances = await manager.getAttendanceForPeriod(
+        currentPeriod.name
+      );
 
       attendancesPeriodsRef.current = periods;
       setAttendances(fetchedAttendances);
@@ -64,7 +69,7 @@ export const useHomeHeaderData = () => {
       setChats(fetchedChats);
     };
 
-    const unsubscribe = subscribeManagerUpdate((_) => {
+    const unsubscribe = subscribeManagerUpdate(_ => {
       const manager = getManager();
       updateAttendance(manager);
       updateDiscussions(manager);
@@ -78,6 +83,6 @@ export const useHomeHeaderData = () => {
     attendancesPeriods: attendancesPeriodsRef.current,
     attendances,
     absencesCount,
-    chats
+    chats,
   };
 };

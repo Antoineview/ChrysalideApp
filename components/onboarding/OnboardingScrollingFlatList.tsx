@@ -7,18 +7,15 @@ import Reanimated, {
 } from "react-native-reanimated";
 import Stack from "@/ui/components/Stack";
 import { useTranslation } from "react-i18next";
-import LottieView from "lottie-react-native";
 import Typography from "@/ui/components/Typography";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import ViewContainer from "@/ui/components/ViewContainer";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useFocusEffect } from "expo-router";
 import { FlatList } from "react-native";
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
-const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, color, step, totalSteps, elements, renderItem }: {
-  lottie?: string
+const OnboardingScrollingFlatList = ({ hasReturnButton = true, title, color, step, totalSteps, elements, renderItem }: {
   hasReturnButton?: boolean,
   title: string
   color: string
@@ -28,12 +25,11 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
   renderItem: ({ item, index }: { item: any, index: number }) => React.JSX.Element
 }) => {
   const insets = useSafeAreaInsets();
-  const animation = React.useRef<LottieView>(null);
 
   const scrollY = React.useRef(useSharedValue(0)).current;
   const { t } = useTranslation();
 
-  let height: number = lottie ? 500 : 250;
+  const height: number = 250;
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -66,34 +62,6 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
     ]
   }));
 
-  const AnimatedLottieContainerStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      scrollY.value,
-      [0, height - 270],
-      [1, 0],
-      Extrapolate.CLAMP
-    ),
-    transform: [
-      {
-        scale: interpolate(
-          scrollY.value,
-          [0, height - 270],
-          [1, 0.8],
-          Extrapolate.CLAMP
-        ),
-      },
-    ],
-  }));
-
-  useFocusEffect(
-    React.useCallback(() => {
-      if (animation.current) {
-        animation.current.reset();
-        animation.current.play();
-      }
-    }, [])
-  );
-
   return (
     <ViewContainer>
       <Reanimated.View
@@ -113,16 +81,6 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
             height: "100%",
           }}
         >
-          <Reanimated.View style={AnimatedLottieContainerStyle}>
-            {lottie && (
-              <LottieView
-                autoPlay
-                loop={false}
-                style={{ width: 230, height: 230 }}
-                source={lottie}
-              />
-            )}
-          </Reanimated.View>
           <Stack
             vAlign='start'
             hAlign='start'

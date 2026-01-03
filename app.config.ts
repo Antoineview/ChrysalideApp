@@ -1,11 +1,16 @@
 import PackageJSON from "./package.json";
 
-const androidPreVersion = PackageJSON.version.replaceAll(".", "")
-const androidVersionCode = androidPreVersion.length == 3 ? parseInt(androidPreVersion + "00") : androidPreVersion.length == 4 ? parseInt(androidPreVersion + "0") : parseInt(androidPreVersion)
+const androidPreVersion = PackageJSON.version.replaceAll(".", "");
+const androidVersionCode =
+  androidPreVersion.length == 3
+    ? parseInt(androidPreVersion + "00")
+    : androidPreVersion.length == 4
+      ? parseInt(androidPreVersion + "0")
+      : parseInt(androidPreVersion);
 
 module.exports = {
   expo: {
-    name: "Papillon",
+    name: "Chrysalide",
     slug: "papillon",
     version: PackageJSON.version,
     orientation: "portrait",
@@ -14,12 +19,12 @@ module.exports = {
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
-    
+
     // --- AJOUT DE LA CONFIGURATION EAS ---
     extra: {
       eas: {
-        projectId: "73e30bf7-efe5-4d42-b06e-3ce3c0b38c0d"
-      }
+        projectId: "73e30bf7-efe5-4d42-b06e-3ce3c0b38c0d",
+      },
     },
     // -------------------------------------
 
@@ -77,8 +82,9 @@ module.exports = {
       [
         "expo-image-picker",
         {
-          "photosPermission": "Papillon utilise ta galerie pour te permettre de personnaliser ta photo de profil"
-        }
+          photosPermission:
+            "Chrysalide utilise ta galerie pour te permettre de personnaliser ta photo de profil",
+        },
       ],
       "expo-web-browser",
       [
@@ -94,9 +100,9 @@ module.exports = {
         "expo-location",
         {
           locationWhenInUsePermission:
-            "Papillon utilise ton emplacement pour trouver les établissements autour de toi.",
+            "Chrysalide utilise ton emplacement pour trouver les établissements autour de toi.",
           cameraPermission:
-            "Papillon utilise ta caméra pour scanner des QR-codes pour te connecter, pour capturer des documents, ou pour des fonctionnalités amusantes telles que les réactions.",
+            "Chrysalide utilise ta caméra pour scanner des QR-codes pour te connecter, pour capturer des documents, ou pour des fonctionnalités amusantes telles que les réactions.",
         },
       ],
       [
@@ -118,7 +124,6 @@ module.exports = {
             extraPods: [
               { name: "SDWebImage", modular_headers: true },
               { name: "SDWebImageSVGCoder", modular_headers: true },
-
             ],
           },
         },

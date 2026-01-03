@@ -50,11 +50,6 @@ export default function OnboardingLayout() {
                     initialParams={{ accountId: "" }}
                 />
                 <Stack.Screen
-                    name="restaurants/method"
-                    options={{ ...newScreenOptions }}
-                    initialParams={{ action: "addAccount" }}
-                />
-                <Stack.Screen
                     name="university/method"
                     options={{ ...newScreenOptions }}
                 />

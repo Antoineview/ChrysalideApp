@@ -102,7 +102,7 @@ export class AccountManager {
           );
         }
       } catch (e) {
-        throw new AuthenticationError(String(e), service)
+        throw new AuthenticationError(String(e), service);
       }
     }
 
@@ -627,12 +627,6 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/izly/index");
       return new module.Izly(service.id);
-    }
-
-    if (service.serviceId === Services.ALISE) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const module = require("@/services/alise/index");
-      return new module.Alise(service.id);
     }
 
     if (service.serviceId === Services.APPSCHO) {

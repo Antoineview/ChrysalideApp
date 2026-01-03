@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
-import { RelativePathString, UnknownInputParams } from 'expo-router';
+import { UnknownInputParams } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
 export interface SupportedService {
@@ -35,17 +34,6 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       },
       variant: 'primary' as const,
       style: { backgroundColor: theme.dark ? colors.border : "black" },
-    },
-    {
-      name: "university",
-      title: t("ONBOARDING_RESTAURANTS"),
-      type: "other",
-      icon: <Papicons name={"Cutlery"} />,
-      onPress: () => {
-        redirect({ pathname: './restaurants/method' });
-      },
-      variant: 'primary' as const,
-      color: 'light' as const
     }
   ]
 }
@@ -205,26 +193,3 @@ export interface LoginMethod {
   ]
 }
 */
-export interface SupportedRestaurant {
-  name: string;
-  title: string;
-  hasLimitedSupport: boolean;
-  image: any;
-  type: string;
-  onPress: () => void;
-}
-
-export function GetSupportedRestaurants(redirect: (path: { pathname: string }) => void): SupportedRestaurant[] {
-  return [
-    {
-      name: "izly",
-      title: "Izly",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/izly.png"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: '../izly/credentials' });
-      }
-    }
-  ]
-}

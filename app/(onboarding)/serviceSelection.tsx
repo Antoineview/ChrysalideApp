@@ -1,6 +1,5 @@
 import { useTheme } from '@react-navigation/native';
-import { RelativePathString, router, UnknownInputParams, useFocusEffect } from 'expo-router';
-import LottieView from 'lottie-react-native';
+import { RelativePathString, router, UnknownInputParams } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, View } from 'react-native';
@@ -18,7 +17,6 @@ export default function WelcomeScreen() {
   const theme = useTheme();
   const { colors } = theme;
   const { t } = useTranslation();
-  const animation = React.useRef<LottieView>(null);
 
   const services = GetSupportedServices((path: { pathname: string, options?: UnknownInputParams }) => {
     router.push({
@@ -27,19 +25,9 @@ export default function WelcomeScreen() {
     });
   });
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (animation.current) {
-        animation.current.reset();
-        animation.current.play();
-      }
-    }, [])
-  );
-
   return (
     <OnboardingScrollingFlatList
       color={'#D51A67'}
-      lottie={require('@/assets/lotties/school-services.json')}
       title={t("ONBOARDING_SELECT_SCHOOLSERVICE")}
       step={1}
       totalSteps={2}

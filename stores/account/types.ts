@@ -17,11 +17,17 @@ export interface AccountsStorage {
   updateServiceAuthData: (serviceId: string, authData: Auth) => void;
   addServiceToAccount: (accountId: string, service: ServiceAccount) => void;
   removeServiceFromAccount: (serviceId: string) => void;
-  setAccountName: (accountId: string, firstName: string, lastName: string) => void;
+  setAccountName: (
+    accountId: string,
+    firstName: string,
+    lastName: string
+  ) => void;
   setSubjectColor: (subject: string, color: string) => void;
   setSubjectEmoji: (subject: string, emoji: string) => void;
   setSubjectName: (subject: string, name: string) => void;
-  setSubjects: (subjects: Record<string, { color: string; emoji: string; name: string }>) => void;
+  setSubjects: (
+    subjects: Record<string, { color: string; emoji: string; name: string }>
+  ) => void;
   setAccountProfilePicture: (accountId: string, profilePicture: string) => void;
 }
 
@@ -96,7 +102,6 @@ export enum Services {
   ARD,
   IZLY,
   MULTI,
-  ALISE,
   APPSCHO,
-  LANNION
+  LANNION,
 }
