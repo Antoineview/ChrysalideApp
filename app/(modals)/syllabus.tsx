@@ -197,6 +197,11 @@ export default function SyllabusModal() {
                 <Typography variant="title">
                   {activity.typeName || activity.type}
                 </Typography>
+                {!!activity.duration && activity.duration > 0 && (
+                  <Typography variant="body2" color="secondary">
+                    {Math.round(activity.duration / 3600)}h
+                  </Typography>
+                )}
               </Item>
             ))}
           </List>

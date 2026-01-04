@@ -424,6 +424,7 @@ class AurigaAPI {
             id: a.id,
             type: a.activityType?.code,
             typeName: a.activityType?.caption?.fr,
+            duration: a.duration,
           })) || [],
         locations:
           row.syllabusSites?.map((s: any) => ({

@@ -72,6 +72,7 @@ export interface Activity {
   id: number;
   type: string;
   typeName: string;
+  duration?: number;
 }
 
 export interface Location {
