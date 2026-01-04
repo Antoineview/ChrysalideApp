@@ -57,6 +57,14 @@ target 'Papillon' do
       config.build_settings["CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES"] = true
     end
 
+    installer.pods_project.targets.each do |target|
+      if target.name.include?("hermes")
+        target.build_configurations.each do |config|
+          config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+        end
+      end
+    end
+
     react_native_post_install(
       installer,
       config[:reactNativePath],
