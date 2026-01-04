@@ -391,7 +391,14 @@ class AurigaAPI {
           startDate: row.period?.startDate,
           endDate: row.period?.endDate,
         },
-        exams: [], // Simplify for now
+        exams:
+          row.syllabusAssessmentComponents?.map((e: any) => ({
+            id: e.id,
+            description: e.description,
+            type: e.examType?.code,
+            typeName: e.examType?.caption?.fr,
+            weighting: e.weighting,
+          })) || [],
         courseDescription: {
           coursPlan: row.customAttributes?.CoursePlan, // Program
           expected: [],
@@ -403,11 +410,26 @@ class AurigaAPI {
             ? { fr: row.learningOutcome.fr }
             : {},
         },
-        responsables: [],
+        responsables:
+          row.syllabusResponsibles?.map((r: any) => ({
+            uid: r.person?.id,
+            login: r.person?.customAttributes?.LOGIN,
+            firstName: r.person?.currentFirstName,
+            lastName: r.person?.currentLastName,
+          })) || [],
         instructorsValidator: [],
         instructorsEditors: [],
-        activities: [],
-        locations: [],
+        activities:
+          row.syllabusActivityTypes?.map((a: any) => ({
+            id: a.id,
+            type: a.activityType?.code,
+            typeName: a.activityType?.caption?.fr,
+          })) || [],
+        locations:
+          row.syllabusSites?.map((s: any) => ({
+            code: s.site?.code,
+            name: s.site?.caption?.fr,
+          })) || [],
       };
     } catch (e) {
       console.log("Error mapping syllabus:", e);

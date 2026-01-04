@@ -38,6 +38,21 @@ export default function SyllabusModal() {
 
 
 
+  /* Description Section */
+  const rawDescription = syllabus.caption?.goals?.fr || syllabus.caption?.name;
+  const description = React.useMemo(() => {
+    if (!rawDescription) return "";
+    return rawDescription
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<li>/gi, "\n• ")
+      .replace(/<\/li>/gi, "")
+      .replace(/<p[^>]*>/gi, "\n")
+      .replace(/<\/p>/gi, "\n")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+  }, [rawDescription]);
+
   return (
     <ScrollView
       style={{ flex: 1 }}
@@ -95,18 +110,24 @@ export default function SyllabusModal() {
               Code
             </Typography>
           </Item>
-          <Item>
-            <Typography variant="title">{syllabus.duration}h</Typography>
-            <Typography variant="body2" color="secondary">
-              Durée
-            </Typography>
-          </Item>
-          <Item>
-            <Typography variant="title">{syllabus.minScore}/20</Typography>
-            <Typography variant="body2" color="secondary">
-              Note minimum
-            </Typography>
-          </Item>
+          {syllabus.duration > 0 && (
+            <Item>
+              <Typography variant="title">
+                {Math.round(syllabus.duration / 3600)}h
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Durée
+              </Typography>
+            </Item>
+          )}
+          {syllabus.minScore > 0 && (
+            <Item>
+              <Typography variant="title">{syllabus.minScore}/20</Typography>
+              <Typography variant="body2" color="secondary">
+                Note minimum
+              </Typography>
+            </Item>
+          )}
           {syllabus.period && (
             <Item>
               <Typography variant="title">
@@ -192,10 +213,10 @@ export default function SyllabusModal() {
       )}
 
       {/* Description Section */}
-      {syllabus.caption?.name && (
+      {!!description && (
         <Stack gap={8} style={{ marginBottom: 24 }}>
           <Typography variant="h6">Description</Typography>
-          <Typography variant="body1">{syllabus.caption.name}</Typography>
+          <Typography variant="body1">{description}</Typography>
         </Stack>
       )}
     </ScrollView>
