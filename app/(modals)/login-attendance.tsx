@@ -41,49 +41,101 @@ export default function AttendanceLoginScreen() {
 
     const [hasInjected, setHasInjected] = useState(false);
 
-    // Interceptor - Catches the token from Authorization header or specific responses
     const FETCH_TOKEN_SCRIPT = `
       (function() {
-        var originalFetch = window.fetch;
-        window.fetch = function(url, options) {
-            
-            // Check if this request has an Authorization header
-            if (options && options.headers && options.headers.Authorization) {
-                var urlString = url.toString();
-                
-                // We want to capture the token sent to the Absences API, NOT to Microsoft Graph or Login
-                var isMicrosoft = urlString.includes("microsoft") || urlString.includes("live.com") || urlString.includes("office.com");
-                
-                if (!isMicrosoft) {
-                    window.ReactNativeWebView.postMessage(JSON.stringify({
-                        type: 'TOKEN',
-                        payload: {
-                            access_token: options.headers.Authorization.replace('Bearer ', ''),
-                            source: 'fetch intercept: ' + urlString
-                        }
-                    }));
-                }
-            }
-            
-            return originalFetch.apply(this, arguments);
-        };
-        
-        var originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
-        XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
-            if (header.toLowerCase() === 'authorization') {
-                // XHR requests don't always give us the URL easily in setRequestHeader, 
-                // but usually the main app XHRs are for the API.
-                // We'll capture it, but the fetch interceptor is usually more reliable for modern React apps.
-                 window.ReactNativeWebView.postMessage(JSON.stringify({
+        function checkAndPost(data, source) {
+            if (data && data.access_token) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
                     type: 'TOKEN',
                     payload: {
-                        access_token: value.replace('Bearer ', ''),
-                        source: 'xhr intercept'
+                        access_token: data.access_token,
+                        source: source
                     }
                 }));
             }
+        }
+
+        // 1. Intercept Fetch Requests (Headers)
+        var originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+            if (options && options.headers && options.headers.Authorization) {
+                var val = options.headers.Authorization;
+                if (!url.toString().includes('microsoft') && !url.toString().includes('live.com')) {
+                     checkAndPost({ access_token: val.replace('Bearer ', '') }, 'fetch-header');
+                }
+            }
+            return originalFetch.apply(this, arguments).then(function(response) {
+                // 2. Intercept Fetch Responses (Body)
+                try {
+                    var clone = response.clone();
+                    clone.json().then(function(data) {
+                        checkAndPost(data, 'fetch-response');
+                    }).catch(function(){});
+                } catch(e){}
+                return response;
+            });
+        };
+
+        // 3. Intercept XHR (Headers & Responses)
+        var originalOpen = XMLHttpRequest.prototype.open;
+        var originalSend = XMLHttpRequest.prototype.send;
+        var originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
+
+        XMLHttpRequest.prototype.open = function(method, url) {
+            this._url = url;
+            return originalOpen.apply(this, arguments);
+        };
+
+        XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
+            if (header.toLowerCase() === 'authorization') {
+                 checkAndPost({ access_token: value.replace('Bearer ', '') }, 'xhr-header');
+            }
             return originalSetRequestHeader.apply(this, arguments);
         };
+
+        XMLHttpRequest.prototype.send = function() {
+            var xhr = this;
+            xhr.addEventListener('load', function() {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    checkAndPost(data, 'xhr-response');
+                } catch(e) {}
+            });
+            return originalSend.apply(this, arguments);
+        };
+
+        // 4. Scrape Storage periodically
+        setInterval(function() {
+            // LocalStorage
+            try {
+                for (var i = 0; i < localStorage.length; i++) {
+                    var key = localStorage.key(i);
+                    var val = localStorage.getItem(key);
+                    // Check if value looks like a token or JSON containing token
+                    if (key.includes('token') || key.includes('auth')) {
+                         try {
+                             var json = JSON.parse(val);
+                             checkAndPost(json, 'localstorage-json-' + key);
+                         } catch(e) {
+                             // maybe plain string?
+                             if (val.length > 20) { // simple heuristic
+                                // checkAndPost({ access_token: val }, 'localstorage-raw-' + key);
+                             }
+                         }
+                    }
+                }
+                
+                // SessionStorage
+                 for (var i = 0; i < sessionStorage.length; i++) {
+                    var key = sessionStorage.key(i);
+                    var val = sessionStorage.getItem(key);
+                     try {
+                         var json = JSON.parse(val);
+                         checkAndPost(json, 'sessionstorage-json-' + key);
+                     } catch(e) {}
+                }
+            } catch(e) {}
+        }, 1000);
       })();
       true;
     `;
