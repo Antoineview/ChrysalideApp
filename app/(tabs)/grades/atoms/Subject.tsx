@@ -109,20 +109,20 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
   return (
     <Stack style={{ width: "100%", marginBottom: subject.subjects ? 12 : 0 }} key={subject.id}>
       <TouchableOpacity style={{ width: '100%' }} activeOpacity={0.5} onPress={handlePressSubject}>
-        <Stack direction='horizontal' vAlign='center' gap={10} padding={[4, 0]}>
+        <Stack direction='horizontal' hAlign='center' gap={10} padding={[4, 0]}>
           <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={subjectAdjustedColor + "22"}>
             <Text style={{ fontSize: 15 }}>
               {subjectEmoji}
             </Text>
           </Stack>
 
-          <Stack flex>
-            <Typography numberOfLines={1} variant='title' color={subjectAdjustedColor}>
+          <Stack flex inline>
+            <Typography nowrap variant='title' color={subjectAdjustedColor}>
               {subjectName || "?"}
             </Typography>
           </Stack>
 
-          <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end' style={{ flexShrink: 0 }}>
+          <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
             {subject.studentAverage.disabled ? (
               <Typography variant='h5' inline style={{ marginTop: 0 }}>
                 {subject.studentAverage.status}
