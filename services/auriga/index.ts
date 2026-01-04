@@ -51,18 +51,43 @@ class AurigaAPI {
     console.log("Fetching Grades...");
     try {
       fetchedGrades = await this.fetchAllGrades();
-      storage.set("auriga_grades", JSON.stringify(fetchedGrades));
-      console.log(`Fetched ${fetchedGrades.length} grades.`);
+      // Only save to cache if we got valid data (prevents wiping cache on 401 errors)
+      if (fetchedGrades.length > 0) {
+        storage.set("auriga_grades", JSON.stringify(fetchedGrades));
+        console.log(`Fetched ${fetchedGrades.length} grades.`);
+      } else {
+        console.log("No grades fetched, keeping existing cache.");
+        // Load existing cached grades instead
+        const cached = storage.getString("auriga_grades");
+        if (cached) {
+          fetchedGrades = JSON.parse(cached);
+        }
+      }
     } catch (e) {
       console.error("Failed to fetch grades:", e);
+      // Keep existing cache
+      const cached = storage.getString("auriga_grades");
+      if (cached) {
+        fetchedGrades = JSON.parse(cached);
+      }
     }
 
     // 2. Fetch Syllabus
     console.log("Fetching Syllabus...");
     try {
       fetchedSyllabus = await this.fetchAllSyllabus();
-      storage.set("auriga_syllabus", JSON.stringify(fetchedSyllabus));
-      console.log(`Fetched ${fetchedSyllabus.length} syllabus items.`);
+      // Only save to cache if we got valid data (prevents wiping cache on 401 errors)
+      if (fetchedSyllabus.length > 0) {
+        storage.set("auriga_syllabus", JSON.stringify(fetchedSyllabus));
+        console.log(`Fetched ${fetchedSyllabus.length} syllabus items.`);
+      } else {
+        console.log("No syllabus fetched, keeping existing cache.");
+        // Load existing cached syllabus instead
+        const cached = storage.getString("auriga_syllabus");
+        if (cached) {
+          fetchedSyllabus = JSON.parse(cached);
+        }
+      }
 
       // Register syllabus items as subjects in the database
       const subjectsToAdd = fetchedSyllabus.map((s: Syllabus) => ({

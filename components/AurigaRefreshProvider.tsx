@@ -1,3 +1,5 @@
+import CookieManager from "@react-native-cookies/cookies";
+import { useRouter } from "expo-router";
 import React, {
     createContext,
     ReactNode,
@@ -8,8 +10,6 @@ import React, {
 } from "react";
 import { View } from "react-native";
 import { WebView, WebViewNavigation } from "react-native-webview";
-import { useRouter } from "expo-router";
-import CookieManager from "@react-native-cookies/cookies";
 
 import AurigaAPI from "@/services/auriga";
 import { initializeAccountManager } from "@/services/shared";
@@ -150,6 +150,7 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
             await initializeAccountManager();
 
             alert.showAlert({
+                id: "auriga-sync",
                 title: "Synchronisation terminée",
                 message: "Tes données Auriga sont à jour.",
                 icon: "Check",
@@ -158,6 +159,7 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
         } catch (error) {
             console.error("Background Auriga Sync Error:", error);
             alert.showAlert({
+                id: "auriga-sync",
                 title: "Erreur de synchronisation",
                 message: "Impossible de récupérer tes données Auriga.",
                 icon: "AlertCircle",
@@ -184,11 +186,12 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
                 setShowHiddenWebView(false);
 
                 alert.showAlert({
+                    id: "auriga-sync",
                     title: "Synchronisation en cours",
                     message: "Récupération de tes données Auriga...",
                     icon: "RefreshCw",
                     color: "#0078D4",
-                    delay: 3000,
+                    delay: 60000, // Will be replaced when sync completes
                 });
 
                 // Sync in background
@@ -205,7 +208,7 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
     };
 
     const refreshAuriga = useCallback(() => {
-        if (isRefreshing) return;
+        if (isRefreshing) { return; }
 
         setIsRefreshing(true);
         hasReceivedToken.current = false;

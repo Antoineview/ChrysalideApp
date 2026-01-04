@@ -78,7 +78,16 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
       callbackRefs.current.set(alertId, alert.customButton.onPress);
     }
 
-    setAlerts((prevAlerts) => [...prevAlerts, alertWithId]);
+    // If alert with same id exists, replace it; otherwise add new
+    setAlerts((prevAlerts) => {
+      const existingIndex = prevAlerts.findIndex(a => a.id === alertId);
+      if (existingIndex >= 0) {
+        const newAlerts = [...prevAlerts];
+        newAlerts[existingIndex] = alertWithId;
+        return newAlerts;
+      }
+      return [...prevAlerts, alertWithId];
+    });
 
     // Clear existing timeout if alert is updated
     const existingTimeout = timeoutRefs.current.get(alertId);
