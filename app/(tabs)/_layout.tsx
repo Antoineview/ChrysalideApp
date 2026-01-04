@@ -1,15 +1,15 @@
-import { useAccountStore } from "@/stores/account";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import {
   createNativeBottomTabNavigator,
   NativeBottomTabNavigationEventMap,
   NativeBottomTabNavigationOptions,
 } from "@bottom-tabs/react-navigation";
 import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/native";
-import { useRouter, withLayoutContext } from "expo-router";
+import { withLayoutContext } from "expo-router";
 import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
+
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 
@@ -22,7 +22,6 @@ const Tabs = withLayoutContext<
 
 // Static platform detection - computed once at module load
 const IS_IOS_WITH_PADDING = runsIOS26;
-const IS_ANDROID = Platform.OS === 'android';
 
 // Pre-load all icons to avoid runtime require() calls
 const ICONS = {
@@ -30,8 +29,8 @@ const ICONS = {
     require('@/assets/icons/home_padding.svg')
     : require('@/assets/icons/home.svg'),
   calendar: IS_IOS_WITH_PADDING ? require('@/assets/icons/calendar_padding.svg') : require('@/assets/icons/calendar.svg'),
-
   grades: IS_IOS_WITH_PADDING ? require('@/assets/icons/results_padding.svg') : require('@/assets/icons/results.svg'),
+  syllabus: IS_IOS_WITH_PADDING ? require('@/assets/icons/news_padding.svg') : require('@/assets/icons/news.svg'), // Reuse news icon for now
   news: IS_IOS_WITH_PADDING ? require('@/assets/icons/news_padding.svg') : require('@/assets/icons/news.svg'),
 } as const;
 
@@ -44,8 +43,8 @@ const TAB_LABEL_STYLE = {
 // Static icon functions to prevent recreation
 const getHomeIcon = () => ICONS.home;
 const getCalendarIcon = () => ICONS.calendar;
-
 const getGradesIcon = () => ICONS.grades;
+const getSyllabusIcon = () => ICONS.syllabus;
 const getNewsIcon = () => ICONS.news;
 
 // Custom hook for optimized tab translations
@@ -55,8 +54,8 @@ const useTabTranslations = () => {
   return useMemo(() => ({
     home: t("Tab_Home"),
     calendar: t("Tab_Calendar"),
-
     grades: t("Tab_Grades"),
+    syllabus: t("Tab_Syllabus"),
     news: t("Tab_News"),
   }), [t]);
 };
@@ -76,10 +75,13 @@ export default function TabLayout() {
       title: translations.calendar,
       tabBarIcon: getCalendarIcon,
     },
-
     grades: {
       title: translations.grades,
       tabBarIcon: getGradesIcon,
+    },
+    syllabus: {
+      title: translations.syllabus,
+      tabBarIcon: getSyllabusIcon,
     },
     news: {
       title: translations.news,
@@ -107,10 +109,13 @@ export default function TabLayout() {
         name="calendar"
         options={screenOptions.calendar}
       />
-
       <Tabs.Screen
         name="grades"
         options={screenOptions.grades}
+      />
+      <Tabs.Screen
+        name="syllabus"
+        options={screenOptions.syllabus}
       />
       <Tabs.Screen
         name="news"

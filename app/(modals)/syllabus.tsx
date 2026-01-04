@@ -1,0 +1,203 @@
+import { useLocalSearchParams } from "expo-router";
+import React from "react";
+import { ScrollView, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { Syllabus } from "@/services/auriga/types";
+import Item from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectName } from "@/utils/subjects/name";
+
+export default function SyllabusModal() {
+  const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{ syllabusData: string }>();
+
+  // Parse syllabus data from params
+  const syllabus: Syllabus | null = React.useMemo(() => {
+    try {
+      return params.syllabusData ? JSON.parse(params.syllabusData) : null;
+    } catch {
+      return null;
+    }
+  }, [params.syllabusData]);
+
+  if (!syllabus) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Typography variant="body1">Aucune donnée</Typography>
+      </View>
+    );
+  }
+
+  const subjectColor = adjust(getSubjectColor(syllabus.name), -0.2);
+  const subjectName = getSubjectName(syllabus.name);
+
+
+
+  return (
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: insets.bottom + 32,
+      }}
+    >
+      {/* Header */}
+      <Stack gap={8} style={{ marginBottom: 24 }}>
+        <Stack direction="horizontal" gap={12} hAlign="start">
+          <Stack
+            width={48}
+            height={48}
+            card
+            hAlign="center"
+            vAlign="center"
+            radius={32}
+            backgroundColor={subjectColor + "22"}
+          >
+            <Text style={{ fontSize: 24 }}>📚</Text>
+          </Stack>
+          <Stack gap={2} style={{ flex: 1 }}>
+            <Typography
+              variant="h5"
+              style={{ lineHeight: 24 }}
+              color={subjectColor}
+              textBreakStrategy="highQuality"
+              android_hyphenationFrequency="full"
+              lineBreakStrategyIOS="standard"
+            >
+              {syllabus.caption?.name || subjectName}
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              {syllabus.code} • Semestre {syllabus.semester}
+            </Typography>
+          </Stack>
+        </Stack>
+      </Stack>
+
+      {/* Info Section */}
+      <Stack gap={8} style={{ marginBottom: 24 }}>
+        <Typography variant="h6">Informations</Typography>
+        <List>
+          <Item>
+            <Typography variant="title">{syllabus.UE}</Typography>
+            <Typography variant="body2" color="secondary">
+              UE
+            </Typography>
+          </Item>
+          <Item>
+            <Typography variant="title">{syllabus.code}</Typography>
+            <Typography variant="body2" color="secondary">
+              Code
+            </Typography>
+          </Item>
+          <Item>
+            <Typography variant="title">{syllabus.duration}h</Typography>
+            <Typography variant="body2" color="secondary">
+              Durée
+            </Typography>
+          </Item>
+          <Item>
+            <Typography variant="title">{syllabus.minScore}/20</Typography>
+            <Typography variant="body2" color="secondary">
+              Note minimum
+            </Typography>
+          </Item>
+          {syllabus.period && (
+            <Item>
+              <Typography variant="title">
+                {syllabus.period.startDate} → {syllabus.period.endDate}
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Période
+              </Typography>
+            </Item>
+          )}
+        </List>
+      </Stack>
+
+      {/* Exams Section */}
+      {syllabus.exams && syllabus.exams.length > 0 && (
+        <Stack gap={8} style={{ marginBottom: 24 }}>
+          <Typography variant="h6">
+            Examens ({syllabus.exams.length})
+          </Typography>
+          <List>
+            {syllabus.exams.map((exam, index) => (
+              <Item key={exam.id || index}>
+                <Typography variant="title">
+                  Coefficient: {exam.weighting}
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  {exam.typeName || exam.type}
+                </Typography>
+              </Item>
+            ))}
+          </List>
+        </Stack>
+      )}
+
+      {/* Responsables Section */}
+      {syllabus.responsables && syllabus.responsables.length > 0 && (
+        <Stack gap={8} style={{ marginBottom: 24 }}>
+          <Typography variant="h6">Responsables</Typography>
+          <List>
+            {syllabus.responsables.map((resp, index) => (
+              <Item key={resp.uid || index}>
+                <Typography variant="title">{resp.login}</Typography>
+                <Typography variant="body2" color="secondary">
+                  {resp.firstName} {resp.lastName}
+                </Typography>
+              </Item>
+            ))}
+          </List>
+        </Stack>
+      )}
+
+      {/* Activities Section */}
+      {syllabus.activities && syllabus.activities.length > 0 && (
+        <Stack gap={8} style={{ marginBottom: 24 }}>
+          <Typography variant="h6">Activités</Typography>
+          <List>
+            {syllabus.activities.map((activity, index) => (
+              <Item key={activity.id || index}>
+                <Typography variant="title">
+                  {activity.typeName || activity.type}
+                </Typography>
+              </Item>
+            ))}
+          </List>
+        </Stack>
+      )}
+
+      {/* Locations Section */}
+      {syllabus.locations && syllabus.locations.length > 0 && (
+        <Stack gap={8} style={{ marginBottom: 24 }}>
+          <Typography variant="h6">Lieux</Typography>
+          <List>
+            {syllabus.locations.map((loc, index) => (
+              <Item key={loc.code || index}>
+                <Typography variant="title">{loc.code}</Typography>
+                <Typography variant="body2" color="secondary">
+                  {loc.name}
+                </Typography>
+              </Item>
+            ))}
+          </List>
+        </Stack>
+      )}
+
+      {/* Description Section */}
+      {syllabus.caption?.name && (
+        <Stack gap={8} style={{ marginBottom: 24 }}>
+          <Typography variant="h6">Description</Typography>
+          <Typography variant="body1">{syllabus.caption.name}</Typography>
+        </Stack>
+      )}
+    </ScrollView>
+  );
+}

@@ -5,7 +5,6 @@ import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import {
-  AI_SCREEN_OPTIONS,
   ALERT_SCREEN_OPTIONS,
   CHANGELOG_SCREEN_OPTIONS,
   CONSENT_SCREEN_OPTIONS,
@@ -13,13 +12,11 @@ import {
   DEVMODE_SCREEN_OPTIONS,
   STACK_SCREEN_OPTIONS
 } from '@/constants/LayoutScreenOptions';
-import getCorners from '@/ui/utils/Corners';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 
 export function RootNavigator() {
   const theme = useTheme();
-  const corners = getCorners();
 
   // Memoize combined screen options to prevent object recreation
   const stackScreenOptions = useMemo(() => ({
@@ -36,28 +33,21 @@ export function RootNavigator() {
       <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
       <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
       <Stack.Screen name="(settings)" options={{ headerShown: false, presentation: "modal" }} />
-      <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
-      <Stack.Screen name="page" />
       <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
       <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
       <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
-      <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
       <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
       <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
       <Stack.Screen
-        name="(modals)/wrapped"
+        name="(modals)/syllabus"
         options={{
-          headerShown: false,
-          presentation: "fullScreenModal",
-          animation: "flip",
-          contentStyle: {
-            borderRadius: corners > 2 ? corners - 2 : 0,
-            overflow: "hidden"
-          }
+          headerShown: Platform.OS !== 'ios',
+          headerTitle: "",
+          headerLargeTitle: false,
+          presentation: "modal",
         }}
       />
-
       <Stack.Screen
         name="(modals)/wallpaper"
         options={{
@@ -108,7 +98,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="(modals)/course"
         options={{
-          headerShown: Platform.OS === 'ios' ? false : true,
+          headerShown: Platform.OS !== 'ios',
           headerTitle: t("Modal_Course_Title"),
           headerLargeTitle: false,
           headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
@@ -136,15 +126,7 @@ export function RootNavigator() {
         }}
       />
 
-      <Stack.Screen
-        name="(features)/(news)/news"
-        options={{
-          headerShown: true,
-          headerTitle: t("Tab_News"),
-          headerTransparent: runsIOS26,
-          headerLargeTitle: false,
-        }}
-      />
+
 
       <Stack.Screen
         name="(features)/(news)/specific"
@@ -166,35 +148,7 @@ export function RootNavigator() {
         }}
       />
 
-      <Stack.Screen
-        name="(features)/(cards)/cards"
-        options={{
-          headerShown: true,
-          presentation: "modal",
-          headerTitle: t("Profile_QRCards"),
-          headerTransparent: false,
-        }}
-      />
 
-      <Stack.Screen
-        name="(features)/(cards)/specific"
-        options={{
-          headerShown: true,
-          presentation: "modal",
-          headerTitle: t("Profile_QRCards"),
-          headerTransparent: true,
-        }}
-      />
-
-      <Stack.Screen
-        name="(features)/(cards)/qrcode"
-        options={{
-          headerShown: false,
-          presentation: "transparentModal",
-          headerTitle: "QR-Code",
-          animation: "fade"
-        }}
-      />
 
       <Stack.Screen
         name="(features)/attendance"

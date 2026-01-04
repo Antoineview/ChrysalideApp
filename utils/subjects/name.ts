@@ -1,4 +1,5 @@
 import { useAccountStore } from "@/stores/account";
+
 import { cleanSubjectName, getSubjectFormat } from "./utils";
 
 export { cleanSubjectName };
