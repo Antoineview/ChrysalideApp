@@ -3,34 +3,46 @@ import { useAccountStore } from "@/stores/account";
 import { cleanSubjectName } from "./utils";
 
 export function getSubjectColor(subject: string): string {
-  const cleanedName = cleanSubjectName(subject)
+  const cleanedName = cleanSubjectName(subject);
   const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
-  const subjectProperties = useAccountStore.getState().accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects[cleanedName]
+  const subjectProperties = useAccountStore
+    .getState()
+    .accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects[
+    cleanedName
+  ];
   if (subjectProperties && subjectProperties.color !== "") {
     if (subjectProperties.color === undefined) {
-      return Colors[0]
+      return Colors[0];
     }
     return subjectProperties.color;
   }
 
-  const subjects = useAccountStore.getState().accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects
-  const ignoredColors = Object.values(subjects ?? {}).map(item => item.color)
+  const subjects = useAccountStore
+    .getState()
+    .accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects;
+  const ignoredColors = Object.values(subjects ?? {}).map(item => item.color);
 
-  const color = getRandomColor(ignoredColors)
-
-  setTimeout(() => {
-    useAccountStore.getState().setSubjectColor(cleanedName, color)
-  }, 0)
-
+  const color = getRandomColor(ignoredColors);
   return color;
 }
 
-export function getRandomColor(ignoredColors?: string[]) {
-  if (ignoredColors && ignoredColors.length !== Colors.length) {
-    const availableColors = Colors.filter(color => !ignoredColors.includes(color));
-    return availableColors[Math.floor(Math.random() * availableColors.length)];
+export function getRandomColor(ignoredColors?: string[]): string {
+  if (
+    ignoredColors &&
+    ignoredColors.length > 0 &&
+    ignoredColors.length < Colors.length
+  ) {
+    const availableColors = Colors.filter(
+      color => !ignoredColors.includes(color)
+    );
+    if (availableColors.length > 0) {
+      return availableColors[
+        Math.floor(Math.random() * availableColors.length)
+      ];
+    }
   }
-  return Colors[Math.floor(Math.random() * Colors.length)]
+  // Always return a valid color from the array
+  return Colors[Math.floor(Math.random() * Colors.length)];
 }
 
 export const Colors = [
@@ -53,5 +65,5 @@ export const Colors = [
   "#B300CA",
   "#C50066",
   "#DD004A",
-  "#DD0030"
-]
+  "#DD0030",
+];

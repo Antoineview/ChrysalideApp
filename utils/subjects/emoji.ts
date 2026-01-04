@@ -17,6 +17,5 @@ export function getSubjectEmoji(subject: string): string {
   const foundFormat = getSubjectFormat(subject);
 
   const emoji = foundFormat?.emoji || "🤓";
-  useAccountStore.getState().setSubjectEmoji(cleanedName, emoji);
   return emoji;
 }
