@@ -26,6 +26,7 @@ import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
 import { useSettingsStore } from "@/stores/settings";
+import AbsencesAPI from "@/services/absences";
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -58,6 +59,7 @@ export default function SettingsIndex() {
     if (account) {
       useAccountStore.getState().removeAccount(account)
       useAccountStore.getState().setLastUsedAccount("")
+      AbsencesAPI.setToken("")
       for (const service of account.services) {
         ClearDatabaseForAccount(service.id)
       }
