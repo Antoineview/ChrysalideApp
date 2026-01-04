@@ -11,11 +11,11 @@ const androidVersionCode =
 module.exports = {
   expo: {
     name: "Chrysalide",
-    slug: "papillon",
+    slug: "chrysalide",
     version: PackageJSON.version,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
-    scheme: ["papillon", "izly", "skoapp-prod"],
+    scheme: ["chrysalide", "izly", "skoapp-prod"],
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -36,7 +36,7 @@ module.exports = {
     ios: {
       appStoreUrl:
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
-      bundleIdentifier: "xyz.getpapillon.ios",
+      bundleIdentifier: "org.epimac.chrysalide",
       associatedDomains: ["applinks:getpapillon.xyz"],
       icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
@@ -55,7 +55,7 @@ module.exports = {
     },
     android: {
       versionCode: androidVersionCode,
-      package: "xyz.getpapillon.app",
+      package: "org.epimac.chrysalide",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
