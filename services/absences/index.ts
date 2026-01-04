@@ -1,7 +1,9 @@
 import { MMKV } from "react-native-mmkv";
 
 import { addAttendanceToDatabase } from "@/database/useAttendance";
+import { addPeriodsToDatabase } from "@/database/useGrades";
 import { Attendance, Absence } from "@/services/shared/attendance";
+import { Period } from "@/services/shared/grade";
 import { AbsencesAPIResponse, AbsenceItem } from "./types";
 
 // Initialize MMKV storage
@@ -52,8 +54,38 @@ class AbsencesAPI {
       storage.set("absences_data", JSON.stringify(responses));
       console.log(`Fetched ${responses.length} semesters.`);
 
+      const periodsToSave: Period[] = [];
+
       for (const semester of responses) {
-        const periodName = semester.levelName; // e.g. "S1"
+        let periodName = semester.levelName; // e.g. "S1"
+        // Normalize "S1" to "Semestre 1" to match likely UI expectations
+        if (periodName.match(/^S\d+$/)) {
+          periodName = periodName.replace("S", "Semestre ");
+        }
+
+        // Calculate period start and end from sub-periods
+        let start = new Date(8640000000000000);
+        let end = new Date(-8640000000000000);
+        
+        if (semester.periods && semester.periods.length > 0) {
+            semester.periods.forEach(p => {
+                const pStart = new Date(p.beginDate);
+                const pEnd = new Date(p.endDate);
+                if (pStart < start) start = pStart;
+                if (pEnd > end) end = pEnd;
+            });
+        } else {
+            start = new Date();
+            end = new Date();
+        }
+
+        periodsToSave.push({
+            id: periodName,
+            name: periodName,
+            start: start,
+            end: end,
+            createdByAccount: "absences"
+        });
 
         // Aggregate all absences from all periods in this semester
         const allAbsences: Absence[] = [];
@@ -89,9 +121,13 @@ class AbsencesAPI {
         await addAttendanceToDatabase([attendance], periodName);
         console.log(`Saved ${allAbsences.length} absences for ${periodName} to database.`);
       }
+
+      await addPeriodsToDatabase(periodsToSave);
+      console.log(`Saved ${periodsToSave.length} periods to database.`);
       
     } catch (e) {
       console.error("Failed to sync absences:", e);
+      throw e;
     }
   }
 
