@@ -1,15 +1,16 @@
-import React, { useMemo, useEffect } from 'react';
-import { useColorScheme, StatusBar } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from '@react-navigation/native';
 import * as SystemUI from 'expo-system-ui';
+import React, { useEffect, useMemo } from 'react';
+import { StatusBar, useColorScheme } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { AurigaRefreshProvider } from "@/components/AurigaRefreshProvider";
 import { DatabaseProvider } from "@/database/DatabaseProvider";
-import { AlertProvider } from '@/ui/components/AlertProvider';
 import { useSettingsStore } from '@/stores/settings';
+import { AlertProvider } from '@/ui/components/AlertProvider';
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { AppColors } from "@/utils/colors";
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
-import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -63,7 +64,9 @@ export function AppProviders({ children }: AppProvidersProps) {
       <DatabaseProvider>
         <ThemeProvider value={theme}>
           <AlertProvider>
-            {children}
+            <AurigaRefreshProvider>
+              {children}
+            </AurigaRefreshProvider>
           </AlertProvider>
         </ThemeProvider>
       </DatabaseProvider>

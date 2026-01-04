@@ -8,6 +8,7 @@ import { Platform, RefreshControl, Text, View } from 'react-native';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAurigaRefresh } from '@/components/AurigaRefreshProvider';
 import AurigaAPI from '@/services/auriga';
 import { Syllabus } from '@/services/auriga/types';
 import ChipButton from '@/ui/components/ChipButton';
@@ -62,12 +63,12 @@ const SyllabusView: React.FC = () => {
     }
   };
 
+  const { refreshAuriga } = useAurigaRefresh();
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    router.push({
-      pathname: "/(onboarding)/university/multi/aurigaAuth",
-      params: { refresh: "true" },
-    } as any);
+    // Use global background refresh
+    refreshAuriga();
     setIsRefreshing(false);
   };
 

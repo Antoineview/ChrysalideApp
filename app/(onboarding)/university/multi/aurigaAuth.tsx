@@ -24,7 +24,9 @@ const KEYCLOAK_AUTH_URL = "https://auriga.epita.fr";
 
 export default function AurigaLoginScreen() {
     const [showWebView, setShowWebView] = useState(false);
+    const [webViewVisible, setWebViewVisible] = useState(true); // Controls actual visibility
     const [isSyncing, setIsSyncing] = useState(false);
+    const [isObtainingToken, setIsObtainingToken] = useState(false); // For hidden webview loading state
     const [syncStatus, setSyncStatus] = useState("Récupération de tes données Auriga");
     const webViewRef = useRef<WebView>(null);
     const alert = useAlert();
@@ -37,11 +39,28 @@ export default function AurigaLoginScreen() {
     const params = useLocalSearchParams();
     const isRefresh = params.refresh === "true";
 
+    const tokenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     React.useEffect(() => {
         if (isRefresh) {
+            // Start with hidden webview
             setShowWebView(true);
+            setWebViewVisible(false);
+            setIsObtainingToken(true);
             setHasInjected(false);
+
+            // Show webview after 3 seconds if no token obtained
+            tokenTimeoutRef.current = setTimeout(() => {
+                setWebViewVisible(true);
+                setIsObtainingToken(false);
+            }, 3000);
         }
+
+        return () => {
+            if (tokenTimeoutRef.current) {
+                clearTimeout(tokenTimeoutRef.current);
+            }
+        };
     }, [isRefresh]);
 
     // Track if we've already injected to avoid spamming
@@ -172,6 +191,74 @@ export default function AurigaLoginScreen() {
 
     const startSync = async (accessToken: string) => {
         if (isSyncing) return;
+
+        // For refresh: run sync in background and go back immediately
+        if (isRefresh) {
+            // Clear the timeout since we got the token
+            if (tokenTimeoutRef.current) {
+                clearTimeout(tokenTimeoutRef.current);
+                tokenTimeoutRef.current = null;
+            }
+            setIsObtainingToken(false);
+            setShowWebView(false);
+            router.back();
+
+            alert.showAlert({
+                title: "Synchronisation en cours",
+                message: "Récupération de tes données Auriga...",
+                icon: "RefreshCw",
+                color: "#0078D4",
+                delay: 3000,
+            });
+
+            // Run sync in background
+            (async () => {
+                try {
+                    const cookiesString = await getCookiesString("https://auriga.epita.fr");
+                    AurigaAPI.setToken(accessToken);
+                    AurigaAPI.setCookie(cookiesString);
+
+                    await AurigaAPI.sync();
+
+                    const { accounts, lastUsedAccount } = useAccountStore.getState();
+                    const existingAccount = accounts.find(acc =>
+                        acc.services.some(s => s.auth?.additionals?.type === 'auriga')
+                    );
+
+                    if (existingAccount) {
+                        const aurigaService = existingAccount.services.find(
+                            s => s.auth?.additionals?.type === 'auriga'
+                        );
+                        if (aurigaService) {
+                            useAccountStore.getState().updateServiceAuthData(aurigaService.id, {
+                                accessToken: accessToken,
+                                additionals: { type: 'auriga', cookies: cookiesString }
+                            });
+                        }
+                    }
+
+                    await initializeAccountManager();
+
+                    alert.showAlert({
+                        title: "Synchronisation terminée",
+                        message: "Tes données Auriga sont à jour.",
+                        icon: "Check",
+                        color: "#00D600"
+                    });
+                } catch (error) {
+                    console.error("Background Auriga Sync Error:", error);
+                    alert.showAlert({
+                        title: "Erreur de synchronisation",
+                        message: "Impossible de récupérer tes données Auriga.",
+                        icon: "AlertCircle",
+                        color: "#D60000"
+                    });
+                }
+            })();
+            return;
+        }
+
+        // For initial login: show sync page
         setIsSyncing(true);
         setShowWebView(false);
 
@@ -206,30 +293,55 @@ export default function AurigaLoginScreen() {
             setSyncStatus("Récupération des notes et de l'emploi du temps...");
             await AurigaAPI.sync();
 
-            const accountId = Crypto.randomUUID();
-            const serviceId = Crypto.randomUUID();
+            const { accounts, lastUsedAccount } = useAccountStore.getState();
 
-            const newAccount: Account = {
-                id: accountId,
-                firstName: studentFirstName,
-                lastName: studentLastName,
-                schoolName: "EPITA",
-                services: [{
-                    id: serviceId,
-                    serviceId: Services.MULTI,
-                    auth: {
+            // Check if an Auriga account already exists
+            const existingAccount = accounts.find(acc =>
+                acc.services.some(s => s.auth?.additionals?.type === 'auriga')
+            );
+
+            if (existingAccount) {
+                // Update the existing account's auth data
+                const aurigaService = existingAccount.services.find(
+                    s => s.auth?.additionals?.type === 'auriga'
+                );
+                if (aurigaService) {
+                    useAccountStore.getState().updateServiceAuthData(aurigaService.id, {
                         accessToken: accessToken,
                         additionals: { type: 'auriga', cookies: cookiesString }
-                    },
+                    });
+                }
+                // Make sure it's the active account
+                if (lastUsedAccount !== existingAccount.id) {
+                    setLastUsedAccount(existingAccount.id);
+                }
+            } else {
+                // Create a new account only if none exists
+                const accountId = Crypto.randomUUID();
+                const serviceId = Crypto.randomUUID();
+
+                const newAccount: Account = {
+                    id: accountId,
+                    firstName: studentFirstName,
+                    lastName: studentLastName,
+                    schoolName: "EPITA",
+                    services: [{
+                        id: serviceId,
+                        serviceId: Services.MULTI,
+                        auth: {
+                            accessToken: accessToken,
+                            additionals: { type: 'auriga', cookies: cookiesString }
+                        },
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    }],
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
-                }],
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
+                };
 
-            addAccount(newAccount);
-            setLastUsedAccount(accountId);
+                addAccount(newAccount);
+                setLastUsedAccount(accountId);
+            }
 
             // Initialize the account manager so grades can be fetched
             await initializeAccountManager();
@@ -241,18 +353,14 @@ export default function AurigaLoginScreen() {
                 color: "#00D600"
             });
 
-            if (isRefresh) {
-                router.back();
-            } else {
-                router.push("/(tabs)" as any);
-            }
+            router.push("/(tabs)" as any);
 
         } catch (error) {
             console.error("Auriga Sync Error:", error);
             alert.showAlert({
                 title: "Erreur de synchronisation",
                 description: "Impossible de récupérer tes données Auriga.",
-                icon: "Error",
+                icon: "AlertCircle",
                 color: "#D60000"
             });
             setIsSyncing(false);
@@ -303,8 +411,41 @@ export default function AurigaLoginScreen() {
 
     const handleLogin = () => {
         setShowWebView(true);
+        setWebViewVisible(true);
         setHasInjected(false);
     };
+
+    // Show "obtaining token" loading screen during hidden webview phase
+    if (isObtainingToken && showWebView && !webViewVisible) {
+        return (
+            <>
+                <Stack.Screen options={{ headerShown: false }} />
+                <ViewContainer>
+                    <StackLayout vAlign="center" hAlign="center" style={{ flex: 1, backgroundColor: colors.background }} gap={20}>
+                        <ActivityIndicator size="large" color="#0078D4" />
+                        <Typography variant="h3">Connexion en cours...</Typography>
+                        <Typography variant="body1" style={{ opacity: 0.7 }}>Obtention du token en cours</Typography>
+                    </StackLayout>
+                </ViewContainer>
+                {/* Hidden WebView loading in background */}
+                <View style={{ position: 'absolute', width: 1, height: 1, opacity: 0 }}>
+                    <WebView
+                        ref={webViewRef}
+                        source={{ uri: KEYCLOAK_AUTH_URL }}
+                        onNavigationStateChange={handleNavigationStateChange}
+                        onMessage={handleMessage}
+                        injectedJavaScriptBeforeContentLoaded={FETCH_TOKEN_SCRIPT}
+                        sharedCookiesEnabled={true}
+                        javaScriptEnabled={true}
+                        domStorageEnabled={true}
+                        thirdPartyCookiesEnabled={true}
+                        incognito={false}
+                        cacheEnabled={true}
+                    />
+                </View>
+            </>
+        );
+    }
 
     if (isSyncing) {
         return (

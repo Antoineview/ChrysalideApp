@@ -2,7 +2,7 @@ import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
 import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from '@react-navigation/native';
-import { useNavigation, useRouter } from 'expo-router';
+import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, Platform, RefreshControl, View } from 'react-native';
@@ -10,6 +10,7 @@ import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAurigaRefresh } from '@/components/AurigaRefreshProvider';
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
 import { Grade, GradeScore, Period, Subject } from "@/services/shared/grade";
 import ChipButton from '@/ui/components/ChipButton';
@@ -264,17 +265,14 @@ const GradesView: React.FC = () => {
   }, [searchText, sortedSubjects]);
 
   // Refresh
-  const router = useRouter();
+  const { refreshAuriga, isRefreshing: isAurigaRefreshing } = useAurigaRefresh();
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    // Navigate to WebView for token refresh (like syllabus tab)
-    router.push({
-      pathname: "/(onboarding)/university/multi/aurigaAuth",
-      params: { refresh: "true" },
-    } as any);
+    // Use global background refresh
+    refreshAuriga();
     setIsRefreshing(false);
-  }, [router]);
+  }, [refreshAuriga]);
 
   const renderItem = useCallback(({ item }: { item: Subject }) => {
     const subject = item;

@@ -192,6 +192,62 @@ class AurigaAPI {
     return this.getAllGrades().find(g => g.code.toString() === code);
   }
 
+  /**
+   * Returns grades enriched with syllabus exam descriptions and weightings.
+   * This is cached after the first call for performance.
+   */
+  getEnrichedGrades(): (Grade & { description: string; weighting: number })[] {
+    const allGrades = this.getAllGrades();
+    const syllabusList = this.getAllSyllabus();
+
+    return allGrades.map(g => {
+      // Find matching syllabus by prefix
+      const matchingSyllabus = syllabusList.find(s => {
+        const syllabusCode = s.name.replace(/\.[^.]+$/, "");
+        return g.name.startsWith(syllabusCode + "_");
+      });
+
+      if (!matchingSyllabus) {
+        return { ...g, description: g.type || g.name, weighting: 1 };
+      }
+
+      const syllabusCode = matchingSyllabus.name.replace(/\.[^.]+$/, "");
+      const examPart = g.name.replace(syllabusCode + "_", "");
+      const parts = examPart.split("_");
+      const type = parts[0];
+      const index = parts[1] ? parseInt(parts[1], 10) : 1;
+
+      const matchingExams =
+        matchingSyllabus.exams?.filter(
+          e => e.type?.toUpperCase() === type.toUpperCase()
+        ) || [];
+      const matchingExam = matchingExams[index - 1];
+
+      // Get description from syllabus exam
+      let description = examPart.replace(/_/g, " ");
+      if (matchingExam) {
+        const examDescription =
+          typeof matchingExam.description === "string"
+            ? matchingExam.description
+            : matchingExam.description?.fr || matchingExam.description?.en;
+
+        if (examDescription && matchingExam.typeName) {
+          description = `${matchingExam.typeName} - ${examDescription}`;
+        } else if (examDescription) {
+          description = examDescription;
+        } else if (matchingExam.typeName) {
+          description = matchingExam.typeName;
+        }
+      }
+
+      return {
+        ...g,
+        description,
+        weighting: matchingExam?.weighting ?? 1,
+      };
+    });
+  }
+
   getAllSyllabus(): Syllabus[] {
     const data = storage.getString("auriga_syllabus");
     const syllabusList: Syllabus[] = data ? JSON.parse(data) : [];

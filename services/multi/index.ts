@@ -113,7 +113,7 @@ export class Multi implements SchoolServicePlugin {
     }
 
     const semesterNum = period.id ? parseInt(period.id.replace("S", "")) : 0;
-    const grades = AurigaAPI.getAllGrades().filter(
+    const enrichedGrades = AurigaAPI.getEnrichedGrades().filter(
       g => g.semester === semesterNum
     );
     const syllabusList = AurigaAPI.getAllSyllabus();
@@ -121,7 +121,7 @@ export class Multi implements SchoolServicePlugin {
     const subjectsMap: Record<string, Subject> = {};
 
     // For each grade, find matching syllabus and group by syllabus display name
-    grades.forEach(g => {
+    enrichedGrades.forEach(g => {
       // Extract UE+[parcours]+subject code from grade name
       // Format: 2526_I_INF_FISE_S03_CN_PC_PSE_EXA_1 -> extract "CN_PC_PSE"
       // Format: 2526_I_INF_FISE_S03_AG_COM3_EXA_1 -> extract "AG_COM3"
