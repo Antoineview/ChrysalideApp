@@ -103,8 +103,6 @@ export class Multi implements SchoolServicePlugin {
   }
 
   async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
-    console.log("getGradesForPeriod called, isAuriga:", this.isAuriga);
-
     if (!this.isAuriga) {
       return {
         studentOverall: { value: 0 },
@@ -120,22 +118,6 @@ export class Multi implements SchoolServicePlugin {
     );
     const syllabusList = AurigaAPI.getAllSyllabus();
 
-    console.log(
-      `Semester ${semesterNum}: ${grades.length} grades, ${syllabusList.length} syllabus items`
-    );
-    if (grades.length > 0) {
-      console.log("Sample grade:", JSON.stringify(grades[0]));
-    }
-    if (syllabusList.length > 0) {
-      console.log(
-        "Sample syllabus:",
-        JSON.stringify({
-          name: syllabusList[0].name,
-          exams: syllabusList[0].exams,
-        })
-      );
-    }
-
     const subjectsMap: Record<string, Subject> = {};
 
     // For each grade, find matching syllabus and group by syllabus display name
@@ -149,6 +131,7 @@ export class Multi implements SchoolServicePlugin {
       // Find the UE code: first 2-letter code after the 5-part prefix (index 5)
       // The UE is always at position 5 (index 5)
       const ueIndex = 5;
+      const ueCode = gradeNameParts[ueIndex] || "OTHER";
 
       // Check if next part after UE is PC or PA (parcours)
       const hasParcours =
@@ -177,6 +160,9 @@ export class Multi implements SchoolServicePlugin {
         matchingSyllabus?.name?.replace(/\.[^.]+$/, "") || // Remove extension
         g.name;
 
+      // Create unique key combining UE and subject name for proper grouping
+      const subjectKey = `${ueCode}_${subjectName}`;
+
       // Use the grade's type field directly (e.g., "EXA", "CC", "TP")
       const examType = g.type || "";
       let description = examType || "Note";
@@ -196,39 +182,30 @@ export class Multi implements SchoolServicePlugin {
         );
         const availableExamTypes =
           matchingSyllabus.exams?.map(e => e.type).join(", ") || "none";
-        console.log(
-          `Grade ${gradeSubjectCode} (${g.code}): matched ${subjectName}, type=${examType}, available=[${availableExamTypes}], matched=${!!matchingExam}`
-        );
 
         if (matchingExam && matchingExam.weighting) {
           // Convert percentage to decimal (e.g., 30 -> 0.30)
           coefficient = matchingExam.weighting / 100;
-          console.log(
-            `  -> Weighting: ${matchingExam.weighting}% -> coefficient: ${coefficient}`
-          );
         }
-
-        console.log(
-          `Grade ${g.name}: type=${examType}, matched=${!!matchingExam}, coef=${coefficient}`
-        );
-      } else {
-        console.log(`Grade ${g.code}: NO MATCHING SYLLABUS for ${g.name}`);
       }
 
-      if (!subjectsMap[subjectName]) {
-        subjectsMap[subjectName] = {
-          id: subjectName,
+      // Store UE code with subject for later grouping
+      if (!subjectsMap[subjectKey]) {
+        subjectsMap[subjectKey] = {
+          id: subjectKey,
           name: subjectName,
           studentAverage: { value: 0 },
           classAverage: { value: 0 },
           outOf: { value: 20 },
           grades: [],
         };
+        // Track UE code separately since Subject interface doesn't have it
+        (subjectsMap[subjectKey] as any)._ueCode = ueCode;
       }
 
       const gradeItem: SharedGrade = {
         id: String(g.code),
-        subjectId: subjectName,
+        subjectId: subjectKey,
         subjectName: subjectName,
         description: description,
         givenAt: new Date(),
@@ -238,7 +215,7 @@ export class Multi implements SchoolServicePlugin {
         createdByAccount: this.accountId,
       };
 
-      subjectsMap[subjectName].grades?.push(gradeItem);
+      subjectsMap[subjectKey].grades?.push(gradeItem);
     });
 
     // Calculate weighted averages per subject
@@ -262,19 +239,52 @@ export class Multi implements SchoolServicePlugin {
 
     const subjects = Object.values(subjectsMap);
 
-    // Calculate overall average
-    let overallTotal = 0;
-    let overallCount = 0;
+    // Group subjects by UE code
+    const ueGroups: Record<string, Subject[]> = {};
     subjects.forEach(s => {
-      overallTotal += s.studentAverage?.value || 0;
-      overallCount++;
+      const ueCode = (s as any)._ueCode || "OTHER";
+      if (!ueGroups[ueCode]) {
+        ueGroups[ueCode] = [];
+      }
+      ueGroups[ueCode].push(s);
     });
-    const overallAverage = overallCount > 0 ? overallTotal / overallCount : 0;
+
+    // Create UE modules with averages
+    const modules: Subject[] = Object.entries(ueGroups).map(
+      ([ueCode, ueSubjects]) => {
+        // Calculate UE average as mean of subject averages (all subjects weight 1)
+        const ueTotal = ueSubjects.reduce(
+          (sum, s) => sum + (s.studentAverage?.value || 0),
+          0
+        );
+        const ueAverage =
+          ueSubjects.length > 0 ? ueTotal / ueSubjects.length : 0;
+
+        return {
+          id: ueCode,
+          name: ueCode,
+          studentAverage: { value: ueAverage, outOf: 20 },
+          classAverage: { value: 0 },
+          outOf: { value: 20 },
+          grades: [], // UE modules don't have direct grades
+          subjects: ueSubjects, // Add nested subjects
+        };
+      }
+    );
+
+    // Calculate overall average as mean of UE averages (each UE coef 1)
+    const overallTotal = modules.reduce(
+      (sum, m) => sum + (m.studentAverage?.value || 0),
+      0
+    );
+    const overallAverage =
+      modules.length > 0 ? overallTotal / modules.length : 0;
 
     return {
       studentOverall: { value: overallAverage, outOf: 20 },
       classAverage: { value: 0 },
       subjects: subjects,
+      modules: modules, // UE groups for display
       createdByAccount: this.accountId,
     };
   }

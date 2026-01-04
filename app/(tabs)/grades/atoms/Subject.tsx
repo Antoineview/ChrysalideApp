@@ -5,8 +5,7 @@ import { t } from 'i18next';
 import React, { useCallback, useMemo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 
-import { Grade } from '@/database/models/Grades';
-import Subject from '@/database/models/Subject';
+import { Grade, Subject } from '@/services/shared/grade';
 import Item, { Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
 import Stack from '@/ui/components/Stack';
@@ -16,7 +15,7 @@ import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
 
-const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
+const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence, isLast }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number, isLast?: boolean }) => {
   const dateString = useMemo(() => {
     // @ts-expect-error date type
     return grade.givenAt.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' });
@@ -28,12 +27,12 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
 
   const theme = useTheme();
 
-  const hasMaxScore = grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore.disabled;
+  const hasMaxScore = grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore?.disabled;
   const trailingBackground = hasMaxScore ? adjust(subjectColor, theme.dark ? -0.2 : 0) : subjectColor + "15";
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
 
   return (
-    <Item isLast disablePadding onPress={handlePress}>
+    <Item isLast={isLast} onPress={handlePress}>
       <Typography variant='title'>
         {grade.description ? grade.description : t('Grade_NoDescription', { subject: subjectName })}
       </Typography>
@@ -43,16 +42,16 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
 
       <Trailing>
         <Stack pointerEvents='none' noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
-          {grade.studentScore.disabled ? (
+          {grade.studentScore?.disabled ? (
             <>
               <Typography color={trailingForeground} variant='navigation'>
-                {grade.studentScore.status}
+                {grade.studentScore?.status}
               </Typography>
             </>
           ) : (
             <>
               <Typography color={trailingForeground} variant='navigation'>
-                {grade.studentScore.value.toFixed(2)}
+                {grade.studentScore?.value.toFixed(2)}
               </Typography>
             </>
           )}
@@ -79,7 +78,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
     [subject.name, theme.dark]
   );
 
-  const subjectName = useMemo(() => getSubjectName(subject.name), [subject.name]);
+  const subjectName = useMemo(() => getSubjectName(subject.name) || subject.name, [subject.name]);
   const subjectEmoji = useMemo(() => getSubjectEmoji(subject.name), [subject.name]);
 
   const handlePressSubject = useCallback(() => {
@@ -108,22 +107,22 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
   );
 
   return (
-    <Stack style={{ width: "100%" }} key={subject.id}>
+    <Stack style={{ width: "100%", marginBottom: subject.subjects ? 12 : 0 }} key={subject.id}>
       <TouchableOpacity style={{ width: '100%' }} activeOpacity={0.5} onPress={handlePressSubject}>
-        <Stack direction='horizontal' hAlign='center' gap={10} padding={[4, 0]}>
+        <Stack direction='horizontal' vAlign='center' gap={10} padding={[4, 0]}>
           <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={subjectAdjustedColor + "22"}>
             <Text style={{ fontSize: 15 }}>
               {subjectEmoji}
             </Text>
           </Stack>
 
-          <Stack flex inline>
-            <Typography nowrap variant='title' color={subjectAdjustedColor}>
-              {subjectName}
+          <Stack flex>
+            <Typography numberOfLines={1} variant='title' color={subjectAdjustedColor}>
+              {subjectName || "?"}
             </Typography>
           </Stack>
 
-          <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
+          <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end' style={{ flexShrink: 0 }}>
             {subject.studentAverage.disabled ? (
               <Typography variant='h5' inline style={{ marginTop: 0 }}>
                 {subject.studentAverage.status}
@@ -140,17 +139,34 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
         </Stack>
       </TouchableOpacity>
 
-      <List style={{ marginTop: 6 }}>
-        {subject.grades.map((grade) => (
-          <GradeItem
-            key={grade.id}
-            grade={grade}
-            subjectName={subjectName}
-            subjectColor={subjectAdjustedColor}
-            onPress={handlePressGrade}
-          />
-        ))}
-      </List>
+      {subject.subjects ? (
+        <Stack gap={12} style={{ marginTop: 6 }}>
+          {subject.subjects.map((subSubject) => (
+            <SubjectItem
+              key={subSubject.id}
+              subject={subSubject}
+              grades={grades}
+              getAvgInfluence={getAvgInfluence}
+              getAvgClassInfluence={getAvgClassInfluence}
+            />
+          ))}
+        </Stack>
+      ) : (
+        <Stack card gap={0} radius={20} style={{ marginTop: 6 }}>
+          {subject.grades?.map((grade, index) => (
+            <GradeItem
+              key={grade.id}
+              grade={grade}
+              subjectName={subjectName}
+              subjectColor={subjectAdjustedColor}
+              onPress={handlePressGrade}
+              getAvgInfluence={getAvgInfluence}
+              getAvgClassInfluence={getAvgClassInfluence}
+              isLast={index === (subject.grades?.length || 0) - 1} /// Re-added isLast logic
+            />
+          ))}
+        </Stack>
+      )}
     </Stack>
   );
 });

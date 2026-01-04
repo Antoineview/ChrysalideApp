@@ -20,6 +20,7 @@ export interface Subject {
   grades?: Grade[];
   credits?: GradeScore;
   rank?: GradeScore;
+  subjects?: Subject[]; // For groupings (e.g. UEs containing subjects)
 }
 
 export interface Grade extends GenericInterface {
@@ -49,8 +50,8 @@ export interface GradeScore {
 }
 
 export interface Period extends GenericInterface {
-  name: string
-  id?: string
-  start: Date
-  end: Date
+  name: string;
+  id?: string;
+  start: Date;
+  end: Date;
 }

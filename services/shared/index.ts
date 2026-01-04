@@ -531,10 +531,11 @@ export class AccountManager {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
         if (!client) {
-          error("Client ID missing");
+          warn("Client ID missing");
+          throw new Error("Client ID missing");
         }
         if (!client.capabilities.includes(capability)) {
-          error(
+          warn(
             "Capability " +
               capability +
               " not supported by client " +

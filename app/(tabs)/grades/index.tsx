@@ -145,7 +145,7 @@ const GradesView: React.FC = () => {
         setGradesLoading(false);
         return;
       }
-      setSubjects(grades.subjects);
+      setSubjects(grades.modules || grades.subjects);
       if (grades.studentOverall && typeof grades.studentOverall.value === 'number') {
         setServiceAverage(grades.studentOverall.value)
       } else {
@@ -178,7 +178,13 @@ const GradesView: React.FC = () => {
   // (including from modals). The subscribeManagerUpdate handles sync updates.
 
   const grades = useMemo(() => {
-    return subjects.flatMap((subject) => subject.grades);
+    return subjects.flatMap((subject) => {
+      // If subject has nested subjects (is a module), extract their grades
+      if (subject.subjects) {
+        return subject.subjects.flatMap(s => s.grades || []);
+      }
+      return subject.grades || [];
+    });
   }, [subjects]);
 
   const getSubjectById = useCallback((id: string) => {
