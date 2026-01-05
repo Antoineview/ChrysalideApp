@@ -123,29 +123,36 @@ export class Multi implements SchoolServicePlugin {
     // For each grade, find matching syllabus and group by syllabus display name
     enrichedGrades.forEach(g => {
       // Extract UE+[parcours]+subject code from grade name
-      // Format: 2526_I_INF_FISE_S03_CN_PC_PSE_EXA_1 -> extract "CN_PC_PSE"
-      // Format: 2526_I_INF_FISE_S03_AG_COM3_EXA_1 -> extract "AG_COM3"
-      // Structure: [prefix 5 parts]_[UE]_[optional PC/PA]_[SUBJECT]_[TYPE]_[NUM]
+      // Regular format: 2526_I_INF_FISE_S03_CN_PC_PSE_EXA_1 -> extract "CN_PC_PSE"
+      // PROJECT format: 2526_I_INF_FISE_S03_PROJET_OCR_MVP_FAF -> extract "PROJET_OCR"
+      // Structure: [prefix 5 parts]_[UE]_[optional PC/PA or projectName]_[SUBJECT/phases]_[TYPE]_[NUM]
       const gradeNameParts = g.name.split("_");
 
-      // Find the UE code: first 2-letter code after the 5-part prefix (index 5)
+      // Find the UE code: first code after the 5-part prefix (index 5)
       // The UE is always at position 5 (index 5)
       const ueIndex = 5;
       const ueCode = gradeNameParts[ueIndex] || "OTHER";
 
-      // Check if next part after UE is PC or PA (parcours)
-      const hasParcours =
-        gradeNameParts[ueIndex + 1] === "PC" ||
-        gradeNameParts[ueIndex + 1] === "PA";
-
-      // Build the match code: UE + (optional parcours) + SUBJECT
+      // Build the match code based on UE type
       let gradeSubjectCode = "";
-      if (hasParcours) {
-        // Format: UE_PC_SUBJECT (e.g., CN_PC_PSE)
-        gradeSubjectCode = `${gradeNameParts[ueIndex]}_${gradeNameParts[ueIndex + 1]}_${gradeNameParts[ueIndex + 2]}`;
+
+      if (ueCode === "PROJET") {
+        // PROJECT format: PROJET_[projectName] (e.g., PROJET_OCR)
+        // The project name is at position 6
+        gradeSubjectCode = `${ueCode}_${gradeNameParts[ueIndex + 1] || ""}`;
       } else {
-        // Format: UE_SUBJECT (e.g., AG_COM3)
-        gradeSubjectCode = `${gradeNameParts[ueIndex]}_${gradeNameParts[ueIndex + 1]}`;
+        // Check if next part after UE is PC or PA (parcours)
+        const hasParcours =
+          gradeNameParts[ueIndex + 1] === "PC" ||
+          gradeNameParts[ueIndex + 1] === "PA";
+
+        if (hasParcours) {
+          // Format: UE_PC_SUBJECT (e.g., CN_PC_PSE)
+          gradeSubjectCode = `${gradeNameParts[ueIndex]}_${gradeNameParts[ueIndex + 1]}_${gradeNameParts[ueIndex + 2]}`;
+        } else {
+          // Format: UE_SUBJECT (e.g., AG_COM3)
+          gradeSubjectCode = `${gradeNameParts[ueIndex]}_${gradeNameParts[ueIndex + 1]}`;
+        }
       }
 
       // Find matching syllabus by checking if it contains the same subject code
