@@ -170,15 +170,36 @@ export class Multi implements SchoolServicePlugin {
 
       if (matchingSyllabus) {
         // Extract exam part from name for description
-        const syllabusCode = matchingSyllabus.name.replace(/\.[^.]+$/, "");
+        const syllabusCode = matchingSyllabus.name;
         const examPart = g.name.replace(syllabusCode + "_", "");
 
-        // Find matching exam in syllabus by exam type code
-        const matchingExam = matchingSyllabus.exams?.find(
-          e => e.type === examType
-        );
-        const availableExamTypes =
-          matchingSyllabus.exams?.map(e => e.type).join(", ") || "none";
+        // Parse exam type and index from examPart (e.g., "EXA_1" or "EXF")
+        const examPartParts = examPart.split("_");
+        const examTypeFromPart = examPartParts[0];
+        const examIndexFromPart = examPartParts[1]
+          ? parseInt(examPartParts[1], 10)
+          : undefined;
+
+        // Count exams per type to determine matching pattern
+        const examTypeCount: Record<string, number> = {};
+        matchingSyllabus.exams?.forEach(e => {
+          examTypeCount[e.type] = (examTypeCount[e.type] || 0) + 1;
+        });
+
+        // Find matching exam using the correct pattern
+        const matchingExam = matchingSyllabus.exams?.find(e => {
+          if (e.type !== examTypeFromPart) {
+            return false;
+          }
+
+          const typeCount = examTypeCount[e.type] || 1;
+          if (typeCount === 1) {
+            // Single exam of this type - matches if type matches
+            return true;
+          }
+          // Multiple exams of this type - match by index
+          return e.index === examIndexFromPart;
+        });
 
         // Use the syllabus exam's typeName for description if available
         if (matchingExam) {

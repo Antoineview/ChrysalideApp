@@ -190,58 +190,73 @@ class AurigaAPI {
     try {
       const { addGradesToDatabase } = await import("@/database/useGrades");
 
-      // Group grades by their matching syllabus
+      // Create a map for fast grade lookup by name
+      const gradesMap = new Map<string, Grade>();
+      fetchedGrades.forEach(g => gradesMap.set(g.name, g));
+
+      // Process each syllabus and find matching grades using the algorithm
       for (const syllabus of fetchedSyllabus) {
-        const syllabusCode = syllabus.name.replace(/\.[^.]+$/, ""); // Remove file extension
+        // syllabus.name now contains the proper code (e.g., "2526_I_INF_FISE_S03_CN_PC_AL")
+        const syllabusCode = syllabus.name;
+
         const displayName =
           syllabus.caption?.name || syllabus.name || String(syllabus.id);
 
-        // Find all grades belonging to this syllabus
-        const matchingGrades = fetchedGrades.filter(g =>
-          g.name.startsWith(syllabusCode + "_")
-        );
+        // Count exams per type to determine if we need index suffix
+        const examTypeCount = new Map<string, number>();
+        for (const exam of syllabus.exams || []) {
+          examTypeCount.set(exam.type, (examTypeCount.get(exam.type) || 0) + 1);
+        }
 
-        if (matchingGrades.length > 0) {
-          // Convert to SharedGrade format for database
-          const gradesToSave = matchingGrades.map(g => {
-            // Extract exam type from name (e.g., "..._EXA_1" -> "EXA_1")
-            const examPart = g.name.replace(syllabusCode + "_", "");
+        const gradesToSave = [];
 
-            // Match with syllabus exam to get descriptive name
-            const parts = examPart.split("_");
-            const type = parts[0];
-            const index = parts[1] ? parseInt(parts[1], 10) : 1;
+        // For each exam in syllabus, construct key and find matching grade
+        for (const exam of syllabus.exams || []) {
+          // Determine the key pattern based on exam count
+          const typeCount = examTypeCount.get(exam.type) || 1;
+          let targetKey: string;
+          if (typeCount === 1) {
+            // Only one exam of this type: key = [Syllabus_Code]_[Exam_Type]
+            targetKey = `${syllabusCode}_${exam.type}`;
+          } else {
+            // Multiple exams of this type: key = [Syllabus_Code]_[Exam_Type]_[Index]
+            targetKey = `${syllabusCode}_${exam.type}_${exam.index}`;
+          }
 
-            const matchingExams =
-              syllabus.exams?.filter(
-                e => e.type?.toUpperCase() === type.toUpperCase()
-              ) || [];
-            const matchingExam = matchingExams[index - 1];
+          const matchedGrade = gradesMap.get(targetKey);
+          if (!matchedGrade) {
+            continue;
+          }
 
-            // Use descriptive name if available
-            const examDescription =
-              typeof matchingExam?.description === "string"
-                ? matchingExam.description
-                : matchingExam?.description?.fr ||
-                  matchingExam?.description?.en;
+          // Build description from exam metadata
+          const rawDesc =
+            typeof exam.description === "string"
+              ? exam.description
+              : exam.description?.fr || exam.description?.en;
+          const description =
+            rawDesc && exam.typeName
+              ? `${exam.typeName} - ${rawDesc}`
+              : rawDesc || exam.typeName || exam.type || "";
 
-            return {
-              id: g.code,
-              createdByAccount: "auriga",
-              subjectId: syllabusCode,
-              subjectName: displayName,
-              description:
-                examDescription || matchingExam?.typeName || examPart || g.type,
-              givenAt: new Date(),
-              outOf: { value: 20 },
-              coefficient: 1,
-              studentScore: { value: g.grade },
-              averageScore: { value: 0, disabled: true },
-              minScore: { value: 0, disabled: true },
-              maxScore: { value: 0, disabled: true },
-            };
+          gradesToSave.push({
+            id: matchedGrade.code,
+            createdByAccount: "auriga",
+            subjectId: syllabusCode,
+            subjectName: displayName,
+            description,
+            givenAt: matchedGrade.syncedAt
+              ? new Date(matchedGrade.syncedAt)
+              : new Date(),
+            outOf: { value: 20 },
+            coefficient: exam.weighting ? exam.weighting / 100 : 1,
+            studentScore: { value: matchedGrade.grade },
+            averageScore: { value: 0, disabled: true },
+            minScore: { value: 0, disabled: true },
+            maxScore: { value: 0, disabled: true },
           });
+        }
 
+        if (gradesToSave.length > 0) {
           await addGradesToDatabase(gradesToSave, displayName);
         }
       }
@@ -275,56 +290,76 @@ class AurigaAPI {
 
   /**
    * Returns grades enriched with syllabus exam descriptions and weightings.
-   * This is cached after the first call for performance.
+   * Uses the algorithm: [Syllabus_Code]_[Exam_Type]_[Index] for multi-exam types,
+   * or [Syllabus_Code]_[Exam_Type] when only one exam of that type exists.
    */
   getEnrichedGrades(): (Grade & { description: string; weighting: number })[] {
     const allGrades = this.getAllGrades();
     const syllabusList = this.getAllSyllabus();
 
-    return allGrades.map(g => {
-      // Find matching syllabus by prefix
-      const matchingSyllabus = syllabusList.find(s => {
-        const syllabusCode = s.name.replace(/\.[^.]+$/, "");
-        return g.name.startsWith(syllabusCode + "_");
-      });
+    // Build a lookup map from grade name to exam metadata
+    const examMetadataMap = new Map<
+      string,
+      { description: string; weighting: number }
+    >();
 
-      if (!matchingSyllabus) {
-        return { ...g, description: g.type || g.name, weighting: 1 };
+    for (const syllabus of syllabusList) {
+      // syllabus.name now contains the proper code (e.g., "2526_I_INF_FISE_S03_CN_PC_AL")
+      const syllabusCode = syllabus.name;
+
+      // Count exams per type to determine if we need index suffix
+      const examTypeCount = new Map<string, number>();
+      for (const exam of syllabus.exams || []) {
+        examTypeCount.set(exam.type, (examTypeCount.get(exam.type) || 0) + 1);
       }
 
-      const syllabusCode = matchingSyllabus.name.replace(/\.[^.]+$/, "");
-      const examPart = g.name.replace(syllabusCode + "_", "");
-      const parts = examPart.split("_");
-      const type = parts[0];
-      const index = parts[1] ? parseInt(parts[1], 10) : 1;
-
-      const matchingExams =
-        matchingSyllabus.exams?.filter(
-          e => e.type?.toUpperCase() === type.toUpperCase()
-        ) || [];
-      const matchingExam = matchingExams[index - 1];
-
-      // Get description from syllabus exam
-      let description = examPart.replace(/_/g, " ");
-      if (matchingExam) {
+      for (const exam of syllabus.exams || []) {
+        // Build description
         const examDescription =
-          typeof matchingExam.description === "string"
-            ? matchingExam.description
-            : matchingExam.description?.fr || matchingExam.description?.en;
+          typeof exam.description === "string"
+            ? exam.description
+            : exam.description?.fr || exam.description?.en;
 
-        if (examDescription && matchingExam.typeName) {
-          description = `${matchingExam.typeName} - ${examDescription}`;
+        let description = exam.typeName || exam.type || "";
+        if (examDescription && exam.typeName) {
+          description = `${exam.typeName} - ${examDescription}`;
         } else if (examDescription) {
           description = examDescription;
-        } else if (matchingExam.typeName) {
-          description = matchingExam.typeName;
+        }
+
+        const metadata = { description, weighting: exam.weighting ?? 1 };
+
+        // Determine the key pattern based on exam count
+        const typeCount = examTypeCount.get(exam.type) || 1;
+        if (typeCount === 1) {
+          // Only one exam of this type: key = [Syllabus_Code]_[Exam_Type]
+          const targetKey = `${syllabusCode}_${exam.type}`;
+          examMetadataMap.set(targetKey, metadata);
+        } else {
+          // Multiple exams of this type: key = [Syllabus_Code]_[Exam_Type]_[Index]
+          const targetKey = `${syllabusCode}_${exam.type}_${exam.index}`;
+          examMetadataMap.set(targetKey, metadata);
         }
       }
+    }
 
+    // Enrich each grade with metadata from matching exam
+    return allGrades.map(g => {
+      const metadata = examMetadataMap.get(g.name);
+
+      if (metadata) {
+        return {
+          ...g,
+          description: metadata.description,
+          weighting: metadata.weighting,
+        };
+      }
+
+      // Fallback: no exact match found, use grade's own type/name
       return {
         ...g,
-        description,
-        weighting: matchingExam?.weighting ?? 1,
+        description: g.type || g.name,
+        weighting: 1,
       };
     });
   }
@@ -334,43 +369,61 @@ class AurigaAPI {
     const syllabusList: Syllabus[] = data ? JSON.parse(data) : [];
     const allGrades = this.getAllGrades();
 
+    // Create a map for fast grade lookup by name
+    const gradesMap = new Map<string, Grade>();
+    allGrades.forEach(g => gradesMap.set(g.name, g));
+
     return syllabusList.map(s => {
-      // Get the subject code from syllabus name (remove file extension if present)
-      const subjectCode = s.name.replace(/\.[^.]+$/, "");
+      // s.name now contains the proper code (e.g., "2526_I_INF_FISE_S03_CN_PC_AL")
+      const syllabusCode = s.name;
 
-      // Find all grades that belong to this subject (grade.name starts with subject code)
-      const matchedGrades = allGrades.filter(g =>
-        g.name.startsWith(subjectCode + "_")
-      );
+      // Count exams per type to determine if we need index suffix
+      const examTypeCount = new Map<string, number>();
+      for (const exam of s.exams || []) {
+        examTypeCount.set(exam.type, (examTypeCount.get(exam.type) || 0) + 1);
+      }
 
-      // Match each grade with its exam weighting from the syllabus
-      const gradesWithWeightings = matchedGrades.map(g => {
-        // Extract exam type from grade name (e.g., "..._EXA_1" -> "EXA_1")
-        const examPart = g.name.replace(subjectCode + "_", "");
+      // Find grades for each exam using the appropriate key pattern
+      const gradesWithWeightings: (Grade & {
+        weighting: number;
+        description: string;
+      })[] = [];
 
-        // Find matching exam in syllabus to get weighting
-        const parts = examPart.split("_");
-        const type = parts[0];
-        const index = parts[1] ? parseInt(parts[1], 10) : 1;
+      for (const exam of s.exams || []) {
+        // Determine the key pattern based on exam count
+        const typeCount = examTypeCount.get(exam.type) || 1;
+        let targetKey: string;
+        if (typeCount === 1) {
+          // Only one exam of this type: key = [Syllabus_Code]_[Exam_Type]
+          targetKey = `${syllabusCode}_${exam.type}`;
+        } else {
+          // Multiple exams of this type: key = [Syllabus_Code]_[Exam_Type]_[Index]
+          targetKey = `${syllabusCode}_${exam.type}_${exam.index}`;
+        }
 
-        const matchingExams =
-          s.exams?.filter(e => e.type?.toUpperCase() === type.toUpperCase()) ||
-          [];
-        const matchingExam = matchingExams[index - 1];
+        const matchedGrade = gradesMap.get(targetKey);
 
-        // Use descriptive name if available
-        const examDescription =
-          typeof matchingExam?.description === "string"
-            ? matchingExam.description
-            : matchingExam?.description?.fr || matchingExam?.description?.en;
+        if (matchedGrade) {
+          // Build description
+          const examDescription =
+            typeof exam.description === "string"
+              ? exam.description
+              : exam.description?.fr || exam.description?.en;
 
-        return {
-          ...g,
-          weighting: matchingExam?.weighting ?? 1,
-          description:
-            examDescription || matchingExam?.typeName || examPart || g.type,
-        };
-      });
+          let description = exam.typeName || exam.type || "";
+          if (examDescription && exam.typeName) {
+            description = `${exam.typeName} - ${examDescription}`;
+          } else if (examDescription) {
+            description = examDescription;
+          }
+
+          gradesWithWeightings.push({
+            ...matchedGrade,
+            weighting: exam.weighting ?? 1,
+            description,
+          });
+        }
+      }
 
       // Calculate weighted average if there are matched grades
       let weightedAverage: number | undefined;
@@ -660,6 +713,10 @@ class AurigaAPI {
 
     try {
       const fileName = row.documents?.[0]?.fileName || "";
+      // Use row.code as the syllabus code - this is what grade names use for matching
+      // Example: "2526_I_INF_FISE_S03_CN_PC_AL" (from row.code)
+      // vs fileName: "2526_I_INF_FISE_S03_CN_PC_AL_FR" (includes language suffix)
+      const syllabusCode = row.code || fileName.replace(/_(FR|EN)$/, "");
 
       return {
         id: row.id,
@@ -667,8 +724,8 @@ class AurigaAPI {
         semester: fileName.split("_")[4]?.replace("S", "")
           ? parseInt(fileName.split("_")[4].replace("S", ""))
           : 0,
-        name: fileName,
-        code: row.field?.code,
+        name: syllabusCode, // Use the proper syllabus code for matching
+        code: row.field?.code, // This is the field/subject area code
         minScore: row.customAttributes?.miniScore,
         duration: row.duration,
         period: {
@@ -676,8 +733,9 @@ class AurigaAPI {
           endDate: row.period?.endDate,
         },
         exams:
-          row.syllabusAssessmentComponents?.map((e: any) => ({
+          row.syllabusAssessmentComponents?.map((e: any, i: number) => ({
             id: e.id,
+            index: e.index ?? i + 1, // Use component's index or 1-based array position
             description: e.description,
             type: e.examType?.code,
             typeName: e.examType?.caption?.fr,

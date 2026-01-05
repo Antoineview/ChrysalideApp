@@ -93,12 +93,12 @@ export async function addGradesToDatabase(
               correctionFile: JSON.stringify(item.correctionFile),
               bonus: item.bonus,
               optional: item.optional,
-              outOf: JSON.stringify(item.outOf),
+              outOfRaw: JSON.stringify(item.outOf),
               coefficient: item.coefficient,
-              studentScore: JSON.stringify(item.studentScore),
-              averageScore: JSON.stringify(item.averageScore),
-              minScore: JSON.stringify(item.minScore),
-              maxScore: JSON.stringify(item.maxScore),
+              studentScoreRaw: JSON.stringify(item.studentScore),
+              averageScoreRaw: JSON.stringify(item.averageScore),
+              minScoreRaw: JSON.stringify(item.minScore),
+              maxScoreRaw: JSON.stringify(item.maxScore),
             });
           });
         },

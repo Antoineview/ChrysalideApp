@@ -35,6 +35,7 @@ export interface Period {
 
 export interface Exam {
   id: number;
+  index: number; // Component index for grade code construction
   description: Description;
   type: string;
   typeName: string;
