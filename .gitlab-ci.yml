@@ -1,19 +1,157 @@
-sync_from_github:
-  image: alpine:latest
+stages:
+  - build
+  - release
 
+# ---------------------------------------------------------------------------
+# GLOBAL VARIABLES & CACHE
+# ---------------------------------------------------------------------------
+variables:
+  # Paths
+  SECURE_FILES_DOWNLOAD_PATH: "$CI_PROJECT_DIR/secure_files"
+  
+  # Node/Yarn Settings
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.yarn"
+
+# Cache configuration for yarn and npm
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    -.npm
+    -.yarn
+    - node_modules
+
+# ---------------------------------------------------------------------------
+# RELEASE CREATION JOB
+# ---------------------------------------------------------------------------
+create-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: $CI_COMMIT_TAG =~ /^release-.*$/
+  needs:
+    - job: build-android
+      artifacts: true
+    - job: build-ios
+      artifacts: true
+  script:
+    - echo "Generating Release for $CI_COMMIT_TAG"
+    
+    # Construct Permanent URLs for Assets
+    # Format: https://gitlab.com/<namespace>/<project>/-/jobs/artifacts/<ref>/raw/<path>?job=<job_name>
+    - APK_URL="$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/android/app/build/outputs/apk/release/app-release.apk?job=build-android"
+    - AAB_URL="$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/android/app/build/outputs/bundle/release/app-release.aab?job=build-android"
+    - IPA_URL="$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/build_artifacts/app-release.ipa?job=build-ios"
+
+    - |
+      release-cli create --name "Release $CI_COMMIT_TAG" --tag-name $CI_COMMIT_TAG \
+        --description "Automated build for release $CI_COMMIT_TAG. Contains Android (APK/AAB) and iOS (IPA) binaries." \
+        --assets-link "{\"name\":\"Android APK\",\"url\":\"$APK_URL\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Android AAB\",\"url\":\"$AAB_URL\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"iOS IPA\",\"url\":\"$IPA_URL\",\"link_type\":\"package\"}"
+
+# ---------------------------------------------------------------------------
+# CULTE DE LA POMME BUILD JOB
+# ---------------------------------------------------------------------------
+build-ios:
+  stage: build
+  tags:
+    - saas-macos-medium-m1
+  image: macos-15-xcode-16
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^release-.*$/
+  
+  variables:
+    # Disable Homebrew auto-update to speed up build
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    # Fastlane Config
+    FL_OUTPUT_DIR: "./build_artifacts"
+
+  cache:
+    key: ios-build-cache
+    paths:
+      - ios/Pods
+      - node_modules
 
   before_script:
-    - apk add --no-cache git
-    - git config --global user.email "noreply@maelduret.com"
-    - git config --global user.name "GitLab Sync Bot"
+    - echo "Setting up Ruby environment..."
+    - gem install bundler
+    - bundle install # Installs Fastlane
 
   script:
-    - git remote remove github || true
-    - git remote add github https://github.com/PapillonApp/Papillon.git
-    - git fetch origin
-    - git fetch github
-    - git checkout -B main origin/main
-    - git merge github/main --allow-unrelated-histories || true
-    - git push "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" main
+    - echo "Installing JS Dependencies..."
+    - yarn install --frozen-lockfile
+
+    - echo "Generating Native iOS Project..."
+    - npx expo prebuild --platform ios --no-interactive
+
+    - echo "Installing CocoaPods..."
+    - cd ios
+    - pod install --repo-update
+    - cd..
+
+    - echo "Building with Fastlane..."
+    - bundle exec fastlane build
+
+  artifacts:
+    paths:
+      - build_artifacts/app-release.ipa
+    expire_in: 30 days
+
+# ---------------------------------------------------------------------------
+# ANDROID BUILD JOB
+# ---------------------------------------------------------------------------
+build-android:
+  stage: build
+  image: reactnativecommunity/react-native-android:latest
+  tags:
+    - docker
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^release-.*$/
+  
+  # Android-specific caching
+  cache:
+    key: android-build-cache
+    paths:
+      -.gradle/wrapper
+      -.gradle/caches
+      - node_modules
+
+  before_script:
+    # 1. Install Utilities
+    - apt-get update && apt-get install -y curl
+    
+    # 2. Secure Files: Download Keystore
+    # Note: Requires GitLab 14.8+ and Job Token permissions
+    - curl --silent --header "JOB-TOKEN: $CI_JOB_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/secure_files/release.keystore/download" --output release.keystore
+    
+    # 3. SDK Verification for Android 35
+    - echo "Verifying Android SDK 35..."
+    - yes | sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+  script:
+    - echo "Installing JS Dependencies..."
+    - yarn install --frozen-lockfile
+
+    - echo "Generating Native Android Project..."
+    - npx expo prebuild --platform android --no-interactive
+
+    - echo "Injecting Signing Config via Env Vars..."
+    # We move the keystore to a predictable path for Gradle
+    - mv release.keystore android/app/release.keystore
+    
+    # React Native's Gradle scripts read these ORG_GRADLE_PROJECT variables automatically
+    - export ORG_GRADLE_PROJECT_MYAPP_UPLOAD_STORE_FILE="release.keystore"
+    - export ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_ALIAS="$ANDROID_KEY_ALIAS"
+    - export ORG_GRADLE_PROJECT_MYAPP_UPLOAD_STORE_PASSWORD="$ANDROID_KEY_PASSWORD"
+    - export ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_PASSWORD="$ANDROID_KEY_PASSWORD"
+
+    - echo "Compiling Release..."
+    - cd android
+    -./gradlew assembleRelease bundleRelease
+
+  artifacts:
+    paths:
+      - android/app/build/outputs/apk/release/app-release.apk
+      - android/app/build/outputs/bundle/release/app-release.aab
+    expire_in: 30 days
