@@ -30,8 +30,8 @@ build-android:
   image: reactnativecommunity/react-native-android:latest
   tags:
     - docker
-  rules:
-    - if: $CI_COMMIT_TAG =~ /^release-.*$/
+  # rules:
+  #   - if: $CI_COMMIT_TAG =~ /^release-.*$/
   
   # Android-specific caching
   cache:
