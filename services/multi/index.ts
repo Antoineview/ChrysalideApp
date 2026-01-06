@@ -335,9 +335,16 @@ export class Multi implements SchoolServicePlugin {
         const ueAverage =
           numericSubjects.length > 0 ? ueTotal / numericSubjects.length : 0;
 
+        const ueNames: Record<string, string> = {
+          PR: "Produire",
+          AG: "Agir",
+          CN: "Concevoir",
+          PROJET: "Projet",
+        };
+
         return {
           id: ueCode,
-          name: ueCode,
+          name: ueNames[ueCode] || ueCode,
           studentAverage: { value: ueAverage, outOf: 20 },
           classAverage: { value: 0 },
           outOf: { value: 20 },
