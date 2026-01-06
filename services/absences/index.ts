@@ -15,20 +15,31 @@ const BASE_URL = "https://absences.epita.net/api";
 
 class AbsencesAPI {
   private token: string | null = null;
+  private cookies: string | null = null;
 
   constructor(token?: string) {
     const savedToken = storage.getString("absences_token");
+    const savedCookies = storage.getString("absences_cookies");
     if (token) {
       this.token = token;
       this.saveToken(token);
     } else if (savedToken) {
       this.token = savedToken;
     }
+    
+    if (savedCookies) {
+        this.cookies = savedCookies;
+    }
   }
 
   setToken(token: string) {
     this.token = token;
     this.saveToken(token);
+  }
+  
+  setCookies(cookies: string) {
+      this.cookies = cookies;
+      storage.set("absences_cookies", cookies);
   }
 
   private saveToken(token: string) {
@@ -40,19 +51,34 @@ class AbsencesAPI {
   }
 
   isLoggedIn() {
-    return !!this.token;
+    return !!this.token || !!this.cookies;
   }
 
   /**
    * Syncs all data from Absences API and stores it in database.
    */
-  async sync() {
+  async sync(preFetchedData?: AbsencesAPIResponse[]) {
     console.log("Starting Absences Sync...");
 
     try {
-      const responses = await this.fetchGrades();
+      let responses = preFetchedData || await this.fetchGrades();
+      
+      // Filter to keep only the last semester from the JSON
+      if (responses.length > 0) {
+          // Sort by levelName logic (S1, S2, S3...) to ensure we get the latest
+          responses.sort((a, b) => {
+              const nameA = a.levelName || "";
+              const nameB = b.levelName || "";
+              return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+          });
+
+          const selectedSemester = responses[responses.length - 1];
+          responses = [selectedSemester];
+          console.log(`Selected latest semester: ${selectedSemester.levelName} from available: ${responses.map(r => r.levelName).join(", ")}`);
+      }
+
       storage.set("absences_data", JSON.stringify(responses));
-      console.log(`Fetched ${responses.length} semesters.`);
+      console.log(`Fetched ${responses.length} semesters (filtered to last).`);
 
       const periodsToSave: Period[] = [];
 
@@ -132,15 +158,28 @@ class AbsencesAPI {
   }
 
   async fetchGrades(): Promise<AbsencesAPIResponse[]> {
-    if (!this.token) {
-      throw new Error("No token provided for Absences API");
+    if (!this.token && !this.cookies) {
+      throw new Error("No token or cookies provided for Absences API");
     }
 
     const headers: any = {
-      "Authorization": `Bearer ${this.token}`,
       "Content-Type": "application/json",
       "Accept": "application/json",
     };
+    
+    if (this.token) {
+        headers["Authorization"] = `Bearer ${this.token}`;
+    }
+    
+    if (this.cookies) {
+        headers["Cookie"] = this.cookies;
+    }
+    
+    // Add User-Agent if captured (or use a default one)
+    // headers["User-Agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
+    
+    console.log("Fetching grades with headers (keys):", Object.keys(headers));
+    if (this.token) console.log("Token prefix:", this.token.substring(0, 10) + "...");
 
     const response = await fetch(`${BASE_URL}/Users/student/grades`, {
       method: "GET",
@@ -150,7 +189,7 @@ class AbsencesAPI {
     if (!response.ok) {
       const text = await response.text();
       console.error(`Absences API Error (${response.status}):`, text);
-      throw new Error(`Absences API Error (${response.status})`);
+      throw new Error(`Absences API Error (${response.status}) - ${text.substring(0, 100)}`);
     }
 
     return await response.json();

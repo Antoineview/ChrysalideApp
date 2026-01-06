@@ -52,7 +52,11 @@ export default function AttendanceView() {
       try {
 
         if (AbsencesAPI.isLoggedIn()) {
-          await AbsencesAPI.sync();
+          try {
+            await AbsencesAPI.sync();
+          } catch (syncError) {
+            console.warn("Absences sync failed, using cached data:", syncError);
+          }
         }
 
         const manager = getManager();
@@ -60,11 +64,13 @@ export default function AttendanceView() {
 
         if (freshPeriods.length > 0) {
           freshPeriods.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-          setPeriods(freshPeriods);
+          const latestPeriod = freshPeriods[freshPeriods.length - 1];
 
-          if (!period && freshPeriods.length > 0) {
-            setPeriod(freshPeriods[freshPeriods.length - 1]);
-          }
+          // Force UI to only show the single latest semester
+          setPeriods([latestPeriod]);
+
+          // Always auto-select the latest period to switch the view
+          setPeriod(latestPeriod);
         }
       } catch (e) {
         console.error("Failed to refresh attendance data", e);
@@ -365,16 +371,16 @@ export default function AttendanceView() {
                   <Typography inline variant="navigation">{getPeriodName(period?.name ?? "")}</Typography>
                 </Dynamic>
                 <Dynamic animated>
-                  <NativeHeaderHighlight v>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
+                  <NativeHeaderHighlight>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
                 </Dynamic>
                 <Dynamic animated>
                   <Papicons name={"ChevronDown"} strokeWidth={2.5} color={colors.text} opacity={0.6} />
                 </Dynamic>
               </Dynamic>
             </MenuView>
-          </NativeHeaderTitle >
+          </NativeHeaderTitle>
         </>
       )}
     </>
-  )
+  );
 }

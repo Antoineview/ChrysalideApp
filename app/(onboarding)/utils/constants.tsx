@@ -36,17 +36,6 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       style: { backgroundColor: theme.dark ? colors.border : "black" },
     },
     {
-      name: "university",
-      title: "Compte Auriga (EPITA)",
-      type: "other",
-      image: require("@/assets/images/auriga.png"),
-      onPress: () => {
-        redirect({ pathname: '../university/multi/aurigaAuth', options: { color: "#0060D6", university: "Compte Auriga (EPITA)", url: "https://ionisepita-auth.np-auriga.nfrance.net/auth/realms/npionisepita/protocol/openid-connect/auth?client_id=np-front&redirect_uri=https%3A%2F%2Fauriga.epita.fr%2F%23%2FmainContent%2Fwelcome&state=b0d51531-8196-40d8-879a-65006e6a077c&response_mode=fragment&response_type=code&scope=openid&nonce=76fd097a-cf70-4f89-8a38-2f7e80b77475&prompt=login&code_challenge=8AH2655_0ZuKl4XeB_TOu0Jbr1HJQoJdPTzG_Rf4Yig&code_challenge_method=S256" } });
-      },
-      variant: 'primary' as const,
-      style: { backgroundColor: theme.dark ? colors.border : "black" },
-    },
-    {
       name: "izly",
       title: "Izly",
       type: "other",
