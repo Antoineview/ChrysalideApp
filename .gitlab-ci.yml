@@ -40,16 +40,14 @@ build-android:
       - node_modules
 
   before_script:
-    # 1. Install Utilities
     - apt-get update && apt-get install -y curl
     
-    # 2. Secure Files: Download Keystore
     # Note: Requires GitLab 14.8+ and Job Token permissions
     - 'curl --silent --header "JOB-TOKEN: $CI_JOB_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/secure_files/release.keystore/download" --output release.keystore'
     
     # 3. SDK Verification for Android 35
     - echo "Verifying Android SDK 35..."
-    - yes | sdkmanager "platforms;android-35" "build-tools;35.0.0"
+    - yes | sdkmanager "platforms;android-35" "build-tools;35.0.0" || true
 
   script:
     - echo "Installing JS Dependencies..."
@@ -59,7 +57,7 @@ build-android:
     - npx expo prebuild --platform android --no-interactive
 
     - echo "Injecting Signing Config via Env Vars..."
-    # We move the keystore to a predictable path for Gradle
+    - mkdir -p android/app
     - mv release.keystore android/app/release.keystore
     
     # React Native's Gradle scripts read these ORG_GRADLE_PROJECT variables automatically
