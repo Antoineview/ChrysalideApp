@@ -18,7 +18,6 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .npm
-    - .yarn
     - node_modules
 
 
@@ -51,7 +50,7 @@ build-android:
 
   script:
     - echo "Installing JS Dependencies..."
-    - yarn install --frozen-lockfile
+    - npm ci 
 
     - echo "Generating Native Android Project..."
     - npx expo prebuild --platform android --no-interactive
@@ -106,7 +105,7 @@ build-ios:
 
   script:
     - echo "Installing JS Dependencies..."
-    - yarn install --frozen-lockfile
+    - npm ci 
 
     - echo "Generating Native iOS Project..."
     - npx expo prebuild --platform ios --no-interactive
