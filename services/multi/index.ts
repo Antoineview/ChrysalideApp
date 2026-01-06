@@ -259,28 +259,50 @@ export class Multi implements SchoolServicePlugin {
         outOf: { value: 20 },
         coefficient: coefficient,
         createdByAccount: this.accountId,
+        alphaMark: g.alphaMark, // VA, NV for validation grades
       };
 
       subjectsMap[subjectKey].grades?.push(gradeItem);
     });
 
-    // Calculate weighted averages per subject
+    // Calculate weighted averages per subject, handling VA/NV grades
     Object.values(subjectsMap).forEach(s => {
       const sGrades = s.grades || [];
       let totalWeightedScore = 0;
       let totalWeight = 0;
+      let allValidation = true; // True if all grades are VA/NV
+      let hasNV = false; // True if any grade is NV
 
       sGrades.forEach(grade => {
-        const score = grade.studentScore?.value || 0;
-        const weight = grade.coefficient || 1;
-        totalWeightedScore += score * weight;
-        totalWeight += weight;
+        if (grade.alphaMark) {
+          // This is a validation grade (VA/NV)
+          if (grade.alphaMark === "NV") {
+            hasNV = true;
+          }
+          // Don't include in numeric average
+        } else {
+          // Numeric grade - include in average
+          allValidation = false;
+          const score = grade.studentScore?.value || 0;
+          const weight = grade.coefficient || 1;
+          totalWeightedScore += score * weight;
+          totalWeight += weight;
+        }
       });
 
-      s.studentAverage = {
-        value: totalWeight > 0 ? totalWeightedScore / totalWeight : 0,
-        outOf: 20,
-      };
+      // Mark subject properties
+      s.isValidationOnly = sGrades.length > 0 && allValidation;
+      s.hasNonValidated = hasNV;
+
+      // Calculate average (only for non-validation subjects)
+      if (s.isValidationOnly) {
+        s.studentAverage = { value: 0, outOf: 20 };
+      } else {
+        s.studentAverage = {
+          value: totalWeight > 0 ? totalWeightedScore / totalWeight : 0,
+          outOf: 20,
+        };
+      }
     });
 
     const subjects = Object.values(subjectsMap);
@@ -298,13 +320,20 @@ export class Multi implements SchoolServicePlugin {
     // Create UE modules with averages
     const modules: Subject[] = Object.entries(ueGroups).map(
       ([ueCode, ueSubjects]) => {
-        // Calculate UE average as mean of subject averages (all subjects weight 1)
-        const ueTotal = ueSubjects.reduce(
+        // Check if any subject has NV (Non validé)
+        const hasNV = ueSubjects.some(s => s.hasNonValidated);
+
+        // Check if all subjects are validation-only
+        const allValidationOnly = ueSubjects.every(s => s.isValidationOnly);
+
+        // Calculate UE average excluding validation-only subjects
+        const numericSubjects = ueSubjects.filter(s => !s.isValidationOnly);
+        const ueTotal = numericSubjects.reduce(
           (sum, s) => sum + (s.studentAverage?.value || 0),
           0
         );
         const ueAverage =
-          ueSubjects.length > 0 ? ueTotal / ueSubjects.length : 0;
+          numericSubjects.length > 0 ? ueTotal / numericSubjects.length : 0;
 
         return {
           id: ueCode,
@@ -314,17 +343,20 @@ export class Multi implements SchoolServicePlugin {
           outOf: { value: 20 },
           grades: [], // UE modules don't have direct grades
           subjects: ueSubjects, // Add nested subjects
+          isValidationOnly: allValidationOnly,
+          hasNonValidated: hasNV,
         };
       }
     );
 
-    // Calculate overall average as mean of UE averages (each UE coef 1)
-    const overallTotal = modules.reduce(
+    // Calculate overall average as mean of UE averages (excluding validation-only UEs)
+    const numericModules = modules.filter(m => !m.isValidationOnly);
+    const overallTotal = numericModules.reduce(
       (sum, m) => sum + (m.studentAverage?.value || 0),
       0
     );
     const overallAverage =
-      modules.length > 0 ? overallTotal / modules.length : 0;
+      numericModules.length > 0 ? overallTotal / numericModules.length : 0;
 
     return {
       studentOverall: { value: overallAverage, outOf: 20 },

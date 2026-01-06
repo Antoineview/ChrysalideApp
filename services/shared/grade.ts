@@ -21,6 +21,8 @@ export interface Subject {
   credits?: GradeScore;
   rank?: GradeScore;
   subjects?: Subject[]; // For groupings (e.g. UEs containing subjects)
+  isValidationOnly?: boolean; // True if all grades are VA/NV type
+  hasNonValidated?: boolean; // True if any grade is NV (Non validé)
 }
 
 export interface Grade extends GenericInterface {
@@ -40,6 +42,7 @@ export interface Grade extends GenericInterface {
   minScore?: GradeScore;
   maxScore?: GradeScore;
   rank?: GradeScore;
+  alphaMark?: string; // VA, NV for validation-based grades
 }
 
 export interface GradeScore {

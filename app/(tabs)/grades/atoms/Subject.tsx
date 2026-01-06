@@ -42,7 +42,11 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
 
       <Trailing>
         <Stack pointerEvents='none' noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
-          {grade.studentScore?.disabled ? (
+          {grade.alphaMark ? (
+            <Typography color={trailingForeground} variant='navigation'>
+              {grade.alphaMark === "VA" ? "Validé" : grade.alphaMark === "NV" ? "Non val." : grade.alphaMark}
+            </Typography>
+          ) : grade.studentScore?.disabled ? (
             <>
               <Typography color={trailingForeground} variant='navigation'>
                 {grade.studentScore?.status}
@@ -55,9 +59,11 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
               </Typography>
             </>
           )}
-          <Typography color={trailingForeground + "99"} variant='body2'>
-            /{grade.outOf.value}
-          </Typography>
+          {!grade.alphaMark && (
+            <Typography color={trailingForeground + "99"} variant='body2'>
+              /{grade.outOf.value}
+            </Typography>
+          )}
 
           {hasMaxScore && (
             <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
@@ -123,7 +129,11 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
           </Stack>
 
           <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end' style={{ flexShrink: 0 }}>
-            {subject.studentAverage.disabled ? (
+            {subject.isValidationOnly ? (
+              <Typography variant='h5' inline style={{ marginTop: 0, fontSize: 17 }}>
+                {subject.hasNonValidated ? "Non val." : "Validé"}
+              </Typography>
+            ) : subject.studentAverage.disabled ? (
               <Typography variant='h5' inline style={{ marginTop: 0 }}>
                 {subject.studentAverage.status}
               </Typography>
@@ -132,9 +142,11 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
                 {subject.studentAverage.value.toFixed(2)}
               </Typography>
             )}
-            <Typography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
-              /{subject.outOf.value}
-            </Typography>
+            {!subject.isValidationOnly && (
+              <Typography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
+                /{subject.outOf.value}
+              </Typography>
+            )}
           </Stack>
         </Stack>
       </TouchableOpacity>

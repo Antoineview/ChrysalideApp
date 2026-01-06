@@ -99,6 +99,7 @@ export async function addGradesToDatabase(
               averageScoreRaw: JSON.stringify(item.averageScore),
               minScoreRaw: JSON.stringify(item.minScore),
               maxScoreRaw: JSON.stringify(item.maxScore),
+              alphaMark: item.alphaMark,
             });
           });
         },

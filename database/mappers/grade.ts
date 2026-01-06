@@ -1,7 +1,11 @@
 import { mapSubjectToShared } from "@/database/mappers/subject";
 import { Grade, Period, PeriodGrades } from "@/database/models/Grades";
 import { Attachment } from "@/services/shared/attachment";
-import { Grade as SharedGrade, Period as SharedPeriod, PeriodGrades as SharedPeriodGrades } from "@/services/shared/grade";
+import {
+  Grade as SharedGrade,
+  Period as SharedPeriod,
+  PeriodGrades as SharedPeriodGrades,
+} from "@/services/shared/grade";
 
 export function mapPeriodToShared(period: Period): SharedPeriod {
   return {
@@ -11,8 +15,8 @@ export function mapPeriodToShared(period: Period): SharedPeriod {
     end: new Date(period.end),
     createdByAccount: period.createdByAccount,
     kidName: period.kidName,
-    fromCache: true
-  }
+    fromCache: true,
+  };
 }
 
 export function mapGradeToShared(grade: Grade): SharedGrade {
@@ -32,16 +36,19 @@ export function mapGradeToShared(grade: Grade): SharedGrade {
     averageScore: grade.averageScore,
     minScore: grade.minScore,
     maxScore: grade.maxScore,
+    alphaMark: grade.alphaMark,
     fromCache: true,
-    createdByAccount: grade.createdByAccount
-  }
+    createdByAccount: grade.createdByAccount,
+  };
 }
 
-export function mapPeriodGradesToShared(data: PeriodGrades): SharedPeriodGrades {
+export function mapPeriodGradesToShared(
+  data: PeriodGrades
+): SharedPeriodGrades {
   return {
     studentOverall: data.studentOverall,
     classAverage: data.classAverage,
     subjects: data.subjects.map(mapSubjectToShared),
-    createdByAccount: data.createdByAccount
-  }
+    createdByAccount: data.createdByAccount,
+  };
 }

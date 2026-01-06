@@ -498,30 +498,49 @@ class AurigaAPI {
             return;
           }
 
-          const gradeValue = row[1];
-          const itemCode = row[0];
-          const itemName = row[2];
-          const typeName = row[4];
+          const gradeValue = row[1]; // Calculated field: numeric grade or alpha text
+          const itemCode = row[0]; // Obligation ID (numeric)
+          const itemName = row[2]; // Obligation code (string with semester info)
+          const typeName = row[4]; // Exam type code
 
           let semester = 0;
-          // Extract semester from name (e.g. "..._S5_...")
-          if (typeof itemName === "string") {
-            const match = itemName.match(/_S(\d+)_/i);
-            if (match) {
-              semester = parseInt(match[1]);
-            }
+          // Extract semester from code (e.g. "..._S03_...")
+          // itemName contains the full grade code like 2526_I_INF_FISE_S03_...
+          const codeStr = String(itemName);
+          const match = codeStr.match(/_S(\d+)_/i);
+          if (match) {
+            semester = parseInt(match[1]);
           }
 
           if (gradeValue !== null && gradeValue !== undefined) {
+            // Check if it's an alpha mark (VA, NV, Validé, Non validé)
+            const gradeStr = String(gradeValue).trim();
+            let alphaMark: string | undefined;
+            let numericGrade = 0;
+
+            if (gradeStr === "VA" || gradeStr === "Validé") {
+              alphaMark = "VA";
+            } else if (gradeStr === "NV" || gradeStr === "Non validé") {
+              alphaMark = "NV";
+            } else {
+              // Parse as numeric grade
+              numericGrade = Number(gradeStr.replace(",", ".")) || 0;
+            }
+
             allGrades.push({
-              code: String(itemCode),
+              code: String(itemCode), // Keep ID as code
               type: String(typeName),
-              name: String(itemName),
+              name: codeStr, // Use string code as name (for matching)
               semester: semester,
-              grade: Number(String(gradeValue).replace(",", ".")) || 0,
+              grade: numericGrade,
+              alphaMark: alphaMark,
             });
           }
         });
+
+        console.log(
+          `[Auriga] Page ${page} processed. Total grades so far: ${allGrades.length}`
+        );
 
         page++;
       } while (page <= totalPages);

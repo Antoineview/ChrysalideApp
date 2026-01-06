@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from "@nozbe/watermelondb";
 
 export const mySchema = appSchema({
-  version: 36,
+  version: 37,
   tables: [
     tableSchema({
       name: "events",
@@ -112,6 +112,7 @@ export const mySchema = appSchema({
         { name: "averageScore", type: "string" },
         { name: "minScore", type: "string" },
         { name: "maxScore", type: "string" },
+        { name: "alphaMark", type: "string", isOptional: true },
       ],
     }),
     tableSchema({

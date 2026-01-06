@@ -4,6 +4,7 @@ export interface Grade {
   name: string;
   semester: number;
   grade: number;
+  alphaMark?: string; // VA, NV, etc. for validation-based grades
   syncedAt?: number; // Timestamp of when this grade was first synced
 }
 
