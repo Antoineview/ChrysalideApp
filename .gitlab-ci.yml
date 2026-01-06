@@ -20,7 +20,6 @@ cache:
     - .npm
     - node_modules
 
-
 # ---------------------------------------------------------------------------
 # ANDROID BUILD JOB
 # ---------------------------------------------------------------------------
@@ -67,7 +66,7 @@ build-android:
 
     - echo "Compiling Release..."
     - cd android
-    - ./gradlew assembleRelease bundleRelease
+    - ./gradlew assembleRelease bundleRelease --max-workers=2 --no-daemon
 
   artifacts:
     paths:
