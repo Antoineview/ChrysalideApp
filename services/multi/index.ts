@@ -340,6 +340,7 @@ export class Multi implements SchoolServicePlugin {
           AG: "Agir",
           CN: "Concevoir",
           PROJET: "Projet",
+          PI: "Piloter",
         };
 
         return {
