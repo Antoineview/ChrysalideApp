@@ -53,7 +53,7 @@ build-android:
     - npm ci || true # fix an issue with the papillon package
 
     - echo "Generating Native Android Project..."
-    - npx expo prebuild --platform android --no-interactive
+    - npx expo prebuild --platform android 
 
     - echo "Injecting Signing Config via Env Vars..."
     - mkdir -p android/app
@@ -108,7 +108,7 @@ build-ios:
     - npm ci || true # fix an issue with the papillon package
 
     - echo "Generating Native iOS Project..."
-    - npx expo prebuild --platform ios --no-interactive
+    - npx expo prebuild --platform ios
 
     - echo "Installing CocoaPods..."
     - cd ios
