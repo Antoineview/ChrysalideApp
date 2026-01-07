@@ -6,11 +6,7 @@ import { registerSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { cleanSubjectName } from "@/utils/subjects/utils";
 
-import {
-  GRADES_PAYLOAD,
-  SYLLABUS_PAYLOAD,
-  SYLLABUS2_PAYLOAD,
-} from "./payloads";
+import { GRADES_PAYLOAD, SYLLABUS_PAYLOAD } from "./payloads";
 import { Grade, Syllabus, UserData } from "./types";
 
 // Initialize MMKV storage
@@ -648,18 +644,81 @@ class AurigaAPI {
     // Use the User's endpoint to get the ID list.
 
     // 1. Get List of IDs
-    const entryUrl = "menuEntries/166/searchResult?size=100&page=1&sort=id";
+    // We use a more robust method: fetch catalog definitions first, then search for each catalog.
+    // This allows us to get syllabuses from all available catalogs/years.
     let allIds: string[] = [];
 
+    // Helper to request with strict headers matching the user's snippet
+    const fetchWithToken = async (endpoint: string, method: "GET" | "POST", body?: any) => {
+      if (!this.token) {
+        throw new Error("No access token available for Auriga sync");
+      }
+
+      const headers: any = {
+        "Authorization": "Bearer " + this.token
+      };
+
+      if (method === "POST") {
+        headers["Content-Type"] = "application/json";
+      }
+
+      const response = await fetch(`${BASE_URL}/${endpoint}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+         throw new Error(`Auriga API Error ${response.status} on ${endpoint}: ${text}`);
+      }
+
+      return await response.json();
+    };
+
     try {
-      const ids1 = await this.postDataToAuriga(entryUrl, SYLLABUS_PAYLOAD);
-      const ids2 = await this.postDataToAuriga(entryUrl, SYLLABUS2_PAYLOAD);
+      console.log("Fetching Course Catalog Definitions...");
+      const definitionUrl = "menuEntries/166/courseCatalogDefinitions?sortBy=code,asc";
+      
+      // Use strict fetch matching user snippet
+      const definitions = await fetchWithToken(definitionUrl, "GET");
 
-      const extractIds = (res: any) =>
-        res?.content?.lines?.map((l: any) => l[0]) || [];
+      if (!definitions || !definitions.content) {
+        throw new Error("No content in course catalog definitions");
+      }
 
-      allIds = [...new Set([...extractIds(ids1), ...extractIds(ids2)])];
-      console.log(`Found ${allIds.length} syllabus IDs. Fetching details...`);
+      console.log(
+        `Found ${definitions.content.length} course catalogs. Fetching syllabuses for each...`
+      );
+
+      const searchUrl = "menuEntries/166/searchResult?size=100&page=1&sort=id";
+      const payload = JSON.parse(JSON.stringify(SYLLABUS_PAYLOAD)); // Clone payload
+
+      for (const element of definitions.content) {
+        try {
+          // Update filter ID
+          if (payload.searchResultDefinition?.filtersCustom) {
+            payload.searchResultDefinition.filtersCustom.id = element.id;
+          }
+
+          // Use strict fetch for search
+          const response = await fetchWithToken(searchUrl, "POST", payload);
+          
+          const lines = response?.content?.lines || [];
+          const ids = lines.map((l: any) => l[0]);
+          
+          if (ids.length > 0) {
+            allIds.push(...ids);
+          }
+          console.log(`[Catalog ${element.code}] Found ${ids.length} syllabuses.`);
+        } catch (e) {
+             console.warn(`Failed to fetch syllabuses for catalog ${element.id}:`, e);
+        }
+      }
+
+      allIds = [...new Set(allIds)];
+      console.log(`Total unique syllabus IDs found: ${allIds.length}`);
+
     } catch (e) {
       console.error(
         "Failed to fetch syllabus IDs (skipping syllabus sync):",
@@ -669,11 +728,9 @@ class AurigaAPI {
     }
 
     // 2. Fetch Details for each ID
-
-    // Let's try to fetch all, but maybe in parallel batches.
-
+    console.log("Fetching details for syllabuses...");
     const syllabusDetails: Syllabus[] = [];
-
+    
     // We can't do too many parallel requests or we might get rate limited/blocked.
     // Let's do batches of 5.
     const BATCH_SIZE = 5;
@@ -682,12 +739,9 @@ class AurigaAPI {
       await Promise.all(
         batch.map(async (id: string) => {
           try {
-            // User endpoint: `menuEntries/166/syllabuses/${element}` (GET)
-            // BUT my postData is POST. Need a GET helper.
             const endpoint = `menuEntries/166/syllabuses/${id}`;
-
-            // Assuming we use the same headers logic for GET
-            const detailRes = await this.getDataFromAuriga(endpoint);
+            // Use strict fetch format for details too
+            const detailRes = await fetchWithToken(endpoint, "GET");
             const mapped = this.mapSyllabusDetail(detailRes);
             if (mapped) {
               syllabusDetails.push(mapped);
