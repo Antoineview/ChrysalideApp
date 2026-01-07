@@ -167,7 +167,9 @@ const SyllabusView: React.FC = () => {
 
   const generateFullPdfHtml = (semesters: typeof groupedSyllabus) => {
     const title = "SYLLABUS";
-    const year = "2024 — 2025";
+    const currentYear = new Date().getFullYear();
+    const startYear = new Date().getMonth() < 8 ? currentYear - 1 : currentYear;
+    const year = `${startYear} — ${startYear + 1}`;
     const parcoursLabel = parcours === 'all' ? 'Tous Parcours' : (parcours === 'PC' ? 'Parcours Classique' : 'Parcours Accompagné');
 
     // Helper to calculate stats
@@ -231,6 +233,27 @@ const SyllabusView: React.FC = () => {
             border-bottom: 1px solid transparent; 
           }
           .page:last-child { page-break-after: avoid; }
+
+          /* Auto Page - For TOC/Recap that might span multiple pages */
+          .page-auto {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 12mm;
+            box-sizing: border-box;
+            position: relative;
+            page-break-after: always;
+            background: #F2F2F7;
+            overflow: visible;
+          }
+          .page-auto .footer {
+             position: relative;
+             margin-top: 20px;
+             border-top: 1px solid #E5E5EA;
+             padding-top: 8px;
+             bottom: auto;
+             left: auto;
+             right: auto;
+          }
 
           /* Modern Card - More compact */
           .card {
@@ -360,56 +383,37 @@ const SyllabusView: React.FC = () => {
            <div class="cover-year">${year}</div>
         </div>
 
-        <!-- Table of Contents -->
-        <div class="page">
-          <div class="card">
-             <h1>Table des matières</h1>
+        <!-- Table of Contents (Split by Semester) -->
+        ${semesters.map(sem => `
+          <div class="page-auto">
+            <div class="card">
+               <h1>Sommaire — Semestre ${sem.semester}</h1>
+            </div>
+            <div class="card" style="min-height: 80%;">
+               <div style="margin-top: 15px; margin-bottom: 5px; font-weight: 700; font-size: 13px; color: ${colors.primary};">
+                  Semestre ${sem.semester}
+               </div>
+               ${sem.ueGroups.map(group => `
+                  <div style="margin-left: 10px; margin-top: 8px; font-weight: 600; font-size: 11px; color: #3A3A3C;">
+                     ${group.name}
+                  </div>
+                  ${group.items.map(item => `
+                      <div style="margin-left: 20px; padding: 4px 0; border-bottom: 1px solid #F2F2F7; display: flex; justify-content: space-between;">
+                         <a href="#course-${item.code || item.id}" style="text-decoration: none; color: #007AFF;">${cleanHtml(item.caption?.name || item.name)}</a>
+                         <span style="color: #AEAEB2;">${item.code || ''}</span>
+                      </div>
+                  `).join('')}
+               `).join('')}
+            </div>
+            <div class="footer">
+               <span>${parcoursLabel}</span>
+               <span>${year}</span>
+            </div>
           </div>
-          <div class="card" style="min-height: 80%;">
-             ${semesters.map(sem => `
-                <div style="margin-top: 15px; margin-bottom: 5px; font-weight: 700; font-size: 13px; color: ${colors.primary};">
-                   Semestre ${sem.semester}
-                </div>
-                ${sem.ueGroups.map(group => `
-                   <div style="margin-left: 10px; margin-top: 8px; font-weight: 600; font-size: 11px; color: #3A3A3C;">
-                      ${group.name}
-                   </div>
-                   ${group.items.map(item => `
-                       <div style="margin-left: 20px; padding: 4px 0; border-bottom: 1px solid #F2F2F7; display: flex; justify-content: space-between;">
-                          <a href="#course-${item.code || item.id}" style="text-decoration: none; color: #007AFF;">${cleanHtml(item.caption?.name || item.name)}</a>
-                          <span style="color: #AEAEB2;">${item.code || ''}</span>
-                       </div>
-                   `).join('')}
-                `).join('')}
-             `).join('')}
-          </div>
-          <div class="footer">
-             <span>${parcoursLabel}</span>
-             <span>${year}</span>
-          </div>
-        </div>
+        `).join('')}
 
-        <!-- Recap Table -->
-        <div class="page" id="recap">
-           <div class="card">
-             <h1>Découpage du semestre</h1>
-           </div>
-           
-           <div class="card">
-             <table class="recap-table">
-               <thead>
-                 <tr>
-                   <th>Semestre</th>
-                   <th>ECUE</th>
-                   <th style="text-align:right;">Cours</th>
-                   <th style="text-align:right;">TD/TP</th>
-                   <th style="text-align:right;">Perso</th>
-                   <th style="text-align:right;">Total</th>
-                   <th style="text-align:center;">Coef</th>
-                 </tr>
-               </thead>
-               <tbody>
-                  ${semesters.map(sem => {
+        <!-- Recap Table (Split by Semester) -->
+        ${semesters.map(sem => {
       let rows = '';
       sem.ueGroups.forEach(group => {
         let groupCoef = 0;
@@ -421,46 +425,65 @@ const SyllabusView: React.FC = () => {
           const subjColor = getSubjectColor(item.caption?.name || item.name);
 
           return `
-                            <tr>
-                               <td style="border:none;"></td>
-                               <td>
-                                 <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${subjColor}; margin-right:6px;"></span>
-                                 ${cleanHtml(item.caption?.name || item.name)}
-                               </td>
-                               <td align="right">${stats.lecture > 0 ? formatHours(stats.lecture) : '-'}</td>
-                               <td align="right">${(stats.tutorial + stats.practical) > 0 ? formatHours(stats.tutorial + stats.practical) : '-'}</td>
-                               <td align="right">${stats.personal > 0 ? formatHours(stats.personal) : '-'}</td>
-                               <td align="right"><b>${formatHours(stats.total)}</b></td>
-                               <td align="center">${coef > 0 ? coef + '%' : '-'}</td>
-                            </tr>
-                          `;
+                   <tr>
+                      <td style="border:none;"></td>
+                      <td>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${subjColor}; margin-right:6px;"></span>
+                        ${cleanHtml(item.caption?.name || item.name)}
+                      </td>
+                      <td align="right">${stats.lecture > 0 ? formatHours(stats.lecture) : '-'}</td>
+                      <td align="right">${(stats.tutorial + stats.practical) > 0 ? formatHours(stats.tutorial + stats.practical) : '-'}</td>
+                      <td align="right">${stats.personal > 0 ? formatHours(stats.personal) : '-'}</td>
+                      <td align="right"><b>${formatHours(stats.total)}</b></td>
+                      <td align="center">${coef > 0 ? coef + '%' : '-'}</td>
+                   </tr>
+                 `;
         }).join('');
 
         rows += `
-                         <tr class="recap-ue-row">
-                            <td></td>
-                            <td colspan="5" style="text-transform:uppercase; font-size:9px; letter-spacing:0.5px;">${group.name}</td>
-                            <td align="center"><b>${groupCoef}%</b></td>
-                         </tr>
-                         ${itemRows}
-                       `;
+                <tr class="recap-ue-row">
+                   <td></td>
+                   <td colspan="5" style="text-transform:uppercase; font-size:9px; letter-spacing:0.5px;">${group.name}</td>
+                   <td align="center"><b>${groupCoef}%</b></td>
+                </tr>
+                ${itemRows}
+              `;
       });
 
       return `
+            <div class="page" id="recap-${sem.semester}">
+               <div class="card">
+                 <h1>Découpage — Semestre ${sem.semester}</h1>
+               </div>
+               
+               <div class="card">
+                 <table class="recap-table">
+                   <thead>
+                     <tr>
+                       <th>UE</th>
+                       <th>ECUE</th>
+                       <th style="text-align:right;">Cours</th>
+                       <th style="text-align:right;">TD/TP</th>
+                       <th style="text-align:right;">Perso</th>
+                       <th style="text-align:right;">Total</th>
+                       <th style="text-align:center;">Coef</th>
+                     </tr>
+                   </thead>
+                   <tbody>
                       <tr>
                          <td colspan="7" style="background:${colors.primary}15; font-weight:bold; color:${colors.primary}; padding:10px;">Semestre ${sem.semester}</td>
                       </tr>
                       ${rows}
-                    `;
+                   </tbody>
+                 </table>
+               </div>
+               <div class="footer">
+                 <span>${parcoursLabel}</span>
+                 <span>${year}</span>
+               </div>
+            </div>
+           `;
     }).join('')}
-               </tbody>
-             </table>
-           </div>
-           <div class="footer">
-             <span>${parcoursLabel}</span>
-             <span>${year}</span>
-           </div>
-        </div>
 
         <!-- Course Pages -->
         ${semesters.flatMap(sem => sem.ueGroups.flatMap(group => group.items.map(item => {
