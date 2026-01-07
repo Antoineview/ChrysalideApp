@@ -699,8 +699,6 @@ class AurigaAPI {
           if (payload.searchResultDefinition?.filtersCustom) {
             payload.searchResultDefinition.filtersCustom.id = element.id;
           }
-          console.log(JSON.stringify(payload, null, 2));
-          console.log("\nFetching syllabuses for catalog : ", payload.searchResultDefinition.filtersCustom.id);
 
           // Use strict fetch for search
           const response = await fetchWithToken(searchUrl, "POST", payload);
