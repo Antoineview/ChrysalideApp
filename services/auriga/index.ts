@@ -517,24 +517,31 @@ class AurigaAPI {
   }
 
   private async postDataToAuriga(endpoint: string, payload: any) {
-    const headers: any = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Origin: "https://auriga.epita.fr",
-      Referer: "https://auriga.epita.fr/",
-      "X-Requested-With": "XMLHttpRequest",
-    };
+    let headers: any = {};
 
     if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`;
-    }
-
-    if (this.cookie) {
-      headers["Cookie"] = this.cookie;
-      // XSRF Protection for POST requests too
-      const xsrfMatch = this.cookie.match(/XSRF-TOKEN=([^;]+)/);
-      if (xsrfMatch) {
-        headers["X-XSRF-TOKEN"] = xsrfMatch[1];
+      // If we have a token, stick to the minimal headers that work (as seen in user's snippet)
+      headers = {
+        "Authorization": `Bearer ${this.token}`,
+        "Content-Type": "application/json",
+      };
+    } else {
+      // Fallback to cookie-based auth if no token (legacy/browser mode)
+      headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Origin: "https://auriga.epita.fr",
+        Referer: "https://auriga.epita.fr/",
+        "X-Requested-With": "XMLHttpRequest",
+      };
+      
+      if (this.cookie) {
+        headers["Cookie"] = this.cookie;
+        // XSRF Protection for POST requests too
+        const xsrfMatch = this.cookie.match(/XSRF-TOKEN=([^;]+)/);
+        if (xsrfMatch) {
+          headers["X-XSRF-TOKEN"] = xsrfMatch[1];
+        }
       }
     }
 
