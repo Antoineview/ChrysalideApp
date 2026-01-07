@@ -52,7 +52,7 @@ build-android:
     - npm ci || true # fix an issue with the papillon package
 
     - echo "Generating Native Android Project..."
-    - npx expo prebuild --platform android 
+    - yes | npx expo prebuild --platform android 
 
     - echo "Injecting Signing Config via Env Vars..."
     - mkdir -p android/app
