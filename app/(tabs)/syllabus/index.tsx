@@ -435,7 +435,7 @@ const SyllabusView: React.FC = () => {
                       <td align="right">${(stats.tutorial + stats.practical) > 0 ? formatHours(stats.tutorial + stats.practical) : '-'}</td>
                       <td align="right">${stats.personal > 0 ? formatHours(stats.personal) : '-'}</td>
                       <td align="right"><b>${formatHours(stats.total)}</b></td>
-                      <td align="center">${coef > 0 ? coef + '%' : '-'}</td>
+                      <td align="center">${coef > 0 ? coef / 100 : '-'}</td>
                    </tr>
                  `;
         }).join('');
@@ -444,7 +444,7 @@ const SyllabusView: React.FC = () => {
                 <tr class="recap-ue-row">
                    <td></td>
                    <td colspan="5" style="text-transform:uppercase; font-size:9px; letter-spacing:0.5px;">${group.name}</td>
-                   <td align="center"><b>${groupCoef}%</b></td>
+                   <td align="center"><b>${groupCoef / 100}</b></td>
                 </tr>
                 ${itemRows}
               `;
@@ -504,7 +504,7 @@ const SyllabusView: React.FC = () => {
                          <div class="course-subtitle">${group.name} • ${item.code || 'CODE'}</div>
                       </div>
                       <div style="text-align:right;">
-                        <div style="font-size:18px; font-weight:700; color:${sColor};">${coef > 0 ? coef : '-'} %</div>
+                        <div style="font-size:18px; font-weight:700; color:${sColor};">${coef > 0 ? coef / 100 : '-'}</div>
                         <div style="font-size:10px; color:#8E8E93; text-transform:uppercase;">Coefficient</div>
                       </div>
                    </div>
