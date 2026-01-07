@@ -522,7 +522,7 @@ class AurigaAPI {
     if (this.token) {
       // If we have a token, stick to the minimal headers that work (as seen in user's snippet)
       headers = {
-        "Authorization": `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.token}`,
         "Content-Type": "application/json",
       };
     } else {
@@ -534,7 +534,7 @@ class AurigaAPI {
         Referer: "https://auriga.epita.fr/",
         "X-Requested-With": "XMLHttpRequest",
       };
-      
+
       if (this.cookie) {
         headers["Cookie"] = this.cookie;
         // XSRF Protection for POST requests too
@@ -553,9 +553,7 @@ class AurigaAPI {
 
     const contentType = response.headers.get("content-type");
     if (!response.ok || (contentType && contentType.includes("text/html"))) {
-      console.error(
-        `Auriga API Error [${endpoint}] (${response.status}):`,
-      );
+      console.error(`Auriga API Error [${endpoint}] (${response.status}):`);
       throw new Error(`Auriga API Error (${response.status}) on ${endpoint}`);
     }
 
@@ -641,26 +639,19 @@ class AurigaAPI {
   }
 
   private async fetchAllSyllabus(): Promise<Syllabus[]> {
-    // User code fetches: menuEntries/166/searchResult?size=100&page=1&sort=id
-    // With TWO payloads (SYLLABUS and SYLLABUS2)
-    // Then fetches INDIVIDUAL syllabuses via `menuEntries/166/syllabuses/${element}`
-
-    // This is much more complex than a simple list fetch.
-    // Use the User's endpoint to get the ID list.
-
-    // 1. Get List of IDs
-    // We use a more robust method: fetch catalog definitions first, then search for each catalog.
-    // This allows us to get syllabuses from all available catalogs/years.
     let allIds: string[] = [];
 
-    // Helper to request with strict headers matching the user's snippet
-    const fetchWithToken = async (endpoint: string, method: "GET" | "POST", body?: any) => {
+    const fetchWithToken = async (
+      endpoint: string,
+      method: "GET" | "POST",
+      body?: any
+    ) => {
       if (!this.token) {
         throw new Error("No access token available for Auriga sync");
       }
 
       const headers: any = {
-        "Authorization": "Bearer " + this.token
+        Authorization: "Bearer " + this.token,
       };
 
       if (method === "POST") {
@@ -670,12 +661,14 @@ class AurigaAPI {
       const response = await fetch(`${BASE_URL}/${endpoint}`, {
         method,
         headers,
-        body: body ? JSON.stringify(body) : undefined
+        body: body ? JSON.stringify(body) : undefined,
       });
 
       if (!response.ok) {
         const text = await response.text();
-         throw new Error(`Auriga API Error ${response.status} on ${endpoint}: ${text}`);
+        throw new Error(
+          `Auriga API Error ${response.status} on ${endpoint}: ${text}`
+        );
       }
 
       return await response.json();
@@ -683,8 +676,9 @@ class AurigaAPI {
 
     try {
       console.log("Fetching Course Catalog Definitions...");
-      const definitionUrl = "menuEntries/166/courseCatalogDefinitions?sortBy=code,asc";
-      
+      const definitionUrl =
+        "menuEntries/166/courseCatalogDefinitions?sortBy=code,asc";
+
       // Use strict fetch matching user snippet
       const definitions = await fetchWithToken(definitionUrl, "GET");
 
@@ -705,25 +699,31 @@ class AurigaAPI {
           if (payload.searchResultDefinition?.filtersCustom) {
             payload.searchResultDefinition.filtersCustom.id = element.id;
           }
+          console.log(JSON.stringify(payload, null, 2));
+          console.log("\nFetching syllabuses for catalog : ", payload.searchResultDefinition.filtersCustom.id);
 
           // Use strict fetch for search
           const response = await fetchWithToken(searchUrl, "POST", payload);
-          
+
           const lines = response?.content?.lines || [];
           const ids = lines.map((l: any) => l[0]);
-          
+
           if (ids.length > 0) {
             allIds.push(...ids);
           }
-          console.log(`[Catalog ${element.code}] Found ${ids.length} syllabuses.`);
+          console.log(
+            `[Catalog ${element.code}] Found ${ids.length} syllabuses.`
+          );
         } catch (e) {
-             console.warn(`Failed to fetch syllabuses for catalog ${element.id}:`, e);
+          console.warn(
+            `Failed to fetch syllabuses for catalog ${element.id}:`,
+            e
+          );
         }
       }
 
       allIds = [...new Set(allIds)];
       console.log(`Total unique syllabus IDs found: ${allIds.length}`);
-
     } catch (e) {
       console.error("Failed to fetch syllabus IDs (skipping syllabus sync):");
       return [];
@@ -732,7 +732,7 @@ class AurigaAPI {
     // 2. Fetch Details for each ID
     console.log("Fetching details for syllabuses...");
     const syllabusDetails: Syllabus[] = [];
-    
+
     // We can't do too many parallel requests or we might get rate limited/blocked.
     // Let's do batches of 5.
     const BATCH_SIZE = 5;
