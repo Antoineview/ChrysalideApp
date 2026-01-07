@@ -9,7 +9,7 @@ import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAurigaRefresh } from '@/components/AurigaRefreshProvider';
-import AurigaAPI from '@/services/auriga';
+import AurigaAPI, { isBachelorSection } from '@/services/auriga';
 import { Syllabus } from '@/services/auriga/types';
 import ChipButton from '@/ui/components/ChipButton';
 import Item, { Leading, Trailing } from '@/ui/components/Item';
@@ -43,6 +43,12 @@ const SyllabusView: React.FC = () => {
     { label: 'Parcours Classique', value: 'PC', icon: { ios: 'person', papicon: 'user' } },
     { label: 'Parcours Accompagné', value: 'PA', icon: { ios: 'person.2', papicon: 'users' } },
   ];
+
+  // Detect if this is a Bachelor account (has _B_ pattern after year)
+  // Bachelor accounts don't have PC/PA parcours options
+  const isBachelor = useMemo(() => {
+    return syllabusList.some(s => isBachelorSection(s.name));
+  }, [syllabusList]);
 
   // Load syllabus data
   // Load syllabus data
@@ -228,30 +234,33 @@ const SyllabusView: React.FC = () => {
           />
         }
         trailing={
-          <ChipButton
-            onPressAction={({ nativeEvent }) => {
-              const actionId = nativeEvent.event;
-              if (actionId.startsWith("parcours:")) {
-                const value = actionId.replace("parcours:", "") as 'all' | 'PC' | 'PA';
-                setParcours(value);
+          // Hide parcours filter for Bachelor accounts (they don't have PC/PA options)
+          !isBachelor ? (
+            <ChipButton
+              onPressAction={({ nativeEvent }) => {
+                const actionId = nativeEvent.event;
+                if (actionId.startsWith("parcours:")) {
+                  const value = actionId.replace("parcours:", "") as 'all' | 'PC' | 'PA';
+                  setParcours(value);
+                }
+              }}
+              actions={
+                parcoursOptions.map((p) => ({
+                  id: "parcours:" + p.value,
+                  title: p.label,
+                  state: parcours === p.value ? "on" : "off",
+                  image: Platform.select({
+                    ios: p.icon.ios,
+                  }),
+                  imageColor: colors.text,
+                }))
               }
-            }}
-            actions={
-              parcoursOptions.map((p) => ({
-                id: "parcours:" + p.value,
-                title: p.label,
-                state: parcours === p.value ? "on" : "off",
-                image: Platform.select({
-                  ios: p.icon.ios,
-                }),
-                imageColor: colors.text,
-              }))
-            }
-            icon={parcoursOptions.find(p => p.value === parcours)?.icon.papicon || 'filter'}
-            chevron
-          >
-            {parcoursOptions.find(p => p.value === parcours)?.label || 'Tous'}
-          </ChipButton>
+              icon={parcoursOptions.find(p => p.value === parcours)?.icon.papicon || 'filter'}
+              chevron
+            >
+              {parcoursOptions.find(p => p.value === parcours)?.label || 'Tous'}
+            </ChipButton>
+          ) : undefined
         }
       />
 

@@ -18,6 +18,27 @@ export const storage = new MMKV({
   id: "auriga-storage",
 });
 
+/**
+ * Extracts the stable subject code from a grade/syllabus name.
+ * Pattern: YYYY_[SECTION]_[...]_SXX_[SUBJECT_CODE]
+ * Returns everything after the _SXX_ pattern.
+ * Examples:
+ *   - "2526_B_CYBER_S03_MIA_IGM" -> "MIA_IGM"
+ *   - "2526_I_INF_FISE_S03_CN_PC_AL" -> "CN_PC_AL"
+ */
+export function extractSubjectCode(name: string): string {
+  const match = name.match(/_S\d{2}_(.+)$/);
+  return match ? match[1] : name;
+}
+
+/**
+ * Checks if a name indicates a Bachelor section account.
+ * Bachelor accounts have _B_ after the year prefix.
+ */
+export function isBachelorSection(name: string): boolean {
+  return /^\d{4}_B_/.test(name);
+}
+
 const BASE_URL = "https://auriga.epita.fr/api"; // Updated base URL to be cleaner
 
 class AurigaAPI {
@@ -190,14 +211,37 @@ class AurigaAPI {
     try {
       const { addGradesToDatabase } = await import("@/database/useGrades");
 
-      // Create a map for fast grade lookup by name
+      // Create a map for fast grade lookup by FULL subject code (including exam type/index)
+      // Grade format after extraction: [UE]_[SUBJECT]_[EXAM_TYPE]_[INDEX] e.g., AG_COM3_EXA_1
       const gradesMap = new Map<string, Grade>();
-      fetchedGrades.forEach(g => gradesMap.set(g.name, g));
+      console.log(
+        `[Match] Building grade lookup map from ${fetchedGrades.length} grades...`
+      );
+      fetchedGrades.forEach(g => {
+        // Extract full code from grade name (everything after _SXX_)
+        // This includes the exam type and index: AG_COM3_EXA_1
+        const gradeFullCode = extractSubjectCode(g.name);
+        gradesMap.set(gradeFullCode, g);
+        console.log(`[Match] Grade: "${g.name}" -> Key: "${gradeFullCode}"`);
+      });
 
-      // Process each syllabus and find matching grades using the algorithm
+      // Log all available keys for debugging
+      console.log(
+        `[Match] Available grade keys: ${Array.from(gradesMap.keys()).join(", ")}`
+      );
+
+      let totalMatched = 0;
+      let totalUnmatched = 0;
+
+      // Process each syllabus and find matching grades
+      console.log(`[Match] Processing ${fetchedSyllabus.length} syllabi...`);
       for (const syllabus of fetchedSyllabus) {
-        // syllabus.name now contains the proper code (e.g., "2526_I_INF_FISE_S03_CN_PC_AL")
-        const syllabusCode = syllabus.name;
+        // Extract base subject code from syllabus name (everything after _SXX_)
+        // Syllabus format: [UE]_[SUBJECT] e.g., AG_COM3 (no exam suffix)
+        const syllabusSubjectCode = extractSubjectCode(syllabus.name);
+        console.log(
+          `[Match] Syllabus: "${syllabus.name}" -> BaseCode: "${syllabusSubjectCode}"`
+        );
 
         const displayName =
           syllabus.caption?.name || syllabus.name || String(syllabus.id);
@@ -212,21 +256,50 @@ class AurigaAPI {
 
         // For each exam in syllabus, construct key and find matching grade
         for (const exam of syllabus.exams || []) {
-          // Determine the key pattern based on exam count
+          // Build target key: [SyllabusCode]_[ExamType] or [SyllabusCode]_[ExamType]_[Index]
           const typeCount = examTypeCount.get(exam.type) || 1;
-          let targetKey: string;
+
+          // Try multiple key formats since grade naming isn't always consistent
+          const keysToTry: string[] = [];
+
           if (typeCount === 1) {
-            // Only one exam of this type: key = [Syllabus_Code]_[Exam_Type]
-            targetKey = `${syllabusCode}_${exam.type}`;
+            // Single exam: try without index first, then with index
+            keysToTry.push(`${syllabusSubjectCode}_${exam.type}`);
+            keysToTry.push(`${syllabusSubjectCode}_${exam.type}_1`);
+            if (exam.index) {
+              keysToTry.push(
+                `${syllabusSubjectCode}_${exam.type}_${exam.index}`
+              );
+            }
           } else {
-            // Multiple exams of this type: key = [Syllabus_Code]_[Exam_Type]_[Index]
-            targetKey = `${syllabusCode}_${exam.type}_${exam.index}`;
+            // Multiple exams: try with index first
+            keysToTry.push(`${syllabusSubjectCode}_${exam.type}_${exam.index}`);
+            keysToTry.push(`${syllabusSubjectCode}_${exam.type}`);
           }
 
-          const matchedGrade = gradesMap.get(targetKey);
+          let matchedGrade: Grade | undefined;
+          let matchedKey: string | undefined;
+
+          for (const key of keysToTry) {
+            matchedGrade = gradesMap.get(key);
+            if (matchedGrade) {
+              matchedKey = key;
+              break;
+            }
+          }
+
           if (!matchedGrade) {
+            console.log(
+              `[Match] ❌ No match for syllabus "${syllabusSubjectCode}" exam "${exam.type}" (tried: ${keysToTry.join(", ")})`
+            );
+            totalUnmatched++;
             continue;
           }
+
+          console.log(
+            `[Match] ✅ Matched "${matchedKey}" -> Grade: ${matchedGrade.grade}`
+          );
+          totalMatched++;
 
           // Build description from exam metadata
           const rawDesc =
@@ -241,7 +314,7 @@ class AurigaAPI {
           gradesToSave.push({
             id: matchedGrade.code,
             createdByAccount: "auriga",
-            subjectId: syllabusCode,
+            subjectId: syllabus.name, // Keep full name for reference
             subjectName: displayName,
             description,
             givenAt: matchedGrade.syncedAt
@@ -257,10 +330,15 @@ class AurigaAPI {
         }
 
         if (gradesToSave.length > 0) {
+          console.log(
+            `[Match] Saving ${gradesToSave.length} grades for "${displayName}"`
+          );
           await addGradesToDatabase(gradesToSave, displayName);
         }
       }
-      console.log(`Matched and saved grades to subjects.`);
+      console.log(
+        `[Match] Complete: ${totalMatched} matched, ${totalUnmatched} unmatched`
+      );
     } catch (e) {
       console.error("Failed to match grades with subjects:", e);
     }
@@ -290,28 +368,23 @@ class AurigaAPI {
 
   /**
    * Returns grades enriched with syllabus exam descriptions and weightings.
-   * Uses the algorithm: [Syllabus_Code]_[Exam_Type]_[Index] for multi-exam types,
-   * or [Syllabus_Code]_[Exam_Type] when only one exam of that type exists.
+   * Uses subject code extraction for year/semester-agnostic matching.
+   * Key pattern: [SubjectCode]_[Exam_Type] or [SubjectCode]_[Exam_Type]_[Index]
    */
   getEnrichedGrades(): (Grade & { description: string; weighting: number })[] {
     const allGrades = this.getAllGrades();
     const syllabusList = this.getAllSyllabus();
 
-    // Build a lookup map from grade name to exam metadata
+    // Build a lookup map from subject code + exam type to metadata
+    // Store under MULTIPLE key formats for flexible matching
     const examMetadataMap = new Map<
       string,
       { description: string; weighting: number }
     >();
 
     for (const syllabus of syllabusList) {
-      // syllabus.name now contains the proper code (e.g., "2526_I_INF_FISE_S03_CN_PC_AL")
-      const syllabusCode = syllabus.name;
-
-      // Count exams per type to determine if we need index suffix
-      const examTypeCount = new Map<string, number>();
-      for (const exam of syllabus.exams || []) {
-        examTypeCount.set(exam.type, (examTypeCount.get(exam.type) || 0) + 1);
-      }
+      // Extract subject code (everything after _SXX_)
+      const syllabusSubjectCode = extractSubjectCode(syllabus.name);
 
       for (const exam of syllabus.exams || []) {
         // Build description
@@ -329,23 +402,23 @@ class AurigaAPI {
 
         const metadata = { description, weighting: exam.weighting ?? 1 };
 
-        // Determine the key pattern based on exam count
-        const typeCount = examTypeCount.get(exam.type) || 1;
-        if (typeCount === 1) {
-          // Only one exam of this type: key = [Syllabus_Code]_[Exam_Type]
-          const targetKey = `${syllabusCode}_${exam.type}`;
-          examMetadataMap.set(targetKey, metadata);
-        } else {
-          // Multiple exams of this type: key = [Syllabus_Code]_[Exam_Type]_[Index]
-          const targetKey = `${syllabusCode}_${exam.type}_${exam.index}`;
-          examMetadataMap.set(targetKey, metadata);
+        // Store under MULTIPLE key formats for flexible matching
+        // This ensures grades can match whether they have _1 suffix or not
+        const baseKey = `${syllabusSubjectCode}_${exam.type}`;
+        examMetadataMap.set(baseKey, metadata);
+        examMetadataMap.set(`${baseKey}_1`, metadata);
+        if (exam.index && exam.index !== 1) {
+          examMetadataMap.set(`${baseKey}_${exam.index}`, metadata);
         }
       }
     }
 
-    // Enrich each grade with metadata from matching exam
+    // Enrich each grade with metadata from matching exam using full grade code
     return allGrades.map(g => {
-      const metadata = examMetadataMap.get(g.name);
+      // Extract full code from grade name (includes exam type and index)
+      // e.g., AG_COM3_EXA_1
+      const gradeFullCode = extractSubjectCode(g.name);
+      const metadata = examMetadataMap.get(gradeFullCode);
 
       if (metadata) {
         return {

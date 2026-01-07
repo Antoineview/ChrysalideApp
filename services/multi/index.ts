@@ -3,7 +3,7 @@ import { Multi as EsupMulti } from "esup-multi.js";
 import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 
-import AurigaAPI from "../auriga";
+import AurigaAPI, { extractSubjectCode } from "../auriga";
 import {
   Grade as SharedGrade,
   Period,
@@ -122,43 +122,54 @@ export class Multi implements SchoolServicePlugin {
 
     // For each grade, find matching syllabus and group by syllabus display name
     enrichedGrades.forEach(g => {
-      // Extract UE+[parcours]+subject code from grade name
-      // Regular format: 2526_I_INF_FISE_S03_CN_PC_PSE_EXA_1 -> extract "CN_PC_PSE"
-      // PROJECT format: 2526_I_INF_FISE_S03_PROJET_OCR_MVP_FAF -> extract "PROJET_OCR"
-      // Structure: [prefix 5 parts]_[UE]_[optional PC/PA or projectName]_[SUBJECT/phases]_[TYPE]_[NUM]
-      const gradeNameParts = g.name.split("_");
+      // Extract subject code from grade name (everything after _SXX_)
+      // This handles both formats:
+      // - Ingénieur: 2526_I_INF_FISE_S03_CN_PC_PSE_EXA_1 -> CN_PC_PSE_EXA_1
+      // - Bachelor: 2526_B_CYBER_S03_MIA_IGM_EXA -> MIA_IGM_EXA
+      const fullSubjectCode = extractSubjectCode(g.name);
 
-      // Find the UE code: first code after the 5-part prefix (index 5)
-      // The UE is always at position 5 (index 5)
-      const ueIndex = 5;
-      const ueCode = gradeNameParts[ueIndex] || "OTHER";
+      // Split the subject code to get the base subject (without exam type/index)
+      const subjectParts = fullSubjectCode.split("_");
 
-      // Build the match code based on UE type
-      let gradeSubjectCode = "";
+      // Find the UE code (first part of subject code)
+      const ueCode = subjectParts[0] || "OTHER";
 
-      if (ueCode === "PROJET") {
-        // PROJECT format: PROJET_[projectName] (e.g., PROJET_OCR)
-        // The project name is at position 6
-        gradeSubjectCode = `${ueCode}_${gradeNameParts[ueIndex + 1] || ""}`;
-      } else {
-        // Check if next part after UE is PC or PA (parcours)
-        const hasParcours =
-          gradeNameParts[ueIndex + 1] === "PC" ||
-          gradeNameParts[ueIndex + 1] === "PA";
-
-        if (hasParcours) {
-          // Format: UE_PC_SUBJECT (e.g., CN_PC_PSE)
-          gradeSubjectCode = `${gradeNameParts[ueIndex]}_${gradeNameParts[ueIndex + 1]}_${gradeNameParts[ueIndex + 2]}`;
-        } else {
-          // Format: UE_SUBJECT (e.g., AG_COM3)
-          gradeSubjectCode = `${gradeNameParts[ueIndex]}_${gradeNameParts[ueIndex + 1]}`;
+      // Build the base subject code (without exam suffixes)
+      // Look for exam type markers and take everything before them
+      // Extended list of exam types from Auriga
+      const examTypes = [
+        "EXA",
+        "EXF",
+        "EXO", // Exams
+        "CC",
+        "TP",
+        "DS",
+        "BE", // Continuous assessment
+        "Projet",
+        "PRJ", // Projects
+        "RAP",
+        "FAF",
+        "ASD", // Reports/Deliverables
+        "DMA",
+        "MVP", // Special types
+      ];
+      const baseSubjectParts: string[] = [];
+      for (const part of subjectParts) {
+        if (examTypes.includes(part)) {
+          break;
         }
+        baseSubjectParts.push(part);
       }
+      const gradeSubjectCode = baseSubjectParts.join("_");
 
-      // Find matching syllabus by checking if it contains the same subject code
+      console.log(
+        `[UI Match] Grade "${fullSubjectCode}" -> BaseCode: "${gradeSubjectCode}" (UE: ${ueCode})`
+      );
+
+      // Find matching syllabus by checking if extracted subject codes match
       const matchingSyllabus = syllabusList.find(s => {
-        const syllabusName = s.name.replace(/\.[^.]+$/, ""); // Remove file extension
-        return gradeSubjectCode && syllabusName.includes(gradeSubjectCode);
+        const syllabusSubjectCode = extractSubjectCode(s.name);
+        return gradeSubjectCode && syllabusSubjectCode === gradeSubjectCode;
       });
 
       // Use syllabus display name if found, otherwise fall back to grade name
