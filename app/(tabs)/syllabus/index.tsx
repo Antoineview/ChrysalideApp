@@ -31,10 +31,11 @@ function cleanHtml(raw?: string | null): string {
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<li>/gi, "\n• ")
     .replace(/<\/li>/gi, "")
-    .replace(/<p[^>]*>/gi, "\n")
-    .replace(/<\/p>/gi, "\n")
+    .replace(/<p[^>]*>/gi, "")
+    .replace(/<\/p>/gi, "\n\n")
     .replace(/&nbsp;/gi, " ")
     .replace(/<[^>]+>/g, "")
+    .replace(/\n\s*\n\s*\n/g, "\n\n") // Reduce 3+ newlines to 2
     .trim();
 }
 
@@ -164,6 +165,50 @@ const SyllabusView: React.FC = () => {
   const coverLogo = `<svg width="80" height="80" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M601.47 226.215L589.382 294.921H800.112L671.513 539.869L903.36 760.436H507.492L482.569 902.106L416.03 890.401L438.894 760.436H120.641L351.487 540.355L214.693 294.921H520.784L534.93 214.511L601.47 226.215ZM519.377 692.874H734.322L587.975 553.646L688.335 362.483H577.497L519.377 692.874ZM435.971 553.16L289.421 692.874H450.779L508.899 362.483H329.697L435.971 553.16ZM681.344 162.121L652.762 223.341L587.612 192.922L616.192 131.705L681.344 162.121ZM557.365 188.027L486.983 202.733L473.165 136.601L543.547 121.894L557.365 188.027Z" fill="${colors.primary}"/>
   </svg>`;
+
+  interface DeltaOp {
+    insert: string | object; // insert peut être une string ou un objet (ex: image)
+    attributes?: Record<string, any>;
+  }
+
+  interface DeltaFormat {
+    ops: DeltaOp[];
+  }
+
+  function parseDeltaToText(input: DeltaFormat | string): string {
+    let data: DeltaFormat;
+
+    const formatForHtml = (txt: string) => {
+      if (!txt) return "";
+      return txt
+        .replace(/\n/g, "<br/>")
+        .replace(/•/g, "<br/>•");
+    };
+
+    if (typeof input === 'string') {
+      try {
+        data = JSON.parse(input);
+      } catch (error) {
+        return formatForHtml(input);
+      }
+    } else {
+      data = input;
+    }
+
+    if (!data || !data.ops || !Array.isArray(data.ops)) {
+      return typeof input === 'string' ? formatForHtml(input) : "";
+    }
+
+    const text = data.ops
+      .map((op) => {
+        if (typeof op.insert === 'string') {
+          return op.insert;
+        }
+        return "";
+      })
+      .join("");
+    return formatForHtml(text);
+  }
 
   const generateFullPdfHtml = (semesters: typeof groupedSyllabus) => {
     const title = "SYLLABUS";
@@ -515,14 +560,14 @@ const SyllabusView: React.FC = () => {
                      <!-- Description -->
                      <div class="card">
                         <h4>Description</h4>
-                        ${item.caption?.goals?.fr ? `<p>${cleanHtml(item.caption.goals.fr)}</p>` : '<p style="font-style:italic; color:#8E8E93;">Non disponible</p>'}
+                        ${item.caption?.goals?.fr ? `<p>${parseDeltaToText(cleanHtml(item.caption.goals.fr))}</p>` : '<p style="font-style:italic; color:#8E8E93;">Non disponible</p>'}
                      </div>
 
                      <!-- Acquis -->
                      ${item.caption?.program?.fr ? `
                         <div class="card">
                            <h4>Acquis d'Apprentissage</h4>
-                           <p>${cleanHtml(item.caption.program.fr)}</p>
+                           <p>${parseDeltaToText(cleanHtml(item.caption.program.fr))}</p>
                         </div>
                      ` : ''}
 
