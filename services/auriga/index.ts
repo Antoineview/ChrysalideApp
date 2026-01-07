@@ -720,10 +720,7 @@ class AurigaAPI {
       console.log(`Total unique syllabus IDs found: ${allIds.length}`);
 
     } catch (e) {
-      console.error(
-        "Failed to fetch syllabus IDs (skipping syllabus sync):",
-        e
-      );
+      console.error("Failed to fetch syllabus IDs (skipping syllabus sync):");
       return [];
     }
 
