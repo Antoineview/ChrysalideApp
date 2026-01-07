@@ -580,12 +580,18 @@ const SyllabusView: React.FC = () => {
                         <div class="card">
                            <h4>Évaluations</h4>
                            <ul class="activity-list">
-                              ${item.exams.map(e => `
-                                <li class="activity-item">
-                                   <span style="font-weight:600;">${e.typeName || e.type || 'Exam'}</span>
-                                   <span style="background:${colors.primary}15; color:${colors.primary}; padding:2px 6px; border-radius:4px; font-weight:700;">${e.weighting}%</span>
+                              ${item.exams.map(e => {
+            const desc = typeof e.description === 'string' ? e.description : (e.description?.fr || e.description?.en || '');
+            return `
+                                <li class="activity-item" style="display:block;">
+                                   <div style="display:flex; justify-content:space-between;">
+                                      <span style="font-weight:600;">${e.typeName || e.type || 'Exam'}</span>
+                                      <span style="background:${colors.primary}15; color:${colors.primary}; padding:2px 6px; border-radius:4px; font-weight:700;">${e.weighting}%</span>
+                                   </div>
+                                   ${desc ? `<div style="font-size:9px; color:#8E8E93; margin-top:4px; line-height:1.3;">${cleanHtml(desc)}</div>` : ''}
                                 </li>
-                              `).join('')}
+                              `;
+          }).join('')}
                            </ul>
                         </div>
                       ` : ''}
