@@ -1,10 +1,12 @@
 import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
+import * as Print from 'expo-print';
 import { useRouter } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -22,6 +24,19 @@ import adjust from '@/utils/adjustColor';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
+
+function cleanHtml(raw?: string | null): string {
+  if (!raw) { return ""; }
+  return raw
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<li>/gi, "\n• ")
+    .replace(/<\/li>/gi, "")
+    .replace(/<p[^>]*>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .trim();
+}
 
 const SyllabusView: React.FC = () => {
   const { t } = useTranslation();
@@ -142,6 +157,99 @@ const SyllabusView: React.FC = () => {
         };
       });
   }, [syllabusList, parcours]);
+
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  const generateFullPdfHtml = (semesters: typeof groupedSyllabus) => {
+    const title = "Syllabus";
+    const dateGenerated = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Minimal styling matching the clean look of the app + EPITA blue
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>${title}</title>
+        <style>
+          @page { margin: 20mm; }
+          body { font-family: sans-serif; color: #333; line-height: 1.5; }
+          h1, h2, h3, h4 { color: #102b65; margin-bottom: 0.5em; }
+          h1 { border-bottom: 2px solid #102b65; padding-bottom: 10px; margin-bottom: 20px; }
+          h2 { background: #f0f4f8; padding: 10px; border-left: 5px solid #102b65; margin-top: 30px; }
+          h3 { margin-top: 20px; font-size: 1.2em; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+          .ue-group { margin-bottom: 20px; }
+          .syllabus-item { margin-bottom: 25px; padding-left: 10px; border-left: 2px solid #ddd; }
+          .item-meta { font-size: 0.9em; color: #666; margin-bottom: 5px; }
+          .item-desc { margin-top: 5px; white-space: pre-wrap; font-size: 0.95em; }
+          .table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+          .table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          .table th { background: #f9f9f9; width: 30%; }
+          .footer { margin-top: 50px; font-size: 0.8em; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 10px; }
+        </style>
+      </head>
+      <body>
+        <h1>EPITA - Syllabus</h1>
+        <p>Généré le ${dateGenerated} • Filtre: ${parcours === 'all' ? 'Tous' : (parcours === 'PC' ? 'Parcours Classique' : 'Parcours Accompagné')}</p>
+
+        ${semesters.map(sem => `
+          <div class="semester-section">
+            <h2>Semestre ${sem.semester}</h2>
+            ${sem.ueGroups.map(group => `
+              <div class="ue-group">
+                <h3>${group.name}</h3>
+                ${group.items.map(item => `
+                  <div class="syllabus-item">
+                    <h4>${cleanHtml(item.caption?.name || item.name)}</h4>
+                    <div class="item-meta">
+                       UE: ${item.UE} • Code: ${item.code} 
+                       ${item.duration ? `• Durée: ${Math.round(item.duration / 3600)}h` : ''}
+                       ${item.grade !== undefined ? `• Note: ${typeof item.grade === 'number' ? item.grade.toFixed(2) : item.grade}/20` : ''}
+                    </div>
+                    
+                    ${item.caption?.goals?.fr || item.caption?.name ? `
+                      <div class="item-desc">${cleanHtml(item.caption?.goals?.fr || item.caption?.name)}</div>
+                    ` : ''}
+
+                    ${item.exams && item.exams.length > 0 ? `
+                      <table class="table">
+                        <tr><th>Évaluations</th><td>${item.exams.map(e => `${e.typeName || e.type} (${e.weighting}%)`).join(', ')}</td></tr>
+                      </table>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+
+        <div class="footer">
+            Document généré depuis l'application Chrysalide
+        </div>
+      </body>
+      </html>
+    `;
+    return html;
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      setIsGeneratingPdf(true);
+      const html = generateFullPdfHtml(groupedSyllabus);
+      const { uri } = await Print.printToFileAsync({ html });
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          UTI: 'com.adobe.pdf',
+          mimeType: 'application/pdf',
+          dialogTitle: 'Syllabus complet'
+        });
+      }
+    } catch {
+      // fail silently
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   // Memoized syllabus item component to avoid setState during render
   const SyllabusItem = React.memo(({ syllabus, ...props }: { syllabus: Syllabus } & any) => {
@@ -297,6 +405,42 @@ const SyllabusView: React.FC = () => {
               </Typography>
             </Stack>
           )
+        }
+        ListFooterComponent={
+          !loading && syllabusList.length > 0 ? (
+            <View style={{ paddingBottom: bottomTabBarHeight + insets.bottom + 16, paddingTop: 16 }}>
+              <TouchableOpacity
+                onPress={handleDownloadPdf}
+                disabled={isGeneratingPdf}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: colors.primary,
+                  marginHorizontal: 16,
+                  padding: 16,
+                  borderRadius: 12,
+                  opacity: isGeneratingPdf ? 0.7 : 1,
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                }}
+              >
+                {isGeneratingPdf ?
+                  <ActivityIndicator color="white" style={{ marginRight: 8 }} /> :
+                  <Papicons name="Download" size={20} color="white" style={{ marginRight: 8 }} />
+                }
+                <Text style={{ color: 'white', fontWeight: '600', fontSize: 16 }}>
+                  {isGeneratingPdf ? 'Génération...' : 'Télécharger le syllabus complet (PDF)'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null
         }
       />
     </View>
