@@ -730,12 +730,23 @@ class AurigaAPI {
       // vs fileName: "2526_I_INF_FISE_S03_CN_PC_AL_FR" (includes language suffix)
       const syllabusCode = row.code || fileName.replace(/_(FR|EN)$/, "");
 
+      // Extract semester from code using regex (handles all formats)
+      // Pattern: _SXX_ where XX is the semester number
+      const semesterMatch = syllabusCode.match(/_S(\d+)_/i);
+      const semester = semesterMatch ? parseInt(semesterMatch[1], 10) : 0;
+
+      // Extract subject code (everything after _SXX_) and get UE (first part)
+      const subjectCode = extractSubjectCode(syllabusCode);
+      const ueCode = subjectCode.split("_")[0] || "Unknown";
+
+      console.log(
+        `[Syllabus] Code: "${syllabusCode}" -> Semester: ${semester}, UE: "${ueCode}", SubjectCode: "${subjectCode}"`
+      );
+
       return {
         id: row.id,
-        UE: fileName.split("_")[5] || "Unknown",
-        semester: fileName.split("_")[4]?.replace("S", "")
-          ? parseInt(fileName.split("_")[4].replace("S", ""))
-          : 0,
+        UE: ueCode,
+        semester: semester,
         name: syllabusCode, // Use the proper syllabus code for matching
         code: row.field?.code, // This is the field/subject area code
         minScore: row.customAttributes?.miniScore,
