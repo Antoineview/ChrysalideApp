@@ -8,7 +8,7 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { View } from "react-native";
+import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { WebView, WebViewNavigation } from "react-native-webview";
 
 import AurigaAPI from "@/services/auriga";
@@ -84,6 +84,7 @@ const FETCH_TOKEN_SCRIPT = `
 type AurigaRefreshContextType = {
     refreshAuriga: () => void;
     isRefreshing: boolean;
+    syncLogs: string[];
 };
 
 const AurigaRefreshContext = createContext<AurigaRefreshContextType | undefined>(undefined);
@@ -103,6 +104,8 @@ interface AurigaRefreshProviderProps {
 export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [showHiddenWebView, setShowHiddenWebView] = useState(false);
+    const [syncLogs, setSyncLogs] = useState<string[]>([]);
+    const [showLogModal, setShowLogModal] = useState(false);
     const webViewRef = useRef<WebView>(null);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hasReceivedToken = useRef(false);
@@ -122,13 +125,21 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
         }
     };
 
+    const addLog = useCallback((message: string) => {
+        setSyncLogs(prev => [...prev, message]);
+    }, []);
+
     const performSync = async (accessToken: string) => {
+        // Clear previous logs and show modal
+        setSyncLogs([]);
+        setShowLogModal(true);
+
         try {
             const cookiesString = await getCookiesString();
             AurigaAPI.setToken(accessToken);
             AurigaAPI.setCookie(cookiesString);
 
-            await AurigaAPI.sync();
+            await AurigaAPI.sync(addLog);
 
             const { accounts } = useAccountStore.getState();
             const existingAccount = accounts.find((acc) =>
@@ -158,6 +169,7 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
             });
         } catch (error) {
             console.error("Background Auriga Sync Error:", error);
+            addLog(`❌ Sync error: ${error}`);
             alert.showAlert({
                 id: "auriga-sync",
                 title: "Erreur de synchronisation",
@@ -167,6 +179,7 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
             });
         } finally {
             setIsRefreshing(false);
+            // Modal stays open until user closes it manually
         }
     };
 
@@ -233,7 +246,7 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
     }, [isRefreshing, alert, router]);
 
     return (
-        <AurigaRefreshContext.Provider value={{ refreshAuriga, isRefreshing }}>
+        <AurigaRefreshContext.Provider value={{ refreshAuriga, isRefreshing, syncLogs }}>
             {children}
 
             {/* Hidden WebView for background token acquisition */}
@@ -254,6 +267,56 @@ export const AurigaRefreshProvider = ({ children }: AurigaRefreshProviderProps) 
                     />
                 </View>
             )}
+
+            {/* Sync Log Modal (Beta Feature) */}
+            <Modal
+                visible={showLogModal}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setShowLogModal(false)}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        backgroundColor: "rgba(0,0,0,0.92)",
+                        padding: 20,
+                        paddingTop: 60,
+                    }}
+                >
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
+                        <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>
+                            🔄 Sync Logs (Beta)
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => setShowLogModal(false)}
+                            style={{ padding: 10 }}
+                        >
+                            <Text style={{ color: "#fff", fontSize: 20, fontWeight: "bold" }}>✕</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <ScrollView
+                        style={{ flex: 1 }}
+                        contentContainerStyle={{ paddingBottom: 40 }}
+                    >
+                        {syncLogs.map((log, index) => (
+                            <Text
+                                key={index}
+                                style={{
+                                    color: log.includes("❌") ? "#ff6b6b" :
+                                        log.includes("✅") ? "#69db7c" :
+                                            log.includes("🎉") ? "#ffd43b" :
+                                                log.includes("⚠️") ? "#ffa94d" : "#ced4da",
+                                    fontSize: 11,
+                                    fontFamily: "monospace",
+                                    marginBottom: 3,
+                                }}
+                            >
+                                {log}
+                            </Text>
+                        ))}
+                    </ScrollView>
+                </View>
+            </Modal>
         </AurigaRefreshContext.Provider>
     );
 };

@@ -123,54 +123,35 @@ export class Multi implements SchoolServicePlugin {
     // For each grade, find matching syllabus and group by syllabus display name
     enrichedGrades.forEach(g => {
       // Extract subject code from grade name (everything after _SXX_)
-      // This handles both formats:
-      // - Ingénieur: 2526_I_INF_FISE_S03_CN_PC_PSE_EXA_1 -> CN_PC_PSE_EXA_1
-      // - Bachelor: 2526_B_CYBER_S03_MIA_IGM_EXA -> MIA_IGM_EXA
-      const fullSubjectCode = extractSubjectCode(g.name);
-
-      // Split the subject code to get the base subject (without exam type/index)
-      const subjectParts = fullSubjectCode.split("_");
+      // Grade format: [UE]_[PARCOURS?]_[ECUE]_[EXAM]_[INDEX?]
+      // Examples:
+      //   - Bachelor: MIA_IGM_EXA
+      //   - Ingénieur: CN_PC_PSE_EXA_1
+      const gradeFullCode = extractSubjectCode(g.name);
 
       // Find the UE code (first part of subject code)
-      const ueCode = subjectParts[0] || "OTHER";
+      const ueCode = gradeFullCode.split("_")[0] || "OTHER";
 
-      // Build the base subject code (without exam suffixes)
-      // Look for exam type markers and take everything before them
-      // Extended list of exam types from Auriga
-      const examTypes = [
-        "EXA",
-        "EXF",
-        "EXO", // Exams
-        "CC",
-        "TP",
-        "DS",
-        "BE", // Continuous assessment
-        "Projet",
-        "PRJ", // Projects
-        "RAP",
-        "FAF",
-        "ASD", // Reports/Deliverables
-        "DMA",
-        "MVP", // Special types
-      ];
-      const baseSubjectParts: string[] = [];
-      for (const part of subjectParts) {
-        if (examTypes.includes(part)) {
-          break;
-        }
-        baseSubjectParts.push(part);
-      }
-      const gradeSubjectCode = baseSubjectParts.join("_");
-
-      console.log(
-        `[UI Match] Grade "${fullSubjectCode}" -> BaseCode: "${gradeSubjectCode}" (UE: ${ueCode})`
-      );
-
-      // Find matching syllabus by checking if extracted subject codes match
+      // Find matching syllabus using PREFIX matching
+      // Syllabus format: [UE]_[PARCOURS?]_[ECUE] (no exam suffix)
+      // Examples:
+      //   - Bachelor syllabus: MIA_IGM
+      //   - Ingénieur syllabus: CN_PC_PSE
+      // Grade "MIA_IGM_EXA" should match syllabus "MIA_IGM" because it starts with it
       const matchingSyllabus = syllabusList.find(s => {
         const syllabusSubjectCode = extractSubjectCode(s.name);
-        return gradeSubjectCode && syllabusSubjectCode === gradeSubjectCode;
+        // Grade must start with syllabus code followed by underscore (to avoid partial matches)
+        // e.g., "MIA_IGM_EXA" starts with "MIA_IGM_" ✓
+        // e.g., "MIA_IGMA" would NOT match "MIA_IGM" (different subject)
+        return (
+          gradeFullCode.startsWith(syllabusSubjectCode + "_") ||
+          gradeFullCode === syllabusSubjectCode // Exact match case
+        );
       });
+
+      console.log(
+        `[UI Match] Grade "${gradeFullCode}" -> Matched: ${matchingSyllabus ? extractSubjectCode(matchingSyllabus.name) : "NONE"} (UE: ${ueCode})`
+      );
 
       // Use syllabus display name if found, otherwise fall back to grade name
       const subjectName =

@@ -9,7 +9,7 @@ import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAurigaRefresh } from '@/components/AurigaRefreshProvider';
-import AurigaAPI, { isBachelorSection } from '@/services/auriga';
+import AurigaAPI from '@/services/auriga';
 import { Syllabus } from '@/services/auriga/types';
 import ChipButton from '@/ui/components/ChipButton';
 import Item, { Leading, Trailing } from '@/ui/components/Item';
@@ -44,10 +44,13 @@ const SyllabusView: React.FC = () => {
     { label: 'Parcours Accompagné', value: 'PA', icon: { ios: 'person.2', papicon: 'users' } },
   ];
 
-  // Detect if this is a Bachelor account (has _B_ pattern after year)
-  // Bachelor accounts don't have PC/PA parcours options
-  const isBachelor = useMemo(() => {
-    return syllabusList.some(s => isBachelorSection(s.name));
+  // Detect if any syllabus has PC/PA parcours codes
+  // Only show the toggle if at least one syllabus has _PC_ or _PA_ pattern
+  const hasParcours = useMemo(() => {
+    return syllabusList.some(s =>
+      s.name.includes('_PC_') || s.name.endsWith('_PC') ||
+      s.name.includes('_PA_') || s.name.endsWith('_PA')
+    );
   }, [syllabusList]);
 
   // Load syllabus data
@@ -82,17 +85,23 @@ const SyllabusView: React.FC = () => {
   // Filter by parcours and group by semester
   const groupedSyllabus = useMemo(() => {
     // First filter by parcours
+    // Parcours codes (PC/PA) appear as standalone segments with underscores: _PC_ or _PA_
     const filtered = syllabusList.filter((s) => {
       if (parcours === 'all') { return true; }
 
+      // Check for parcours pattern with underscores to avoid false matches
+      // e.g., "_PA_" should match but "AFP" (containing PA) should not
+      const hasPC = s.name.includes('_PC_') || s.name.endsWith('_PC');
+      const hasPA = s.name.includes('_PA_') || s.name.endsWith('_PA');
+
       if (parcours === 'PC') {
-        // Show everything EXCEPT items with 'PA' in name
-        return !s.name.includes('PA');
+        // Show items with PC or items without any parcours (for S05+ which have no PC/PA)
+        return hasPC || (!hasPC && !hasPA);
       }
 
       if (parcours === 'PA') {
-        // Show everything EXCEPT items with 'PC' in name
-        return !s.name.includes('PC');
+        // Show items with PA or items without any parcours (for S05+ which have no PC/PA)
+        return hasPA || (!hasPC && !hasPA);
       }
 
       return true;
@@ -234,8 +243,8 @@ const SyllabusView: React.FC = () => {
           />
         }
         trailing={
-          // Hide parcours filter for Bachelor accounts (they don't have PC/PA options)
-          !isBachelor ? (
+          // Only show parcours filter if at least one syllabus has PC/PA
+          hasParcours ? (
             <ChipButton
               onPressAction={({ nativeEvent }) => {
                 const actionId = nativeEvent.event;
