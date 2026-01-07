@@ -1,0 +1,74 @@
+information:
+  label: Caml
+  coefficient: 1
+  threshold: 7
+  referents:
+    - Nathalie BOUQUET
+
+summary: |
+  Bases du langage Caml fonctionnel
+    
+  Apprentissage des bases du langage Caml, uniquement la partie purement fonctionnelle. 
+  - de familiariser et entraîner les étudiants au raisonnement récursif nécessaire à de nombreux algorithmes classiques étudiés pendant le cursus
+  - d'aborder les premières structures de données récursives avec les listes Caml
+
+outline: |
+  - Pendant le séminaire :
+    - Bases : expressions - définitions
+    - Les fonctions :
+      - à un paramètre
+      - à plusieurs paramètres
+    - Analyses par cas :
+      - L'alternative
+      - Le filtrage
+    - Récursivité :
+      - Raisonnement récursif - Fonctions récursives simples - Fonctions récursives à plusieurs appels
+      - Introduction à la complexité
+  - En TD ensuite :
+    - Les listes (lien avec le type abstrait liste récursive de l'ECUE Types Algébriques Abstraits)
+    - Les fonctions d'ordre supérieur
+
+tlo: |
+  - À l'issue du séminaire les étudiants sont capables de
+    - évaluer du code Caml simple (fonctionnel uniquement)
+    - écrire des fonctions Caml récursives à un ou plusieurs appels sur des données élémentaires
+  - À l'issu des TDs ensuite, les étudiants sont capables de
+    - résoudre des problèmes récursifs simples et les traduire en langage Caml
+    - écrire des fonctions Caml manipulant des structures de données séquentielles récursives (listes)
+    - utiliser l'ordre supérieur pour généraliser des calculs, en particulier sur les listes
+
+references:
+  - kind: book
+    label: Le langage Caml. Pierre Weis & Xavier Leroy. Dunod, 1993.
+    isbn-13: 978-2729606398
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: "Séminaire intensif de rentrée : 3h par jour de cours / td pendant 2 semaines"
+  - kind: tutorial
+    hours: 20
+    label: "Travaux dirigés (TD) ensuite, contenant quelques parties de cours : 2 × 2h par semaine sur 5 semaines"
+  - kind: practical
+    hours: 3
+    label: Des travaux pratiques supplémentaires pourront être mis en place occasionnellement
+  - kind: lecture
+    hours: 12
+  - kind: personnal
+    hours: 44
+
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: SEMINAIRE
+    coefficient: 0.30
+    label: QCM Journalier
+    comments: 6 * 15min
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B1
+    coefficient: 0.70
+    label: Mi-semestre

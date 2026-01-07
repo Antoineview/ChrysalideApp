@@ -1,0 +1,56 @@
+information:
+  label: Études des régimes sinusoïdaux
+  coefficient: 1
+  threshold: 5
+  referents:
+    - Anne-Sophie DUJARDIN
+
+prerequisites:
+  - ECUE <code>[SI-S1-ELEC-1-OAC]</code>
+  - "Outils mathématiques : Nombres complexes"
+
+summary: |
+  Ce cours fait partie du module Sciences de l'Ingénieur (SI), donc l'objectif est de donner à l'élève Ingénieur une culture générale scientifique.
+  Dans ce cours, les lois étudiées dans l'ECUE du bimestre précédent <code>[SI-S1-ELEC-1-OAC]</code> seront appliquées dans le cadre de courants et de tensions sinusoïdaux. Ainsi, la notion de filtrage (sélection de signaux en fonction de leur fréquence) pourra être abordée, et les filtres du premier et du second ordre seront étudiés.
+
+outline: |
+  - Condensateurs et bobine
+  - Signaux sinusoïdaux
+  - Représentation complexe
+    - Notion d'amplitude complexe
+    - Notion d'impédance complexe
+  - Circuits en régime sinusoïdal forcé
+  - Filtrage
+    - Définitions
+    - Filtres d'ordre 1
+    - Filtres d'ordre 2
+
+tlo: |
+  - Définir les notions d'amplitude complexe et d'impédance complexe associées aux signaux et aux composants en régime sinusoïdal.
+  - Appliquer les lois et théorèmes de l'ECUE ELEC-1-OAC pour exprimer les courants et les tensions dans des circuits en régime sinusoïdal.
+  - Déterminer la nature et l'ordre d'un filtre à partir d'un circuit en analysant le comportement d'un circuit en très basses et en très hautes fréquences.
+  - Déterminer et calculer les éléments caractéristiques d'un filtre (fonction de transfert, fréquences de coupure).
+  - Réécrire la fonction de transfert d'un filtre sous sa forme normalisée.
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux Dirigés
+  - kind: personnal
+    hours: 8
+    label: Le travail personnel inclu l'étude du cours donné sous forme de polycopié
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B1
+    coefficient: 0.75
+    label: Mi-semestre
+    comments: Pas de calculatrice ni document

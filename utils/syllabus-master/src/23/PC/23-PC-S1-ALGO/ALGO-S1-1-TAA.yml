@@ -1,0 +1,88 @@
+information:
+  label: Types Algébriques Abstraits
+  coefficient: 1
+  threshold: 6
+  referents:
+    - Christophe BOULLAY
+
+prerequisites:
+  - Bagage scientifique (mathématiques) de terminale.
+
+summary: |
+  Formalisme TAA et TA (types algébriques) élémentaires :
+  - étude du formalisme d'écriture des types algébriques abstraits ;
+  - étude de la représentation et de la manipulation des données élémentaires (séquentielles et ensembles) ;
+  - étude d'algorithmes de recherche de base utilisant les données élémentaires.
+
+outline: |
+  La conception d'un algorithme peut se faire de deux manières :
+  - La première, et aussi la plus simple, est celle qui consiste à coder et à considérer uniquement les types de données créés pour l'occasion et correspondants au langage de programmation utilisé. Leur implémentation se fera via les déclarations de types du langage et l'on utilisera alors les méthodes (procédures et fonctions) qui leur sont propres. Il est, alors, parfois difficile de transcrire facilement l'algorithme vers un autre langage.
+  - La deuxième consiste à définir des types de données abstraits. C'est à dire que l'on va définir pour un type de donnée son nom, sa syntaxe d'utilisation (opérations, paramètres, etc.) et ses propriétés tout en étant détachés de toutes les contingences propres à un langage de programmation et/ou à une machine. Si, par exemple, un problème nécessite l'utilisation d'un graphe, nous nous contenterons de penser à la résolution du problème sans nous soucier du comment sera implémenté ce graphe en mémoire, ni comment seront manipulées ses différentes composantes.  
+  
+  La première partie du cours présente la deuxième méthode au travers de la définition de types abstraits et d'une partie des types de données séquentielles. Pour ces dernières, nous verrons à chaque fois leur type abstrait ainsi que diverses implémentations. Les thèmes abordés couvrent :
+  - Les types algébriques abstraits :
+    - Signature
+    - Hiérarchie
+    - Propriétés
+  - Quelques types séquentiels :
+    - Les listes (récursives et itératives)
+    - Les piles
+    - Les files
+  
+  La deuxième partie du cours enchaînera sur :
+  - Les types ensemble et multi-ensembles. Il n'y aura pas de rappels sur les définitions et propriétés des ensembles qui sont supposées connues.
+  - Les algorithmes de recherche de base. Le but même du stockage de données, est de pouvoir manipuler celles-ci. Évidemment plus le nombre de données est important, plus les temps de gestion (ajout, modification, suppression, etc.) le seront. Or, pour pouvoir manipuler ces données, il faut d'abord les trouver et donc les rechercher. C'est ce temps de recherche qui doit être réduit au maximum. Pour cela, il existe diverses méthodes algorithmiques adaptées à diverses structures de données. Les premières, les plus simples et les plus intuitives, sont présentées dans ce cours. Ce sont les algorithmes de recherche de base.
+    
+  Les thèmes abordés couvrent :
+  - Les ensembles et multi-ensembles
+  - Les algorithmes de recherche de Base :
+    - La recherche séquentielle
+    - La recherche dichotomique
+    - La recherche par interpolation linéaire
+    - Présentation pour chaque de sa complexité en temps (moyenne et pire)
+
+tlo: |
+  - Décrire et représenter un type de données
+  - Expliquer et illustrer le fonctionnement d'un type de données
+  - Utiliser tous les types de données élémentaires (séquentiels et ensembles), notamment dans le cas d'un algorithme de recherche
+  - Comparer les performances, en temps, d'algorithmes de recherche de base
+
+references:
+  - kind: link
+    url: https://algo.infoprepa.epita.fr/index.php/Epita_Algo_Cours_Info-Sup.html
+    label: Epita Algo Cours (FR)
+  - kind: link
+    url: https://algo.infoprepa.epita.fr/english/index.php/Epita_Algo_Course_Info-Sup.html
+    label: Epita Algo Course (EN)
+
+activities:
+  - kind: lecture
+    hours: 22
+    label: "Cours magistraux (anglais) / MiMos (français)"
+  - kind: remediation
+    hours: 11
+    label: "Remédiation sur la partie formalisme (écriture, lecture) des types algébriques abstraits à l'aide des types élémentaires"
+  - kind: personnal
+    hours: 10
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 2.25
+    code: QCMs
+    coefficient: 0.20
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: EXAM-B1
+    coefficient: 0.40
+    label: Mi-semestre
+    comments: 0h30
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: EXAM-B2
+    coefficient: 0.40
+    label: Mi-semestre
+    comments: 0h30

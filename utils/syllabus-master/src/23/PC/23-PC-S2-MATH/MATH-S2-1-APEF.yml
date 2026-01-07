@@ -1,0 +1,64 @@
+information:
+  label: Analyse (polynômes, équations différentielles, fonctions)
+  coefficient: 2
+  threshold: 7
+  referents:
+    - Christel TRÉMOULET
+
+prerequisites:
+  - ECUE <code>[MATH-S1-1-LE]</code>
+  - Développer un produit de polynômes
+  - Résoudre une équation du second degré
+  - Dériver les fonctions usuelles et leurs compositions
+  - Trouver les primitives des fonctions usuelles
+  - Comparer deux suites (comparateurs de Landau)
+
+summary: |
+  Cet ECUE d'analyse est composée de 3 chapitres.
+  Sur les polynômes, on affine la notion de racine d'un polynôme en spécifiant son ordre de multiplicité. Ce dernier, une fois connu, sert à factoriser le polynôme.
+  Vous avez déjà vu au lycée comment résoudre certaines équations différentielles. Cette année, vous voyons comment résoudre de nouvelles équations: équations du premier ordre à coefficients non constants et équations du second ordre.
+  Enfin, le chapitre sur les fonctions sera consacré à l'approximation de fonctions : il s'agit de remplacer une fonction par une fonction plus simple, en fait polynomiale. Cette dernière fonction étant une bonne approximation au voisinage d'un point (ou de l'infini).
+
+outline: |
+  - Polynômes : division euclidienne, racine et multiplicité, factorisation d'un polynôme.
+  - Équations différentielles : équations linéaires du premier ordre à coefficients non constants, équations linéraires du second ordre à coefficients constants.
+  - Fonctions : comparaison de fonctions (notations de Landau), développements limités.
+
+tlo: |
+  - Combiner la factorisation d'un polynôme avec la recherche de ses racines et leurs ordres de multiplicité
+  - Résoudre une équation différentielle linéaire d'ordre 1 ou 2 (pour l'ordre 2 : uniquement à coefficients constants)
+  - Etablir et manipuler des relations de comparaisons entre deux fonctions, au voisinage d'un point ou de ∞ (comparateurs de Landau)
+  - Déterminer des développements limités à partir des développements limités usuels, par exemple pour trouver une limite
+
+activities:
+  - kind: tutorial
+    hours: 20
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 12
+    label: Cours
+  - kind: remediation
+    hours: 4
+    label: Remédiation
+  - kind: personnal
+    hours: 36
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: QCMs-APEF
+    coefficient: 0.15
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: CC-APEF
+    coefficient: 0.25
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B3-APEF
+    hours: 2
+    coefficient: 0.6
+    label: Examen

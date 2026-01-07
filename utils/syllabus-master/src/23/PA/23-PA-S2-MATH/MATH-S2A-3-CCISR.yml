@@ -1,0 +1,69 @@
+information:
+  label: Compléments de calcul intégral et suites réelles
+  coefficient: 2
+  threshold: 8
+  referents:
+    - Christel TRÉMOULET
+    - Guillaume EUVRARD
+
+prerequisites:
+    - ECUE <code>[MATH-S1A-2-SR]</code>
+    - ECUE <code>[MATH-S1A-3-FCT]</code>
+    - ECUE <code>[MATH-S1A-5-PIEDL]</code>
+
+summary: |
+  Le chapitre suites réelles est la continuité du chapitre vu au premier semestre. On y ajoute en particulier la notion de suites adjacentes, de suites extraites et de suites récurrentes. On étudie aussi le comportement des suites en $+\infty$ à l'aide des comparateurs de Landau.
+  Le chapitre sur les intégrales aborde le problème du calcul d'une intégrale quand il n'y a pas de primitive directe. Pour cela, on étudie l'intégration par parties et l'intégration par changement de variable. 
+
+outline: |
+  - Suites réelles
+    - Rappels des définitions liées aux suites à l'aide des quantificateurs : monotonie, suite majorée, minorée, bornée.
+    - Suites convergentes et suites divergentes : définitions avec les quantificateurs. Rappels sur les opérations avec les limites et les théorème d'encadrement. Exemples.
+    - Suites monotones : théorème de convergence monotone, suites adjacentes et théorème de convergence des suites adjacentes.
+    - Suites extraites : définition, propriétés de convergence et de divergence. Cas des deux suites $(u_{2n})$ et $(u_{2n+1})$. Théorème de Bolzano-Weierstrass.
+    - Comparaison de suites : suites négligeables, suites dominées, suites équivalentes. Notations de Landau.
+    - Suites récurrentes $u_{n+1}=f(u_n)$ avec $f$ continue : généralités, lien de la convergence de $(u_n)$ avec les points fixes de $f$ . Étude du cas $f$ croissante, étude du cas $f$ décroisssante.
+  - Compléments de calcul intégral.
+    - Intégration par parties
+    - Intégration par changement de variable.
+
+tlo: |
+  - Complément de calcul intégral
+    - Calculer une intégrale via une intégration par parties ou un changement de variable.
+  - Suites réelles
+    - Modéliser un problème de domaines divers (informatique ou vie courante) donné via un calcul de suites numériques.
+    - Formaliser les concepts liés aux suites, en particulier établir une monotonie, une majoration, une minoration par exemple.
+    - Déterminer le comportement à l'infini d'une suite définie explicitement ou par récurrence, notamment une suite modélisant un phénomène : convergence et divergence, comparaison à une autre suite (notations de Landau).
+
+activities:
+  - kind: tutorial
+    hours: 20
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 12
+    label: Cours
+  - kind: remediation
+    hours: 5
+    label: Remédiation
+  - kind: personnal
+    hours: 32
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: QCM-CCISR
+    coefficient: 0.25
+    label: QCM
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B3-CCISR
+    hours: 0.5
+    coefficient: 0.25
+    label: Examen
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B4-CCISR
+    hours: 1.5
+    coefficient: 0.5
+    label: Examen

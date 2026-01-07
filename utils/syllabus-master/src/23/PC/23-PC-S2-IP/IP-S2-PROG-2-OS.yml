@@ -1,0 +1,53 @@
+information:
+  label: Optimisations et simplifications
+  coefficient: 5
+  threshold: 5
+  referents:
+    - Jean-Malo MEICHEL
+
+prerequisites:
+  - ECUE <code>[IP-S2-PROG-1-POO]</code>
+
+summary: |
+  Mise en application des optimisations et simplifications de code proposées par le langage C#
+
+outline: |
+  - Lambda
+  - Delegate
+  - Indexers
+  - Iterators
+  - Linq
+
+tlo: |
+  - Optimiser et simplifier l'implémentation via l'utilisation des lambdas
+  - Optimiser et simplifier l'implémentation via l'utilisation des delegates (`Func`, `Action`, `Predicate`, …)
+  - Optimiser et simplifier l'implémentation via l'utilisation des indexers
+  - Optimiser et simplifier l'implémentation via l'utilisation des itérateurs (`IEnumarable`)
+  - Optimiser et simplifier l'implémentation via l'utilisation de LINQ (.NET)
+
+activities:
+  - kind: practical
+    hours: 18
+    label: Travaux Pratique d'application du cours en salle machine
+  - kind: lecture
+    hours: 4
+    label: Cours magistral
+  - kind: remediation
+    hours: 2
+    label: Séances de remédiation
+  - kind: personnal
+    hours: 36
+
+evaluations:
+  - kind: exam
+    environment: computer-room
+    hours: 3
+    code: EXAM-B1
+    coefficient: 0.8
+    label: Travaux pratique en condition d'examen
+  - kind: exercices
+    environment: intranet
+    hours: 0
+    code: TPs
+    coefficient: 0.2
+    label: Travaux pratique hebdomadaire

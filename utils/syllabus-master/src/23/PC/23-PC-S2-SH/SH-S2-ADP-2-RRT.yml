@@ -1,0 +1,52 @@
+information:
+  label: Rédaction de résumé de texte
+  coefficient: 3
+  threshold: 5
+  referents:
+    - Fuji FRANK
+
+prerequisites:
+  - ECUE <code>[SH-S1-ADP-1-ECPE]</code>
+  - ECUE <code>[SH-S1-ADP-2-SEOG]</code>
+
+summary: |
+  Si le résumé de texte n'est pas une compétence professionnelle, c'est un excellent exercice intellectuel. L'étudiant n'ayant pas un vocabulaire riche est obligé de chercher ces définitions et les remettre dans le contexte donné. Il s'en servira pour la rédaction de résumé en paraphrasant le contenu. Le lecteur doit comprendre facilement l'essentiel du document. L'étude de grammaire se poursuit à l'écrit et à l'orale.
+
+outline: |
+  - Révision de grammaire, niveau B2
+  - Un exercice de résumé afin d'habituer les étudiants à la lecture attentive de la presse
+  - A la suite de cette lecture et l'apprentissage de la méthode, des étudiants s'entraîneront à rédiger un résumé
+  - Cette rédaction donne une autre occasion de démontrer leur compétence en matière de grammaire, vocabulaire, et syntaxe
+
+tlo: |
+  - Rédiger un résumé à partir d'un document de la presse en identifiant les informations principales dans un texte d'actualité
+  - Rédiger un résumé avec ses propres mots en passant par une étape de réduction (par un facteur 4) du nombre de mots par rapport à l'article d'origine
+  - Utiliser la grammaire étudiée pour le résumé écrit, et à l'oral par des exercices oraux en cours
+
+activities:
+  - kind: tutorial
+    hours: 6
+    label: Travaux dirigés sur 1h par semaine
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCM
+    coefficient: 0.2
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: TOEIC
+    coefficient: 0.2
+    label: TOEIC
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: EXAM-B4
+    coefficient: 0.6
+    label: Mi-semestre
+    comments: Grammaire et Résumé

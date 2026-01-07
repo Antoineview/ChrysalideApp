@@ -1,0 +1,16 @@
+information:
+  label: Mathématiques S1
+  level: L1
+  ects: 9
+  coordinator: Christel TRÉMOULET
+
+description: |
+  Le programme de l'enseignement mathématique de l'école est conçu pour répondre aux besoins de l'ingénierie du numérique. Nous ne faisons pas des maths pour les maths, notre but est de vous donner des outils et méthodes d'analyse, que vous pourrez utiliser dans la suite de votre parcours, à l'école comme en entreprise. Aussi, le programme du premier semestre reprend les grandes lignes de celui de la spécialité Mathématiques de Terminale, mais en nous focalisant sur ce qui sera utilisé dans la suite du parcours. 
+
+  Ainsi, une grande place sera accordée à l'étude de fonctions. Savoir par exemple que la limite en $+\infty$ de $\frac{ln(𝑥)}{𝑥}$ est 0 peut à première vue paraître un résultat purement théorique, sans grandes conséquences. Mais imaginez que vous conceviez une procédure informatique pour manipuler une liste de $n$ éléments et que vous hésitiez entre deux algorithmes : un premier algorithme dont le temps d'exécution est de la forme $ n \times Constante $ et un second dont le temps d'exécution est de la forme $ln(n) \times Constante$. Là, vous saurez que le second algorithme est bien plus performant quand $n$ est grand et vous allez choisir celui-là.
+
+  De même, quand une procédure entre dans une boucle, il y a très souvent une suite numérique qui entre en jeu : une variable est modifiée à chaque itération et ses valeurs successives définissent une suite numérique. Certaines procédures informatiques de résolution d'équations, par exemple, sont basées sur ce principe. Elles génèrent d'abord une approximation initiale grossière de la solution, puis entrent dans une boucle ou cette approximation est affinée à chaque itération. La suite numérique ainsi définie converge vers la solution. L'étude des suites numériques sera ainsi abordée au cours de ce semestre et consolidée au suivant.
+
+  Ce sont là des exemples de thèmes qui seront étudiés ce semestre. Ils sont tous reliés d'une façon ou d'une autre aux besoins du numérique.
+
+  Format des activités : Cours (3 heures par semaine) et TD (5 heures par semaine)

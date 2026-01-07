@@ -1,0 +1,52 @@
+information:
+  label: Synthèse et explication orale de graphique
+  coefficient: 3
+  threshold: 5
+  referents:
+    - Fuji FRANK
+
+prerequisites:
+  - Niveau d'anglais B1 sur l'échelle du Cadre européen commun de référence pour les langues (CECRL)
+
+summary: |
+  Les informations contenues dans un graphique (statistiques de vente, tendances climatiques) ont une grande importance en entreprise. La capacité de comprendre ces data constitue un atout dans tous les domaines. En demandant aux étudiants de les analyser et ensuite d'en parler en anglais, la professeure leur met un vrai défi intéressant. Source des graphiques : *New York Times.* La nécessaire révision de grammaire complète cette période, ainsi qu'une étude à l'oral pour repérer et corriger les erreurs de prononciation.
+
+outline: |
+  - Révision de grammaire
+  - Étude et déchiffrage de graphique
+  - Organisation des données et mise en forme de l'exposé (BomberB)
+  - Exécution de l'exposé devant la classe
+
+tlo: |
+  - Déterminer, à partir d'un graphique donné, les tendances principales en intégrant le nouveau vocabulaire lié au contenu du graphique
+  - Comparer les données afin d'en expliquer les oppositions
+  - Réaliser une interprétation orale en synthétisant les tendances principales et en justifiant les contrastes
+  - Prononcer les mots anglais correctement (notamment les *silent letters*)
+  - Employer avec justesse ces temps (acquis en bimestre 1) : *Past simple*, *present perfect continuous, past perfect*
+
+activities:
+  - kind: tutorial
+    hours: 6
+    label: Travaux dirigés sur 1h par semaine
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCM
+    coefficient: 0.2
+    label: QCM hebdomadaire
+  - kind: defense
+    environment: classroom
+    hours: 0.25
+    code: EXPOSÉ
+    coefficient: 0.4
+    label: Exposé en cours
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: EXAM-B2
+    coefficient: 0.4
+    label: Mi-semestre

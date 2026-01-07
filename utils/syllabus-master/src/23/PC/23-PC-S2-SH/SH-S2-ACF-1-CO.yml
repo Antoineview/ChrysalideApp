@@ -1,0 +1,58 @@
+information:
+  label: Compréhension Orale
+  coefficient: 3
+  threshold: 5
+  referents:
+    - Max TESTEMALE
+
+prerequisites:
+  - Niveau d'anglais B1 sur l'échelle du Cadre européen commun de référence pour les langues (CECRL)
+
+summary: |
+  Avant de mieux pouvoir s'exprimer il faut déjà être capable de comprendre. La compréhension orale est l'une des deux étapes essentielles pour progresser en anglais. Reconnaître et assimiler les informations vont dépendre de plusieurs facteurs et il est nécessaire de s'entraîner sur plusieurs types de media pour mieux les appréhender. Que cela soit en vidéos, podcasts ou bien à la radio les informations données peuvent prendre plusieurs formes et pour chacune d'entre elles il existe une stratégie d'approche.
+  - Hiérarchiser les informations et en prendre note.
+  - Exercices d'écoute provenant de médias différents.
+  - Stratégies d'écoute sur le Toeic.
+
+outline: |
+  - Stratégie de la compréhension orale et sur la prise de note.
+  - Podcast exercice:
+    - Exercice de compréhension sur Wooclap
+  - TED Talk execice:
+    - Exercice de compréhension sur Wooclap
+  - Video exercice:
+    - Exercice de compréhension sur Wooclap
+  - In class listening Test:
+    - Test de compréhension.
+  - Toeic Strategy
+    - Parties 3 & 4
+
+tlo: |
+  - Identifier l'idée principale et les détails la concernant à partir d'un extrait vidéo ou audio.
+  - Retranscrire oralement de façon structurée les informations obtenues depuis un extrait vidéo ou audio donné.
+  - Analyser les informations obtenues d'une vidéo ou d'un extrait audio afin de proposer des réponses à des questions orales données.
+
+references:
+  - kind: other
+    label: FIXME
+
+activities:
+  - kind: tutorial
+    hours: 6
+    label: Travaux dirigés sur 1h par semaine
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: exam
+    environment: classroom
+    hours: 1
+    code: EVAL-B3
+    coefficient: 0.4
+    label: Exercice de compréhension
+  - kind: exam
+    environment: classroom
+    hours: 1.5
+    code: EXAM-B3
+    coefficient: 0.5
+    label: QCM de compréhension orale (type Toeic)

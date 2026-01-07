@@ -1,0 +1,60 @@
+information:
+  label: Suites réelles
+  coefficient: 2
+  threshold: 7
+  referents:
+    - Christel TRÉMOULET
+    - Guillaume EUVRARD
+
+prerequisites:
+  - Déterminer une relation explicite ou une relation de récurrence pour modéliser une suite.
+  - Calculer les premiers termes d'une suite définie explicitement ou par récurrence.
+  - Pour les suites arithmétiques et géométriques, calculer le terme général, la somme de termes consécutifs, la monotonie.
+  - Conjecturer à partir d'exemples graphiques la limite d'une suite.
+  - ECUE <code>[MATH-S1A-1-SEM]</code>
+
+summary: |
+  Ce chapitre est la continuité du cours donné en spécialité Maths de Première. On s'intéresse particulièrement à la convergence ou la divergence des suites réelles.
+
+outline: |
+  - Rappels sur la définition d'une suite définie explicitement ou par récurrence, définition de la monotonie.
+  - Limite d'une suite : suite divergeant vers l'infini et suite convergeant vers un réel.
+  - Propriétés sur les limites : opérations (somme, produit, quotient).
+  - Limites et comparaison : théorème d'encadrement, théorème des gendarmes, passage à la limite dans les inégalités, croissances comparées.
+  - Exemple de la suite ($q^n$)
+  - Théorème de convergence monotone : suites majorées, minorées, bornées, toute suite croissante et majorée converge, toute suite croissante et non majorée diverge vers +$\infty$.
+
+tlo: |
+  - Appliquer un raisonnement par récurrence pour établir une propriété d'une suite.
+  - Établir la convergence ou la divergence d'une suite usuelle définie explicitement, en utilisant des opérations sur les limites, des encadrement ou la monotonie.
+  - Reconnaitre des phénomènes d'évolution modélisables par une suite, spécifiquement : identifier les croissances de type arithmétique / géométrique, utiliser ces modèles pour étudier les phénomènes d'évolution de population, ou de taux d'intérêts etc.
+
+activities:
+  - kind: tutorial
+    hours: 10
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 6
+    label: Cours
+  - kind: personnal
+    hours: 16
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.25
+    code: QCM-SR
+    coefficient: 0.1
+    label: QCM
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: CC-SR
+    coefficient: 0.3
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B1-SR
+    hours: 1
+    coefficient: 0.6
+    label: Examen

@@ -1,0 +1,55 @@
+information:
+  label: "Structures de données : des tableaux aux classes"
+  coefficient: 2
+  threshold: 5
+  referents:
+    - Nouha CHAOUED
+
+prerequisites:
+  - ECUE <code>[IP-S1-PROG-1-SGC]</code>
+
+summary: |
+  Mise en application des différentes structures de données fréquemment utilisées en C#
+
+outline: |
+  - les tableaux: vecteurs, matrices et en "escalier" (arrays, multidimensional and jagged)
+  - les collections de C#
+  - programmation orientée objet : Classe - Objet - Attributs, Propriétés et méthodes
+  - programmation orientée objet: héritage (oop inheritance)
+
+tlo: |
+  - Appliquer les structures de données type tableaux à une ou plusieurs dimensions dans le cadre d'implémentations d'algorithmes
+  - Appliquer les structures de données type tableaux de tableaux dans le cadre d'implémentations d'algorithmes
+  - Appliquer les structures de données de la bibliothèque System.Collections proposées par C# dans le cadre d'implémentations d'algorithmes
+  - Appréhender le paradigme de programmation orientée objet
+    - Différencier une classe d'un objet
+    - Différencier un attribut d'une propriété
+    - Expliquer les différences des modificateurs : `public`, `private` et `protected`
+    - Expliquer le modificateur `static` (appliqué aux classes, attributs et méthodes)
+
+activities:
+  - kind: practical
+    hours: 18
+    label: Travaux Pratique d'application du cours en salle machine
+  - kind: lecture
+    hours: 4
+    label: Cours magistral
+  - kind: remediation
+    hours: 2
+    label: Séances de remédiation
+  - kind: personnal
+    hours: 36
+
+evaluations:
+  - kind: exam
+    environment: computer-room
+    hours: 3
+    code: EXAM-B1
+    coefficient: 0.8
+    label: Travaux pratique en condition d'examen
+  - kind: exercices
+    environment: intranet
+    hours: 0
+    code: TPs
+    coefficient: 0.2
+    label: Travaux pratique hebdomadaire

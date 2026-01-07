@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "information": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "coefficient": {
+          "type": "number"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "referents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": ["label", "coefficient", "threshold", "referents"]
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "string"
+    },
+    "outline": {
+      "type": "string"
+    },
+    "tlo": {
+      "type": "string"
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "pattern": "^(link|book|other)$"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^https?://.*"
+          },
+          "isbn-13": {
+            "type": "string",
+            "pattern": "^[0-9]{3}-[0-9]{10}$"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "label"
+        ]
+      }
+    },
+    "activities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "pattern": "^(lecture|remediation|tutorial|practical|personnal)$"
+          },
+          "hours": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "hours"
+        ]
+      }
+    },
+    "evaluations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "pattern": "^(exam|project|report|defense|exercices)$"
+          },
+          "environment": {
+            "type": "string",
+            "pattern": "^(exam-room|computer-room|intranet|autonomous|classroom)$"
+          },
+          "hours": {
+            "type": "number"
+          },
+          "code": {
+            "type": "string"
+          },
+          "coefficient": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          },
+          "comments": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "environment",
+          "hours",
+          "code",
+          "coefficient"
+        ]
+      }
+    },
+    "others": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "information",
+    "activities",
+    "summary"
+  ]
+}

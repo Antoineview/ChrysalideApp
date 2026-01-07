@@ -1,0 +1,29 @@
+information:
+  label: Proof of Concept
+  coefficient: 3
+  threshold: 8
+  referents:
+    - Martin VAN LAERE
+    - Christophe BOULLAY
+
+summary: |
+  - Travail en groupe de 5 étudiants  
+  - Développement d'un jeu sous Unity (se référer au dossier de projet)  
+  - Livrables attendus : prototype du projet (PoC), plan et rapport de soutenance
+  - Évaluation : soutenance technique sur le projet libre
+
+tlo: |
+  - Se référer à la grille d'évaluation fournie dans le dossier de projet
+
+activities:
+  - kind: personnal
+    hours: 40
+    label: En autonomie réalisation et développement du projet
+
+evaluations:
+  - kind: defense
+    environment: exam-room
+    hours: 0.5
+    code: POC
+    coefficient: 1
+    label: Soutenance de projet

@@ -1,0 +1,12 @@
+information:
+  label: Algorithmique S2
+  level: L1
+  ects: 6
+  coordinator: Nathalie BOUQUET
+
+description: |
+  Au semestre 1, ce sont essentiellement des structures de données linéaires qui ont été étudiées.
+  
+  Après quelques classiques sur les matrices, l'essentiel du semestre 2 porte sur les structures arborescentes : les arbres binaires, les arbres généraux, les arbres de recherche. En cours sont présentés les types de données et les algorithmes classiques associés. Les TD permettent l'implémentation de ces algorithmes (en Python), avec quelques applications. Une part plus importante est donnée à l'optimisation.
+  
+  Il est possible que durant cette UE, des activités puissent être rajoutées (devoirs maison). Dans ce cas, les nouvelles règles d'évaluations seront portées à votre connaissance.

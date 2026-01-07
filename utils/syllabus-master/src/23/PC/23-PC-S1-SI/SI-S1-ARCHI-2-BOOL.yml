@@ -1,0 +1,47 @@
+information:
+  label: Algèbre de Boole
+  coefficient: 1
+  threshold: 5
+  referents:
+    - David BOUCHET
+
+summary: |
+  Ce cours fait partie de l'Unité d'Enseignement Sciences de l'Ingénieur (SI), dont l'objectif est de donner à l'élève Ingénieur une culture générale scientifique.
+  Ce cours doit permettre la compréhension et la synthèse de fonctions logiques combinatoires.
+
+outline: |
+  - Définitions des opérateurs fondamentaux : <code>NON</code>, <code>ET</code>, <code>OU</code>
+  - Propriétés des opérateurs fondamentaux
+  - Fonctions logiques usuelles :<code>NON ET</code>, <code>NON OU</code>, <code>OU EXCLUSIF</code>, <code>ET INCLUSIF</code>
+  - Différents modes d'écriture des fonctions logiques - Simplification par tableaux de Karnaugh
+  - Fonctions Combinatoires de Transcodage : Etudes des codeurs, décodeurs, transcodeurs
+  - Fonctions combinatoires d'aiguillage : Multiplexage, Démultiplexage
+  - Application à quelques problèmes concrets (adressage d'une mémoire, par exemple)
+
+tlo: |
+  - Simplifier des expressions logiques en utilisant les propriétés des opérateurs fondamentaux.
+  - Simplifier des expressions logiques avec au plus 4 variables en utilisant les tableaux de Karnaugh.
+  - Analyser un problème concret et le transposer en équations logiques.
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux Dirigés
+  - kind: personnal
+    hours: 9
+    label: Le travail personnel inclu l'étude du cours donné sous forme de polycopié
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B2
+    coefficient: 0.75
+    label: Mi-semestre
+    comments: Pas de calculatrice ni document

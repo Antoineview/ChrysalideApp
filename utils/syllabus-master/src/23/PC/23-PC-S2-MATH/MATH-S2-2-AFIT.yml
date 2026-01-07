@@ -1,0 +1,40 @@
+information:
+  label: AFIT
+  coefficient: 1
+  threshold: 6
+  referents:
+    - Guillaume EUVRARD
+    - Khelifa SABER
+
+prerequisites:
+  - ECUE <code>[MATH-S1-3-ARITH]</code>
+  - ECUE <code>[ALGO-S1-2-CAML]</code>
+
+summary: |
+  Le projet consiste à écrire et exécuter des algorithmes de chiffrement/déchiffrement de messages. Un message est vu comme un nombre entier (c'est une suite de bits) et les algorithmes reposent sur des opérations arithmétiques effectuées ce nombre. Une première étape du projet consiste à coder les opérations arithmétiques et les algorithmes.
+  Dans une seconde étape, le but sera de travailler avec des nombres entiers plus grands que ceux fournis par le langage OCaml, des nombres dont la taille n'a pas de limite a priori. En effet, les algorithmes de chiffrement/déchiffrement ne sont efficaces que quand ils sont utilisés avec de très grands nombres. Il faudra donc définir un nouveau type entier, puis réécrire toutes les opérations arithmétiques.
+
+tlo: |
+  - Programmer et optimiser (en mémoire et en temps) des algorithmes de calculs arithmétiques (Euclide, puissances et inverses modulaires).
+  - Manipuler et utiliser des relations de congruence dans un cadre numérique
+  - Mettre en œuvre des algorithmes de chiffrement/déchiffrement.
+  - Utiliser des outils mis à disposition pour tester ses fonctions.
+
+activities:
+  - kind: practical
+    hours: 9
+    label: Séances de travaux pratique en salle machine
+  - kind: remediation
+    hours: 3
+    label: Séances de Maths AFIT en salle de classe
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: project
+    environment: autonomous
+    hours: 0
+    code: AFIT
+    coefficient: 1
+    label: Projet AFIT
+    comments: 1 rendu intermédiaire et 1 rendu final

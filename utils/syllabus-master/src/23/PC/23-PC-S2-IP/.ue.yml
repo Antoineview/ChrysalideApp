@@ -1,0 +1,58 @@
+information:
+  label: Informatique Pratique S2
+  level: L1
+  ects: 8
+  coordinator: Martin VAN LAERE
+
+description: |
+  ## Introduction
+  
+  Le but de cette UE est d'approfondir les bases du C# que vous avez acquises lors de l'UE précédente.
+
+  Cette UE contient également un projet "libre" en groupe :   
+  - Au cours du 1<sup>er</sup> semestre, vous recevez un document qui leur indique la marche à suivre pour initier le projet qui sera réalisé au S2.  
+  - Vous devrez constituer un groupe, choisir un sujet de projet et établir un cahier des charges selon les règles définies dans le document reçu.  
+  - Ces étapes ne font pas l'objet d'un enseignement spécifique, mais l'enseignant référent est à disposition des étudiants pour prodiguer ses conseils, corriger et valider le sujet choisi ainsi que le cahier des charges.  
+  
+  <hr>
+  <br>
+  
+  ### Informations générales
+  
+  #### Langage de programmation
+  - Le langage utilisé pour cette UE est `C#11` sous `.NET7+` uniquement (applicable sur tous les AAVs)
+    - Suivant la date de sortie de `C#12`, le contenu des ECUE pourra proposer ces nouveautés.
+  
+  #### Format des activités
+  - Cours Magistraux - 1h par semaine
+    - *Le cours magistral peut être remplacé par une remédiation suivant les semaines*
+  - Travaux Pratiques - 3h par semaine
+  - Travail Personnel - ~6h par semaine
+  
+  #### Découpage d'un ECUE
+  - Un cours ou une remédiation sur chaque semaine
+  - 1 semaine de `reload` (sauf premier bimestre)
+    - Les étudiants peuvent soumettre à nouveau tous les TP et l'examen de l'ECUE précédent
+    - Les notes obtenables sont limitées à 10/20 pour un TP et 08/20 pour un examen
+    - L'objectif est de permettre d'éviter un échec de l'ECUE sans pour autant permettre une validation sans utiliser les compensations via les autres ECUE de l'UE
+  - 4 semaines de TP (à raison d'un sujet par semaine)
+    - Chaque TP va mettre en pratique les nouvelles notions vues en CM précédemment
+  - 1 semaine de révision
+    - Reprise de toutes les notions de l'ECUE dans un TP permettant une autre approche de celles-ci
+  - 1 examen
+    - Examen en salle machine d'évaluation des AAVs de l'ECUE
+  
+  #### Découpage d'un TP
+  - la première section contient les AAVs
+    - obtenir 100% sur les tests de cette section garantis une note ≥ 12
+    - cette partie correspond au temps de travail attendu
+  - les deux sections suivantes sont pour ceux qui souhaitent aller plus loin et dépasser les objectifs attendus
+    - elles permettent d'atteindre la note maximale, mais ne sont pas requises pour valider l'ECUE
+  
+  #### Informations complémentaires
+  - Les cours précèdent toujours les TP les mettant en pratique
+  - Le contenu des TP est incrémental (reprise des notions des TP précédents)
+
+  ### Informations complémentaires
+  - Les cours précèdent toujours les TP les mettant en pratique
+  - Le contenu des TP est incrémental (reprise des notions des TP précédents)

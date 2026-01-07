@@ -1,0 +1,61 @@
+information:
+  label: Primitives, intégrales et équation différentielles linéaires
+  coefficient: 2
+  threshold: 7
+  referents:
+    - Christel TRÉMOULET
+    - Guillaume EUVRARD
+
+prerequisites:
+  - Déterminer les dérivées des fonctions usuelles de la forme $f \circ u$.
+  - Reconnaitre les fonctions continues.
+  - ECUE <code>[MATH-S1A-3-FCT]</code>
+  - Résolution des équations du second degré, voir ECUE <code>[MATH-S1A-4-GPENC]</code>
+  - ECUE <code>[MATH-S1A-1-SEM]</code>
+
+summary: |
+    La première partie aborde la notion de primitive, d'aire et d'intégrale (uniquement en calcul direct).    
+    La seconde partie concerne la résolution des équations différentielles linéaires d'ordre 1 à coefficients quelconques ainsi que celle des équations différentielles linéaires d'ordre 2 à coefficients constants. Pour ces dernières, le second membre sera une fonction polynomiale ou bien un fonction polynomiale multipliée par $e^{mx}$ avec $m$  constant.
+
+outline: |
+  - Primitives et intégrales
+    - Définition et primitives usuelles. On admet que toute fonction continue sur un intervalle I admet des primitives sur I.
+    - Une fonction continue sur I admet une infinité de primitives à une constante près.
+    - Primitive de $\alpha f+g$, primitives usuelles des fonctions composées.
+    - Définition de l'intégrale d'une fonction continue et positive comme une aire de la surface délimitée par la courbe, l'axe des abscisses et les droites d'équation $x=a$ et $x=b.$ Exemples.
+    - Méthodes des rectangles pour une fonction continue et positive sur $[a,b].$
+    - Extension aux fonctions continues négatives et de signe quelconque. Propriétés de Chasles, cas des fonctions paires et impaires sur un intervalle du type $[-a,a].$
+    - Théorème fondamental de l'analyse. $\int_a^b f(x)dx=F(b)-F(a)$.
+    - Linéarité de l'intégrales, passage aux inégalités, valeur moyenne d'une fonction.
+  - Équations différentielles linéaires d'ordre 1 et 2
+    - Cas des équations de la forme $a(x)y'+b(x)y=c(x)$ : ensemble des solutions, résolution de l'équation homogène associée, recherche d'une solution particulière via la méthode de la variation de la constante s'il n'y en a pas d'évidente.
+    - Cas des équations de la forme $ay''+by'+cy=d(x)$ avec $d(x)=$polynôme ou $d(x)=P(x)e^{mx}$ ( $P$   étant une polynôme et $m$ un réel) : ensemble des solutions, résolution de l'équation homogène associée, recherche d'une solution particulière de la forme $Q(x)$ ou $Q(x)e^{mx}$ ( $Q$ polynôme) s'il n'y en a pas d'évidente.
+
+tlo: |
+  - Calculer une primitive ou une intégrale en utilisant des primitives de référence ou les fonctions de la forme$(v' \circ u)  \times u'$.
+  - Estimer graphiquement une intégrale ou une valeur moyenne.
+  - Résoudre une équation différentielle linéaire d'ordre 1 ou 2 (pour l'ordre 2 : uniquement à coefficients constants)
+
+activities:
+  - kind: tutorial
+    hours: 15
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 9
+    label: Cours
+  - kind: personnal
+    hours: 24
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: QCM-PIEDL
+    coefficient: 0.3
+    label: QCM
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B2-PIEDL
+    hours: 2
+    coefficient: 0.7
+    label: Examen

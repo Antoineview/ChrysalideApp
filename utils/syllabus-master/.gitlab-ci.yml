@@ -1,0 +1,14 @@
+image: registry.cri.epita.fr/prepa/students/syllabus
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+pages:
+  stage: deploy
+  script:
+    - python3 syllabus.py
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH

@@ -1,0 +1,55 @@
+information:
+  label: Expression Orale
+  coefficient: 3
+  threshold: 5
+  referents:
+    - Max TESTEMALE
+
+prerequisites:
+  - Niveau d'anglais B1 sur l'échelle du Cadre européen commun de référence pour les langues (CECRL)
+
+summary: |
+    L'expression orale désigne la capacité à communiquer et à transmettre des messages dans une langue donnée. Les quatre composantes de la communication orale sont : le vocabulaire, la grammaire, la prononciation et la fluidité. Les sessions pratiques auront aussi pour but d'entraîner l'étudiant afin d'acquérir un certains confort lors de conversations orales.
+    - Appliquer une méthode d'organisation en anglais
+    - Exprimer une opinion à l'orale
+    - Répondre à des questions de façon spontanée sur un sujet donnée.
+
+outline: |
+  - BOMBER B, "Outlines", préparation des sessions pratiques.
+  - Plan d'activité des sessions de pratiques notées
+    - Choisir un sujet sur thème imposé
+    - Synthèse grossière du sujet
+    - Choix d'une position sur le sujet
+    - Savoir argumenter / défendre sa position
+    - Oral d'environ 30min
+
+tlo: |
+  - Appliquer l'organisation Bomber B
+  - Synthétiser l'information de façon cohérente
+  - Concevoir et défendre une argumentation sur un sujet choisi à partir d'un thème imposé
+  - Prononcer un discours persuasif avec un vocabulaire adapté au sujet imposé.
+
+references:
+  - kind: other
+    label: FIXME
+
+activities:
+  - kind: tutorial
+    hours: 6
+    label: Travaux dirigés sur 1h par semaine
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: defense
+    environment: classroom
+    hours: 1
+    code: EVAL-B4
+    coefficient: 0.6
+    label: Soutenance et questions / réponses
+  - kind: defense
+    environment: exam-room
+    hours: 0.5
+    code: PROJET-B4
+    coefficient: 0.4
+    label: Soutenance en anglais du projet d'IP <code>[IP-S2-PROJ-2-MVP]</code>

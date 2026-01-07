@@ -1,0 +1,41 @@
+information:
+  ue:
+    code: FIX-ME-FIX-ME
+    label: FIXME
+  ecue:
+    code: FIXME-SX-1-FIXME
+    label: FIXME
+    coefficient: 0
+    threshold: 0
+  referents:
+    - FIXME
+
+prerequisites:
+  - FIXME
+
+summary: |
+  FIXME
+
+outline: |
+  FIXME
+
+tlo: |
+  - FIXME
+
+references:
+  - kind: other
+    label: FIXME
+
+activities:
+  - kind: tutorial
+    hours: 0
+    label: FIXME
+
+evaluations:
+  - kind: exam
+    environment: computer-room
+    hours: 0
+    code: FIXME
+    coefficient: 0
+    label: FIXME
+    comments: FIXME

@@ -1,0 +1,55 @@
+information:
+  label: Étude de communication professionnelle écrite (courriel)
+  coefficient: 3
+  threshold: 5
+  referents:
+    - Fuji FRANK
+
+prerequisites:
+  - Niveau d'anglais B1 sur l'échelle du Cadre européen commun de référence pour les langues (CECRL)
+
+summary: |
+  Le courriel étant la forme la plus courante de la communication en société, les étudiants apprennent à mettre en pratique leur anglais écrit pour communiquer avec leurs collègues futurs par " mail ". Pour ce faire, ils passeront par une révision de grammaire, mais aussi des expressions de politesse standard que l'on trouve, notamment, dans les échantillons de courriel à l'examen TOEIC. 
+
+outline: |
+  - Révision de grammaire niveau B1, à la fois avec un document mais aussi à l'oral
+  - Etude de courriels professionnels types (demande d'information, réclamations)
+  - Exposer des règles et le format de la communication professionnelle de base
+  - Rédaction de courriel
+
+tlo: |
+  - Écrire un mail professionnel pour demander un entretien d'embauche ou de stage, d'information, etc.
+  - Répondre à un mail professionnel, en utilisant l'anglais approprié et le vocabulaire juste dans le contexte donné.
+  - Consolider les 3 temps présents (B1): *simple, continuous, perfect* et en démontrer la maitrise dans un courriel
+
+references:
+  - kind: book
+    label: Understanding and Using English Grammar by Betty Azar
+    isbn-13: 978-0132455459
+
+activities:
+  - kind: tutorial
+    hours: 5
+    label: Travaux dirigés sur 1h par semaine
+  - kind: personnal
+    hours: 10
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: QCM
+    coefficient: 0.3
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: TOEIC
+    coefficient: 0.1
+    label: TOEIC
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: EXAM-B1
+    coefficient: 0.6
+    label: Mi-semestre

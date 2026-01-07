@@ -1,0 +1,64 @@
+information:
+  label: Cybersécurité
+  coefficient: 1
+  threshold: 5
+  referents:
+    - Samuel MARRAZZO
+
+summary: |
+  Durant ce semestre de première année, les étudiants découvriront, via ce cours, la détection et l'exploitation de vulnérabilité d'application Web.
+  C'est un cours de sécurité offensive, le but est de montrer les techniques d'attaques pour mieux comprendre les vulnérabilités.
+
+outline: |
+  - Les principes généraux de sécurité informatique.
+  - Attaques d'applications Web.
+  - Attaques de serveurs distants.
+
+tlo: |
+  - Exploiter des vulnérabilités du web/dev (Top 10+ Owasp, injections, XSS, CSRF . . . ).
+  - Exploiter des vulnérabilités de serveurs web.
+
+references:
+  - kind: link
+    url: https://www.root-me.org/
+    label: Root Me
+  - kind: link
+    url: https://www.newbiecontest.org/
+    label: Newbie Contest
+  - kind: link
+    url: https://overthewire.org/wargames/
+    label: "OverTheWire : Wargames"
+  - kind: link
+    url: https://book.hacktricks.xyz/
+    label: HackTricks
+
+activities:
+  - kind: lecture
+    hours: 3
+    label: Conférences et vidéos
+  - kind: practical
+    hours: 8
+    label: Travaux pratiques guidés
+  - kind: personnal
+    hours: 9
+    label: Travail personnel de recherche, conception et réalisation
+
+evaluations:
+  - kind: exercices
+    environment: computer-room
+    hours: 1
+    code: TP
+    coefficient: 0.6
+    label: Travaux pratiques notés en groupe
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: QCM1
+    coefficient: 0.2
+    label: QCM sur la première vidéo
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: QCM2
+    coefficient: 0.2
+    label: QCM sur la deuxième vidéo

@@ -1,0 +1,62 @@
+information:
+  label: Applications linéaires et matrices
+  coefficient: 2
+  threshold: 7
+  referents:
+    - Christel TRÉMOULET
+
+prerequisites:
+  - ECUE <code>[MATH-S1-1-LE]</code>
+  - ECUE <code>[MATH-S2-3-EV]</code>
+
+summary: |
+  Les applications linéaires sont des applications qui prennent des vecteurs en entrée, renvoient des vecteurs en sortie et qui conservent les propriétés vectoriels des entrées. En fait, ce sont des applications pour lesquelles de nombreuses simplifications que l'on a "envie de faire" sont justement autorisées. Ces propriétés ont plusieurs conséquences:    
+  - L'étude de l'injectivité, de la surjectivité et de la bijectivité est simplifiée
+  - En dimension finie, l'application est entièrement définie par ses images en quelques valeurs des entrées. Cela permet de représenter une application linéaire par une matrice, c'est-à-dire par un tableau de nombre de taille finie.
+
+outline: |
+  - Définition de la linéarité
+  - Noyau et image d'une application linéaire, théorème du rang
+  - Projecteurs et symétries
+  - Caractérisation d'une application linéaire par l'image d'une base
+  - Représentations matricielles d'une application linéaire
+
+tlo: |
+  - Reconnaitre une application linéaire (par exemple un projecteur ou une symétrie)
+  - Déterminer le noyau et l'image d'une application linéaire (par exemple en exploitant le théorème du rang)
+  - Manipuler des opérations sur les matrices (addition, multiplication, inverse)
+  - Naviguer entre une application linéaire et sa représentation matricielle
+  - Déterminer et utiliser une matrice de passage d'une base dans une autre
+
+activities:
+  - kind: tutorial
+    hours: 25
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 15
+    label: Cours
+  - kind: remediation
+    hours: 5
+    label: Remédiation
+  - kind: personnal
+    hours: 39
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: QCMs-ALM
+    coefficient: 0.20
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: CC-ALM
+    coefficient: 0.20
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B4-ALM
+    hours: 2
+    coefficient: 0.6
+    label: Examen B3

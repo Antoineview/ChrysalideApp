@@ -1,0 +1,63 @@
+information:
+  label: Arithmétique des nombres entiers
+  coefficient: 2
+  threshold: 7
+  referents:
+    - Christel TRÉMOULET
+
+prerequisites:
+  - ECUE <code>[MATH-S1-1-LE]</code>
+  - Manipuler les nombres entiers (produit, quotient essentiellement).
+  - Connaitre ses tables de multiplication.
+  - Poser une division euclidienne (Primaire)
+
+summary: |
+  Ce chapitre concerne l'arithmétique sur les entiers. On aborde la notion de divisibilité, de division euclidienne, de congruence. Les "grands" théorèmes d'arithmétique sont étudiés : théorème de Bézout, de Gauss et petit théorème de Fermat.
+
+outline: |
+  - Divisibilité : définition, propriétés, relation d'ordre dans $\mathbb N$.
+  - Division euclidienne, lien avec la divisibilité.
+  - Pgcd : définition, nombres premiers entre eux. Lemme d'Euclide et algorithme d'Euclide.
+  - Congruence : définition, relation d'équivalence, compatibilité avec la somme et le produit.
+  - Théorème de Bézout, théorème de Gauss. Application à la résolution des équations diophantiennes.
+  - Nombres premiers : définition et propriétés. Crible d'Erastosthène.
+  - Décomposition d'un entier supérieur à 2 en facteurs premiers. Calcul du pgcd et diviseurs communs.
+  - Petit théorème de Fermat.
+
+tlo: |
+  - Identifier le reste et le quotient d'une division euclidienne ainsi que les cas de divisibilité.
+  - Manipuler et composer des relations de congruence : additions, multiplications, inversions quand c'est possible, élévation à la puissance.
+  - Mettre en œuvre des algorithmes de calculs arithmétiques (Bézout, Euclide, puissances, inverse modulaire, factorisation)
+
+activities:
+  - kind: tutorial
+    hours: 10
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 6
+    label: Cours
+  - kind: remediation
+    hours: 2
+    label: Remédiation
+  - kind: personnal
+    hours: 18
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.25
+    code: QCMs-ARITH
+    coefficient: 0.10
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 0.75
+    code: CC-ARITH
+    coefficient: 0.3
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B2-ARITH
+    hours: 1
+    coefficient: 0.6
+    label: Examen

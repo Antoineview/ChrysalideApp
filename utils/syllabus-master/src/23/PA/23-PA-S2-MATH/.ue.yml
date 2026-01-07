@@ -1,0 +1,26 @@
+information:
+  label: Mathématiques S1
+  level: L1
+  ects: 8
+  coordinator: Christel TRÉMOULET
+
+description: |
+  Après avoir consolidé vos bases mathématiques au semestre précédent, vous commencerez ce semestre à vous centrer sur des domaines qui ont une forte résonnance avec la programmation. 
+  
+  Ainsi par exemple, les méthodes de dénombrement vous permettront non seulement de calculer des probabilités, mais aussi à l'avenir d'évaluer la complexité d'une procédure informatique. Cette évaluation demande en effet d'énumérer et de compter les opérations élémentaires que la procédure devra exécuter, pour prévoir son temps d'exécution. 
+  
+  La complexité algorithmique est un élément clef des méthodes de cryptage : un message doit être difficile à décrypter pour un intrus qui l'aurait intercepté. De nombreuses méthodes font appel à l'arithmétique des nombres entiers. Après tout, un message n'est qu'une suite de bits et peut donc être interprété comme un nombre entier. On peut donc le crypter ou décrypter au moyen d'une suite d'opérations arithmétiques. L'ECUE Arithmétique donne les outils mathématiques pour cela, vous le mettrez en œuvre informatiquement à la fin du semestre, dans l'ECUE AFIT. 
+  
+  Dans cet ECUE AFIT, il s'agira de coder des méthodes de cryptage/décryptage de messages. Ces méthodes font appel à des propriétés des nombres entiers étudiées dans l'ECUE Arithmétique. Cette fois, les nombres considérés seront bien plus élevés et vous vous frotterez à la complexité des algorithmes : les exécuter avec des nombres entiers de plusieurs centaines de chiffres vous feront sentir leurs limites en termes de temps d'exécution et d'efficacité du cryptage.  
+  
+  De même, de nombreuses applications numériques font appel à une modélisation probabiliste. Les méthodes de reconnaissance de la parole, par exemple, ne reconnaissent pas à coup sûr les sons puis les mots prononcés par le locuteur. À chaque syllabe possible correspond une probabilité, puis cette dernière est réévaluée à partir des syllabes qui l'entourent, en fonction des possibilités de correspondances avec des mots existant dans la langue du locuteur. Travailler dans ce domaine nécessite donc un solide bagage en probabilités, qui sera développé tout au long du parcours à l'école. Les bases en seront posées au cours de ce second semestre. 
+  
+
+  Format des activités (sauf ECUE AFIT) : Cours (MiMos + remédiation) et TD 
+  
+  Chaque semaine :  
+  - Un programme de MiMos à étudier en autonomie. 
+  - Une séance de remédiation d'une heure. Un enseignant revient sur les MiMos de la semaine, aide à les décortiquer. Cette séance est facultative et placée en fin de semaine. Pour qu'elle soit profitable il est indispensable d'avoir déjà étudié les MiMos de la semaine. 
+  - Cinq heures de Travaux Dirigés. 
+  
+  Format des activités AFIT : séances de TP en salle machine + séance d'explications mathématiques

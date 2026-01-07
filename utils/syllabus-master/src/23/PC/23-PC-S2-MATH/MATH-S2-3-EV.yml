@@ -1,0 +1,65 @@
+information:
+  label: Espaces vectoriels
+  coefficient: 2
+  threshold: 8
+  referents:
+    - Christel TRÉMOULET
+
+prerequisites:
+  - ECUE <code>[MATH-S1-1-LE]</code>
+  - Résoudre un système linéaire à deux équations et deux inconnues
+  - Écrire l'équation cartésienne et/ou paramétrique d'une droite ou d'un plan vectoriel de l'espace 3D
+
+summary: |
+  Vous avez déjà manipulé des vecteurs: il s'agissait de couples $(x,y)$ ou de triplets $(x,y,z)$ de nombres réels, auxquels on donnait une interprétation géométrique dans l'espace physique à 2 ou 3 dimensions. Les raisonnements mettant en jeu ces objets peuvent en fait s'appliquer à bien d'autres objets. Citons par exemples: les $n$-uplets de $\mathbb R^n$ (vecteurs de dimensions plus grandes que 3), les fonctions réelles, les suites numériques, etc.
+  Dans cet ECUE, on définit les espaces vectoriels (et les "vecteurs", leurs éléments) d'une façon abstraite, qui fait ressortir tout ce que ces objets ont en commun et les raisonnements qui peuvent être appliqués à tous. On s'entraine alors à utiliser ces raisonnements dans des contextes particuliers. Ainsi, les activités alternent entre des notions abstraites concernant tous les espaces vectoriels, et des déclinaisons dans les différents contextes.
+
+outline: |
+  - Structure d'espace vectoriel et sous-espace vectoriel
+  - Somme de sous espaces vectoriels, sous-espaces vectoriels supplémentaires
+  - Famille de vecteurs: familles libres, familles génératrices, bases. Dimension d'un espace vectoriel.
+
+tlo: |
+  - Identifier un espace vectoriel ou un sous-espace vectoriel
+  - Identifier le caractère d'une famille de vecteurs (libre? génératrice? base?)
+  - Trouver la dimension d'un sev de dimension finie
+  - Utiliser un argument de dimension dans des raisonnements portant sur des espaces vectoriels.
+
+activities:
+  - kind: tutorial
+    hours: 15
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 9
+    label: Cours
+  - kind: remediation
+    hours: 3
+    label: Remédiation
+  - kind: personnal
+    hours: 27
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: QCMs-EV
+    coefficient: 0.15
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: CC-EV
+    coefficient: 0.25
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B3-EV
+    hours: 1
+    coefficient: 0.3
+    label: Examen B3
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B4-EV
+    hours: 1
+    coefficient: 0.3
+    label: Examen B4

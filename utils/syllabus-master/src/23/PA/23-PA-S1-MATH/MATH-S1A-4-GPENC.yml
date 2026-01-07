@@ -1,0 +1,64 @@
+information:
+  label: Géométrie du plan et de l'espace et nombres complexes
+  coefficient: 2
+  threshold: 7
+  referents:
+    - Christel TRÉMOULET
+    - Guillaume EUVRARD
+
+prerequisites:
+  - Utiliser le produit scalaire pour démontrer une orthogonalité.
+  - Vecteurs du plan.
+  - Résoudre une équation du second degré à coefficients réels et discriminant positif.
+  - Manipuler le cercle trigonométrique et les valeurs remarquables de cosinus et sinus revues dans l'ECUE <code>[MATH-S1A-3-FCT]</code>
+  - ECUE <code>[MATH-S1A-1-SEM]</code>
+
+summary: |
+    La première partie concerne la géométrie du plan et de l'espace. On insiste sur la notion de droite et/ou plan affine et vectoriels.
+    La seconde partie aborde la notion de nombres complexes. Il s'agit d'apprendre à écrire un complexe sous forme exponentielle et de résoudre aussi les équations du second degré à coefficients réels et à discriminant de signe quelconque.
+
+outline: |
+  - Géométrie dans le plan et l'espace
+    - Coordonnées d'un point, d'un vecteur dans le plan. Manipulation graphique.
+    - Equations de droites dans le plan : passant par deux points donnés, définies par un point et un vecteur directeur. Equations paramétriques.
+    - Plan et droites de l'espace.
+  - Nombres complexes
+    - Définition d'un nombre complexe, partie réelle et partie imaginaire, égalité de deux nombres complexes.
+    - Opérations dans $\mathbb C$ : addition, produit, inverse et quotient.
+    - Conjugué d'un nombre complexe. Propriétés.
+    - Représentation graphique. Affixe d'un point.
+    - Module d'un nombre complexe. Propriétés.
+    - Argument d'un nombre complexe. Forme trigonométrique. Propriétés.
+    - Forme exponentielle. Propriétés.
+    - Résolution des équations du second degré à coefficients réels.
+
+tlo: |
+  - Géométrie du plan et de l'espace
+    - Manipuler des vecteurs du plan et de l'espace (addition, multiplication par un réel).
+    - Déduire d'une équation cartésienne de droite ou de plan une équation paramétrique, et inversement.
+  - Nombres complexes
+    - Mener des calculs mettant en jeu des nombres complexes (module, argument, équation du second degré à coefficients réels.
+
+activities:
+  - kind: tutorial
+    hours: 10
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 6
+    label: Cours
+  - kind: personnal
+    hours: 16
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: QCM-GPENC
+    coefficient: 0.4
+    label: QCM
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B2-GPENC
+    hours: 1
+    coefficient: 0.6
+    label: Examen

@@ -1,0 +1,54 @@
+information:
+  label: Logique Séquentielle
+  coefficient: 1
+  threshold: 5
+  referents:
+    - David BOUCHET
+
+prerequisites:
+  - ECUE <code>[SI-S1-ARCHI-2-BOOL]</code>
+
+summary: |
+  Ce cours fait partie de l'Unité d'Enseignement Sciences de l'Ingénieur (SI), dont l'objectif est de donner à l'élève Ingénieur une culture générale scientifique.
+  Ce cours doit permettre aux étudiants de comprendre et de concevoir des fonctions logiques séquentielles (compteurs).
+
+outline: |
+  - Logique Séquentielle
+    - Définitions
+    - Modes de synchronisation (synchronisation sur état, front, et sur impulsion)
+    - Bascule <code>RS</code> asynchrone et synchrone
+    - Bascule <code>D</code>
+    - Bascule <code>JK</code>
+  - Les Compteurs
+    - Principe
+    - Compteurs/décompteurs asynchrones
+    - Compteurs / Décompteurs synchrones
+
+tlo: |
+  - Reconnaître les différents types de bascules présentées dans le cours.
+  - Représenter des chronogrammes de circuits séquentiels existants.
+  - Interpréter les chronogrammes pour identifier s'il s'agit d'un compteur ou d'un décompteur ainsi que son modulo.
+  - Associer des bascules pour réaliser des compteurs asynchrones ou synchrones à cycles complets ou incomplets.
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux Dirigés
+  - kind: personnal
+    hours: 9
+    label: Le travail personnel inclu l'étude du cours donné sous forme de polycopié
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B3
+    coefficient: 0.75
+    label: Mi-semestre
+    comments: Pas de calculatrice ni document

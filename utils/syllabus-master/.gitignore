@@ -1,0 +1,18 @@
+# PyCharm
+/.idea
+
+# Python
+__pycache__
+
+# venv
+/venv
+
+# OSX
+.DS_Store
+
+# Deploy and publish folder
+/public
+/publish
+/public-exchange
+
+# auto-gen svg files

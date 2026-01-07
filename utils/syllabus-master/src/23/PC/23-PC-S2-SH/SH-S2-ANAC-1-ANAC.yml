@@ -1,0 +1,25 @@
+information:
+  label: Activités Non Académiques
+  coefficient: 1
+  threshold: 8
+  referents:
+    - Scolarité
+
+summary: |
+  Comme son nom l'indique, cette ECUE n'est pas constituée d'un enseignement traditionnel. Son but est d'inciter les étudiants à pratiquer des activités visant une ouverture vers l'extérieur et un "mieux être".
+
+outline: |
+  Les activité prises en compte sont les suivantes :
+  -	Pratique régulière d'un sport : 1 point attribué par séance d'entrainement et par participation à une compétition
+  -	Ouverture sociale : participation aux activités d'associations caritatives. Le nombre de point attribués dépend de la nature de l'activité et du temps qui y a été consacré.
+  -	Communication : participation aux évènements de l'école (JPO, salons, forum …). Le but ici est de venir en aide aux jeunes en recherche d'école en leur présentant la formation et leur expérience. Ici encore, le nombre de points attribué dépendra de la nature de l'activité et du temps qui y a été consacré.
+  - Association : participation active à une association, sous réserve préalable de la direction des études, et sous validation du responsable de l'association et de la direction des études.
+  La somme des points obtenus est bornée à 20 et intervient dans le calcul de la note finale de l'UE 
+
+  Cette note est prise en compte sur le 2ème semestre mais les points peuvent être cumulés sur l'année entière.
+
+activities:
+  - kind: personnal
+    hours: 20
+    label: Activités listées ci-dessus
+

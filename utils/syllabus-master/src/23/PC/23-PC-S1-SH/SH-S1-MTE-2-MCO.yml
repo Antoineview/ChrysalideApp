@@ -1,0 +1,46 @@
+information:
+  label: Méthodologie de la Communication Orale
+  coefficient: 4
+  threshold: 5
+  referents:
+    - Klervi LE COLLEN
+
+summary: |
+  Maîtriser la communication orale est une étape indispensable dans la retransmission d'une idée, d'un projet… Communiquer à l'oral s'apprend. L'atelier offrira à l'étudiant la possibilité d'acquérir des techniques dont l'objectif principal repose sur une plus grande aisance à l'oral. Un oral se prépare et la création (ainsi que la bonne utilisation) des supports fait partie de ces techniques.
+
+outline: |
+  - Exercices de recherches sur un thème donné
+  - Récolter les documents provenant de sources différentes
+  - Traiter ses documents en faisant une synthèse comme vu au B1 en vue de les présenter à l'oral
+  - Découvrir les différents supports de présentation pour un oral
+  - Corriger les fautes, illustrer le contenu avec parcimonie, sources et légender
+  - Jeux de rôles sur l'organisation d'une réunion en exposant, défendant et argumentant ses propos
+
+tlo: |
+  - Présenter à l'oral un sujet travaillé, en un temps limité, en l'ayant structuré et organisé
+  - Anticiper les questions / réponses de fin de présentation.
+  - Construire un support visuel de présentation en adéquation à partir d'objectifs prédéfinis
+    - Fabriquer un support visuel de type slide
+    - Concevoir une démo produit
+  - Produire une présentation orale sur un travail existant en utilisant le type support adapté
+  - Gérer une réunion de travail de suivi de projet technique
+    - Identifier un ordre du jour
+    - Intégrer une gestion du temps via la désignation d'un timekeeper
+    - Exposer les différents éléments de l'ordre du jour
+    - Retranscrire le contenu de la réunion dans un contre-rendu listant les actions à faire nominativement et temporellement
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Atelier de 2 heures par semaine
+  - kind: personnal
+    hours: 10
+
+evaluations:
+  - kind: defense
+    environment: exam-room
+    hours: 0.5
+    code: SOUTENANCE
+    coefficient: 1
+    label: Présentation orale en groupe avec support du projet
+    comments: La note sera individuelle sauf cohérence complète du groupe de projet. Le support compte pour la moitié, la présentation pour l'autre.
