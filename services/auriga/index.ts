@@ -546,10 +546,8 @@ class AurigaAPI {
 
     const contentType = response.headers.get("content-type");
     if (!response.ok || (contentType && contentType.includes("text/html"))) {
-      const text = await response.text();
       console.error(
         `Auriga API Error [${endpoint}] (${response.status}):`,
-        text.substring(0, 200)
       );
       throw new Error(`Auriga API Error (${response.status}) on ${endpoint}`);
     }
