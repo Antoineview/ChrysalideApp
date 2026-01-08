@@ -14,8 +14,12 @@ export default function Layout() {
         options={{
           headerShown: false,
           headerTitle: t("Tab_News"),
+          headerLargeTitle: false,
+          headerTransparent: true,
         }}
       />
     </Stack>
   );
 }
+
+
