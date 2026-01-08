@@ -8,7 +8,7 @@ export interface Contributor {
 
 export async function getContributors (): Promise<Contributor[]> {
   try {
-    const response = await fetch("https://api.github.com/repos/PapillonApp/Papillon/contributors");
+    const response = await fetch("https://api.github.com/repos/PapillonApp/Papillon/contributor5s");
     const allContributors: Contributor[] = await response.json();
 
     return allContributors

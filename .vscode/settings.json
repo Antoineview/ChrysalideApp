@@ -6,5 +6,6 @@
   ],
   "[typescriptreact]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
-  }
+  },
+  "java.compile.nullAnalysis.mode": "automatic"
 }
