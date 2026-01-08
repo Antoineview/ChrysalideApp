@@ -1,11 +1,7 @@
-import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from "@react-navigation/native";
-import * as Print from "expo-print";
 import { useLocalSearchParams } from "expo-router";
-import * as Sharing from "expo-sharing";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Syllabus } from "@/services/auriga/types";
@@ -32,11 +28,8 @@ function cleanHtml(raw?: string | null): string {
 
 export default function SyllabusModal() {
   const { i18n } = useTranslation();
-  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ syllabusData: string }>();
-
-  const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
 
   // Parse syllabus data from params
   const syllabus: Syllabus | null = React.useMemo(() => {
@@ -63,296 +56,6 @@ export default function SyllabusModal() {
   const description = React.useMemo(() => cleanHtml(rawDescription), [
     rawDescription,
   ]);
-
-  // Generate HTML for PDF based on actual syllabus data
-  const generatePdfHtml = (): string => {
-    const displayName = syllabus.caption?.name || subjectName;
-    const dateGenerated = new Date().toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-
-    // Build exams section if available
-    let examsHtml = '';
-    if (syllabus.exams && syllabus.exams.length > 0) {
-      examsHtml = `
-        <div class="section">
-          <h2>Évaluations (${syllabus.exams.length})</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Coefficient</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${syllabus.exams.map(exam => {
-    const examDesc = typeof exam.description === 'string'
-      ? cleanHtml(exam.description)
-      : cleanHtml(exam.description?.fr || exam.description?.en || '');
-    return `
-                  <tr>
-                    <td>${exam.typeName || exam.type}</td>
-                    <td>${exam.weighting}%</td>
-                    <td>${examDesc || '-'}</td>
-                  </tr>
-                `;
-  }).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    // Build responsables section if available
-    let responsablesHtml = '';
-    if (syllabus.responsables && syllabus.responsables.length > 0) {
-      responsablesHtml = `
-        <div class="section">
-          <h2>Responsables</h2>
-          <ul>
-            ${syllabus.responsables.map(resp => `
-              <li>${resp.firstName} ${resp.lastName}</li>
-            `).join('')}
-          </ul>
-        </div>
-      `;
-    }
-
-    // Build activities section if available
-    let activitiesHtml = '';
-    if (syllabus.activities && syllabus.activities.length > 0) {
-      activitiesHtml = `
-        <div class="section">
-          <h2>Activités</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Durée</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${syllabus.activities.map(activity => `
-                <tr>
-                  <td>${activity.typeName || activity.type}</td>
-                  <td>${activity.duration && activity.duration > 0 ? Math.round(activity.duration / 3600) + 'h' : '-'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    // Build description section if available
-    let descriptionHtml = '';
-    if (description) {
-      descriptionHtml = `
-        <div class="section">
-          <h2>Description</h2>
-          <p>${description.replace(/\n/g, '<br>')}</p>
-        </div>
-      `;
-    }
-
-    // Build program section if available
-    let programHtml = '';
-    if (syllabus.caption?.program?.fr || syllabus.caption?.program?.en) {
-      const programText = cleanHtml(syllabus.caption?.program?.fr || syllabus.caption?.program?.en);
-      if (programText) {
-        programHtml = `
-          <div class="section">
-            <h2>Programme</h2>
-            <p>${programText.replace(/\n/g, '<br>')}</p>
-          </div>
-        `;
-      }
-    }
-
-    return `
-      <!DOCTYPE html>
-      <html lang="fr">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Syllabus - ${displayName}</title>
-        <style>
-          @page {
-            margin: 20mm;
-          }
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .header {
-            border-bottom: 3px solid #102b65;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-          }
-          .logo {
-            font-size: 14px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-          }
-          h1 {
-            color: #102b65;
-            font-size: 28px;
-            margin: 0 0 10px 0;
-          }
-          .subtitle {
-            color: #666;
-            font-size: 16px;
-          }
-          .info-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-          }
-          .info-item {
-            flex: 1 1 200px;
-          }
-          .info-label {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-          }
-          .info-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: #102b65;
-          }
-          .section {
-            margin-bottom: 30px;
-          }
-          h2 {
-            color: #102b65;
-            font-size: 18px;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-          }
-          th, td {
-            border: 1px solid #e0e0e0;
-            padding: 12px;
-            text-align: left;
-          }
-          th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #102b65;
-          }
-          tr:nth-child(even) {
-            background: #fafafa;
-          }
-          ul {
-            margin: 0;
-            padding-left: 20px;
-          }
-          li {
-            margin-bottom: 8px;
-          }
-          .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div class="logo">EPITA - Syllabus</div>
-          <h1>${displayName}</h1>
-          <div class="subtitle">${syllabus.code} • Semestre ${syllabus.semester}</div>
-        </div>
-
-        <div class="info-grid">
-          <div class="info-item">
-            <div class="info-label">UE</div>
-            <div class="info-value">${syllabus.UE}</div>
-          </div>
-          ${syllabus.duration > 0 ? `
-            <div class="info-item">
-              <div class="info-label">Durée</div>
-              <div class="info-value">${Math.round(syllabus.duration / 3600)}h</div>
-            </div>
-          ` : ''}
-          ${syllabus.minScore > 0 ? `
-            <div class="info-item">
-              <div class="info-label">Note minimum</div>
-              <div class="info-value">${syllabus.minScore}/20</div>
-            </div>
-          ` : ''}
-          ${syllabus.grade !== undefined ? `
-            <div class="info-item">
-              <div class="info-label">Ma note</div>
-              <div class="info-value">${typeof syllabus.grade === "number" ? syllabus.grade.toFixed(2).replace(".00", "") : syllabus.grade}/20</div>
-            </div>
-          ` : ''}
-        </div>
-
-        ${examsHtml}
-        ${responsablesHtml}
-        ${activitiesHtml}
-        ${descriptionHtml}
-        ${programHtml}
-
-        <div class="footer">
-          Généré le ${dateGenerated} depuis Chrysalide
-        </div>
-      </body>
-      </html>
-    `;
-  };
-
-  const handleDownloadPdf = async () => {
-    try {
-      setIsGeneratingPdf(true);
-
-      const html = generatePdfHtml();
-      const displayName = syllabus.caption?.name || subjectName;
-
-      // Generate PDF from HTML
-      const { uri } = await Print.printToFileAsync({
-        html,
-        base64: false,
-      });
-
-      // Share the generated PDF
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, {
-          mimeType: 'application/pdf',
-          dialogTitle: `Syllabus - ${displayName}`,
-          UTI: 'com.adobe.pdf',
-        });
-      }
-    } catch {
-      // PDF generation failed - silently handle
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
 
   return (
     <ScrollView
@@ -453,7 +156,7 @@ export default function SyllabusModal() {
                       typeof exam.description === "string"
                         ? exam.description
                         : exam.description[
-                          i18n.language.startsWith("en") ? "en" : "fr"
+                        i18n.language.startsWith("en") ? "en" : "fr"
                         ] ||
                         exam.description.fr ||
                         exam.description.en
@@ -503,8 +206,6 @@ export default function SyllabusModal() {
         </Stack>
       )}
 
-
-
       {/* Description Section */}
       {!!description && (
         <Stack gap={8} style={{ marginBottom: 24 }}>
@@ -513,32 +214,6 @@ export default function SyllabusModal() {
         </Stack>
       )}
 
-      {/* Download PDF Button */}
-      <TouchableOpacity
-        onPress={handleDownloadPdf}
-        disabled={isGeneratingPdf}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 10,
-          backgroundColor: colors.primary,
-          paddingVertical: 14,
-          paddingHorizontal: 24,
-          borderRadius: 12,
-          marginTop: 8,
-          opacity: isGeneratingPdf ? 0.7 : 1,
-        }}
-      >
-        {isGeneratingPdf ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Papicons name="Download" size={20} color="#fff" />
-        )}
-        <Typography variant="title" style={{ color: '#fff', fontWeight: '600' }}>
-          {isGeneratingPdf ? 'Génération...' : 'Télécharger en PDF'}
-        </Typography>
-      </TouchableOpacity>
     </ScrollView>
   );
 }

@@ -5,13 +5,14 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, RefreshControl, View } from 'react-native';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAurigaRefresh } from '@/components/AurigaRefreshProvider';
 import AurigaAPI from '@/services/auriga';
 import { Syllabus } from '@/services/auriga/types';
+import Button from '@/ui/components/Button';
 import ChipButton from '@/ui/components/ChipButton';
 import List from '@/ui/components/List';
 import Stack from '@/ui/components/Stack';
@@ -255,37 +256,14 @@ const SyllabusView: React.FC = () => {
         }
         ListFooterComponent={
           !loading && syllabusList.length > 0 ? (
-            <View style={{ paddingBottom: bottomTabBarHeight + insets.bottom + 16, paddingTop: 16 }}>
-              <TouchableOpacity
+            <View style={{ paddingTop: 16 }}>
+              <Button
                 onPress={handleDownloadPdf}
                 disabled={isGeneratingPdf}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: colors.primary,
-                  marginHorizontal: 16,
-                  padding: 16,
-                  borderRadius: 12,
-                  opacity: isGeneratingPdf ? 0.7 : 1,
-                  shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}
-              >
-                {isGeneratingPdf ?
-                  <ActivityIndicator color="white" style={{ marginRight: 8 }} /> :
-                  <Papicons name="Download" size={20} color="white" style={{ marginRight: 8 }} />
-                }
-                <Text style={{ color: 'white', fontWeight: '600', fontSize: 16 }}>
-                  {isGeneratingPdf ? 'Génération...' : 'Télécharger le syllabus complet (PDF)'}
-                </Text>
-              </TouchableOpacity>
+                loading={isGeneratingPdf}
+                icon={<Papicons name="Paper" size={20} />}
+                title={isGeneratingPdf ? 'Génération...' : 'Télécharger le syllabus complet (PDF)'}
+              />
             </View>
           ) : null
         }
