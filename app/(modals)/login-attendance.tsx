@@ -160,6 +160,8 @@ export default function AttendanceLoginScreen() {
         try {
             AbsencesAPI.setToken(accessToken);
 
+            console.log("Token set: ", accessToken);
+
             setSyncStatus("Synchronisation des absences...");
             await AbsencesAPI.sync();
 
