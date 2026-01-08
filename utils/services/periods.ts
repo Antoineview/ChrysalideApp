@@ -29,7 +29,7 @@ export const getPeriodName = (name: string) => {
 
 export const isPeriodWithNumber = (name: string) => {
   // return only digits
-  let newName = name.replace(/\D/g, '').trim();
+  const newName = name.replace(/\D/g, '').trim();
 
   return newName.length > 0;
 }

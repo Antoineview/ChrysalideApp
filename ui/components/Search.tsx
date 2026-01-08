@@ -1,13 +1,14 @@
+import { isLiquidGlassSupported } from "@callstack/liquid-glass";
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect, useState } from "react";
 import { Dimensions, Platform, TextInput, TouchableOpacity, View } from "react-native";
-import Stack from "./Stack";
-import { useTheme } from "@react-navigation/native";
-import Icon from "./Icon";
-import { Papicons } from "@getpapillon/papicons";
-import { Dynamic } from "./Dynamic";
+
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import { isLiquidGlassSupported } from "@callstack/liquid-glass";
+import { Dynamic } from "./Dynamic";
+import Icon from "./Icon";
+import Stack from "./Stack";
 
 interface SearchProps {
   placeholder?: string,

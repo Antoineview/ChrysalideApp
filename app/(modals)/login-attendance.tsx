@@ -1,20 +1,19 @@
+import CookieManager from '@react-native-cookies/cookies';
 import { useTheme } from "@react-navigation/native";
-import { Stack, useRouter, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams,useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewNavigation } from 'react-native-webview';
-import CookieManager from '@react-native-cookies/cookies';
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import AbsencesAPI from "@/services/absences";
 import { useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import StackLayout from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
-
-import AbsencesAPI from "@/services/absences";
 
 const ABSENCES_AUTH_URL = "https://absences.epita.net/";
 
@@ -154,7 +153,7 @@ export default function AttendanceLoginScreen() {
     }
 
     const startSync = async (accessToken: string) => {
-        if (isSyncing) return;
+        if (isSyncing) {return;}
         setIsSyncing(true);
         setShowWebView(false);
 

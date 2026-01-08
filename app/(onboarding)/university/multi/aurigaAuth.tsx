@@ -1,24 +1,23 @@
+import CookieManager from '@react-native-cookies/cookies';
 import { useTheme } from "@react-navigation/native";
-import { Stack, useRouter, useLocalSearchParams } from "expo-router";
-import React, { useRef, useState, useEffect } from "react";
+import * as Crypto from 'expo-crypto';
+import { Stack, useLocalSearchParams,useRouter } from "expo-router";
+import React, {useRef, useState } from "react";
 import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewNavigation } from 'react-native-webview';
-import * as Crypto from 'expo-crypto';
-import CookieManager from '@react-native-cookies/cookies';
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import AurigaAPI from "@/services/auriga";
+import { initializeAccountManager } from "@/services/shared";
+import { useAccountStore } from "@/stores/account";
+import { Account, Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import StackLayout from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
-
-import AurigaAPI from "@/services/auriga";
-import { initializeAccountManager } from "@/services/shared";
-import { useAccountStore } from "@/stores/account";
-import { Account, Services } from "@/stores/account/types";
 
 const KEYCLOAK_AUTH_URL = "https://auriga.epita.fr";
 
@@ -190,7 +189,7 @@ export default function AurigaLoginScreen() {
     }
 
     const startSync = async (accessToken: string) => {
-        if (isSyncing) return;
+        if (isSyncing) {return;}
 
         // For refresh: run sync in background and go back immediately
         if (isRefresh) {

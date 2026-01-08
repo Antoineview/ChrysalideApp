@@ -1,11 +1,15 @@
 import { Papicons } from "@getpapillon/papicons";
 import { MenuView } from "@react-native-menu/menu";
 import { useTheme } from "@react-navigation/native";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import { LineGraph } from "react-native-graph";
+import { LayoutAnimationConfig } from "react-native-reanimated";
+import Reanimated from "react-native-reanimated";
 
 import { Grade } from "@/services/shared/grade";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
@@ -13,16 +17,13 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonGradesAveragesOverTime from "@/utils/grades/algorithms/time";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { LayoutAnimationConfig } from "react-native-reanimated";
-import Reanimated from "react-native-reanimated";
+
 import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
-import * as Haptics from "expo-haptics";
-import * as WebBrowser from "expo-web-browser";
 
 
 const algorithms = [

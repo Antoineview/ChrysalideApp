@@ -1,2 +1,2 @@
-export * from "./syllabus";
 export * from "./grades";
+export * from "./syllabus";

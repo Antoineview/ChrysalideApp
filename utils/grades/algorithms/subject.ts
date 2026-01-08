@@ -1,4 +1,5 @@
 import { Grade } from "@/services/shared/grade";
+
 import { ScoreProperty } from "./helpers";
 
 export const getSubjectAverage = (

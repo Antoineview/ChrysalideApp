@@ -1,16 +1,17 @@
-import Stack from "@/ui/components/Stack";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
-import Typography from "@/ui/components/Typography";
-import { CompactGrade } from "@/ui/components/CompactGrade";
-import { Alert, Dimensions, ScrollView, View, Platform } from "react-native";
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { Colors } from "@/utils/subjects/colors";
-import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { useAccountStore } from "@/stores/account";
+import { useState } from "react";
+import { Alert, Dimensions, Platform,ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { useAccountStore } from "@/stores/account";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { CompactGrade } from "@/ui/components/CompactGrade";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import { Colors } from "@/utils/subjects/colors";
 
 export default function EditSubject() {
   const { colors } = useTheme();
@@ -223,7 +224,7 @@ export default function EditSubject() {
               onPress={() => {
                 if (emoji === "custom") {
                   Alert.prompt("Emoji personnalisé", "Entre un emoji personnalisé pour cette matière (ex: 🧪)", (text) => {
-                    var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
+                    const regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
                     const emojiMatch = text.match(regexp);
                     if (emojiMatch) {
                       emoji = emojiMatch[emojiMatch.length - 1];

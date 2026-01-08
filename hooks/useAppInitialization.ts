@@ -1,10 +1,11 @@
-import { useEffect, useState, useRef, useCallback } from "react";
-import { AppState, AppStateStatus } from "react-native";
-import * as SplashScreen from "expo-splash-screen";
-import { useFonts } from "expo-font";
 import Countly from "countly-sdk-react-native-bridge";
 import CountlyConfig from "countly-sdk-react-native-bridge/CountlyConfig";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useCallback,useEffect, useRef, useState } from "react";
+import { AppState, AppStateStatus } from "react-native";
 
+import { FONT_CONFIG } from "@/constants/LayoutScreenOptions";
 import { initializeDatabaseOnStartup } from "@/database/utils/initialization";
 import { initializeAccountManager } from "@/services/shared";
 import { useSettingsStore } from "@/stores/settings";
@@ -12,7 +13,6 @@ import i18n from "@/utils/i18n";
 import { checkConsent } from "@/utils/logger/consent";
 import { log, warn } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
-import { FONT_CONFIG } from "@/constants/LayoutScreenOptions";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

@@ -9,6 +9,17 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   {
+    ignores: [
+      "**/android/**",
+      "**/ios/**",
+      "**/.expo/**",
+      "**/node_modules/**",
+      "**/*.min.js",
+      "**/dist/**",
+      "**/web-build/**",
+    ],
+  },
+  {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     plugins: { js },
     extends: ["js/recommended"],
@@ -38,7 +49,8 @@ export default defineConfig([
       },
     },
     rules: {
-      indent: ["error", 2],
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
       "no-duplicate-imports": "error",
       "no-self-compare": "error",
       "no-template-curly-in-string": "warn",

@@ -1,9 +1,9 @@
-import { Period, PeriodGrades, Subject, Grade, Score } from "@/services/shared/grade";
+import { Grade, Period, PeriodGrades, Score,Subject } from "@/services/shared/grade";
+import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { error } from "@/utils/logger/logger";
 
 import { LannionAPI, LannionClient } from "./module";
-import { LannionReleve, LannionRessource, LannionNote } from "./module/types";
-import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
+import { LannionNote,LannionReleve, LannionRessource } from "./module/types";
 
 function safeParseFloat(value: string | null | undefined): number {
   if (typeof value !== 'string') {

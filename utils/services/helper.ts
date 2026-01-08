@@ -1,5 +1,6 @@
-import { Services } from "@/stores/account/types";
 import { ImageSourcePropType } from "react-native";
+
+import { Services } from "@/stores/account/types";
 
 export function getServiceName(service: Services): string {
   switch (service) {
@@ -71,7 +72,7 @@ export function getCodeType(service: Services): string {
 export function isSelfModuleEnabledED(
   additionals?: Record<string, any>
 ): boolean {
-  if (!additionals) return false;
+  if (!additionals) {return false;}
   for (const module of additionals["modules"] as Array<{
     badge: number;
     code: string;
@@ -80,7 +81,7 @@ export function isSelfModuleEnabledED(
     params: Array<any>;
   }>) {
     if (module.code === "CANTINE_BARCODE" && module.enable) {
-      if (module.params && module.params.numeroBadge) return true;
+      if (module.params && module.params.numeroBadge) {return true;}
     }
   }
   return false;

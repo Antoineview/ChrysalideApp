@@ -1,20 +1,18 @@
 
+import { Papicons } from '@getpapillon/papicons';
 import React from 'react';
-
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TouchableOpacity } from 'react-native';
+import { LayoutAnimationConfig, LinearTransition } from 'react-native-reanimated';
 
 import { NativeHeaderHighlight } from '@/ui/components/NativeHeader';
 import Typography from '@/ui/components/Typography';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from './Icon';
-import { TouchableOpacity } from 'react-native';
-import Stack from './Stack';
-import { Dynamic } from './Dynamic';
-import { LayoutAnimationConfig, LinearTransition } from 'react-native-reanimated';
+
+import { Animation } from '../utils/Animation';
 import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 import ActivityIndicator from './ActivityIndicator';
-import { Animation } from '../utils/Animation';
+import { Dynamic } from './Dynamic';
+import Icon from './Icon';
+import Stack from './Stack';
 
 export interface TabHeaderTitleProps {
   leading?: string,

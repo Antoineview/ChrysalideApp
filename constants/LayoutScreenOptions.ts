@@ -1,7 +1,8 @@
-import { Platform } from "react-native";
 import "@/utils/i18n";
+
 import { t } from "i18next";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { Platform } from "react-native";
+
 
 export const FONT_CONFIG = {
   light: require("../assets/fonts/RobotoFlex-Light.ttf"),

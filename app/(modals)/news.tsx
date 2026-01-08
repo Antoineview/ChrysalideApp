@@ -1,33 +1,28 @@
+import { Papicons } from "@getpapillon/papicons";
+import { HeaderBackButton } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
+import { useEffect, useState } from "react";
+import { Linking, Platform, ScrollView, StyleSheet } from "react-native";
+import HTMLView from 'react-native-htmlview';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Attachment, News as SkolengoNews } from "skolengojs"
+
 import { getManager } from "@/services/shared";
 import { News } from "@/services/shared/news";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
+import Avatar from "@/ui/components/Avatar";
+import Icon from "@/ui/components/Icon";
+import Item, { Leading } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
-import { useEffect, useState } from "react";
-import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
-import { Attachment, News as SkolengoNews } from "skolengojs"
-
 import { VARIANTS } from "@/ui/components/Typography";
-
-import HTMLView from 'react-native-htmlview';
-import * as WebBrowser from 'expo-web-browser';
-import { useTheme } from "@react-navigation/native";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { MenuView } from "@react-native-menu/menu";
-import Icon from "@/ui/components/Icon";
-import { t } from "i18next";
-import List from "@/ui/components/List";
-import Item, { Leading } from "@/ui/components/Item";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
-import { news } from "pawnote";
-import Avatar from "@/ui/components/Avatar";
-import { getInitials } from "@/utils/chats/initials";
-import { HeaderBackButton } from "@react-navigation/elements";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { Papicons } from "@getpapillon/papicons";
+import { getInitials } from "@/utils/chats/initials";
+import { cleanHtmlForArticle } from "@/utils/news/cleanUpHTMLNews";
 import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 
 const NewsModal = () => {

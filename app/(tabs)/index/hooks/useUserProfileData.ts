@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { useAccountStore } from '@/stores/account';
 import { getInitials } from '@/utils/chats/initials';
 

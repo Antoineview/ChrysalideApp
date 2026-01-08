@@ -1,11 +1,12 @@
 import { useCallback, useEffect } from 'react';
-import { getManager, initializeAccountManager } from "@/services/shared";
-import { useAlert } from '@/ui/components/AlertProvider';
-import { log, warn } from '@/utils/logger/logger';
+
 import { getWeekNumberFromDate } from '@/database/useHomework';
+import { getManager, initializeAccountManager } from "@/services/shared";
 import { Grade, Period } from '@/services/shared/grade';
-import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { useSettingsStore } from '@/stores/settings';
+import { useAlert } from '@/ui/components/AlertProvider';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { log, warn } from '@/utils/logger/logger';
 
 export const useHomeData = () => {
   const alert = useAlert();

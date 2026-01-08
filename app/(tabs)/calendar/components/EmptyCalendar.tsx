@@ -1,9 +1,10 @@
-import React, { memo } from 'react';
-import { t } from "i18next";
 import { Papicons } from '@getpapillon/papicons';
+import { t } from "i18next";
+import React, { memo } from 'react';
+
 import { Dynamic } from "@/ui/components/Dynamic";
-import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 
 export const EmptyCalendar = memo(() => (

@@ -33,7 +33,7 @@ const formatLookup = new Map<string, { pretty: string; emoji: string }>();
 
 // Internal normalization function (not cached itself, used by cache wrapper)
 function normalizeSubjectNameInternal(subject: string): string {
-  if (!subject) return "";
+  if (!subject) {return "";}
   return subject
     .split(/\s*[>|]\s*/)[0]
     .toLowerCase()
@@ -46,7 +46,7 @@ function normalizeSubjectNameInternal(subject: string): string {
 }
 
 export function normalizeSubjectName(subject: string): string {
-  if (!subject) return "";
+  if (!subject) {return "";}
   if (normalizationCache.has(subject)) {
     return normalizationCache.get(subject)!;
   }
@@ -56,7 +56,7 @@ export function normalizeSubjectName(subject: string): string {
 }
 
 export function cleanSubjectName(subject: string): string {
-  if (!subject) return subject;
+  if (!subject) {return subject;}
   if (cleanNameCache.has(subject)) {
     return cleanNameCache.get(subject)!;
   }

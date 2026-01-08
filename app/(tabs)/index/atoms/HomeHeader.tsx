@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import AbsencesAPI from "@/services/absences";
 import Stack from '@/ui/components/Stack';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 
 import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
 import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
-import AbsencesAPI from "@/services/absences";
 
 const HomeHeader = () => {
   const { t } = useTranslation();

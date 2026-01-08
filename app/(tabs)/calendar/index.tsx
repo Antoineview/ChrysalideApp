@@ -1,14 +1,16 @@
-import React, { useRef, useCallback, useState } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+import React, { useCallback, useRef, useState } from "react";
+import { FlatList, StyleSheet,View } from "react-native";
+import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { CourseStatus } from "@/services/shared/timetable";
+
+import { CalendarDay } from "./components/CalendarDay";
+import { CalendarHeader } from "./components/CalendarHeader";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
-import { CalendarHeader } from "./components/CalendarHeader";
-import { CalendarDay } from "./components/CalendarDay";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useBottomTabBarHeight } from "react-native-bottom-tabs";
-import { CourseStatus } from "@/services/shared/timetable";
-import { t } from "i18next";
 
 export default function TabOneScreen() {
   const { colors } = useTheme();

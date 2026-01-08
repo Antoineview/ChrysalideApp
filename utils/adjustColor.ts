@@ -1,7 +1,7 @@
 const cache = new Map<string, string>();
 
 export default function adjust(hex: string, percent: number) {
-  if (!hex) return hex;
+  if (!hex) {return hex;}
 
   const key = `${hex}_${percent}`;
   if (cache.has(key)) {

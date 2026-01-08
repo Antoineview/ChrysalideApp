@@ -1,8 +1,9 @@
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { ScrollView, Text, View, Image } from "react-native";
+import { Image,ScrollView } from "react-native";
+
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 export default function AboutAverages() {
   const theme = useTheme();

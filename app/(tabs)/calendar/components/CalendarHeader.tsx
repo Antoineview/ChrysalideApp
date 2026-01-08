@@ -1,12 +1,13 @@
-import React from 'react';
-import { Platform } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
+import React from 'react';
+import { Platform } from 'react-native';
+
+import Calendar from "@/ui/components/Calendar";
+import ChipButton from '@/ui/components/ChipButton';
 import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
-import ChipButton from '@/ui/components/ChipButton';
-import Calendar from "@/ui/components/Calendar";
 import i18n from '@/utils/i18n';
 
 interface CalendarHeaderProps {

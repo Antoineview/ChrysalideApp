@@ -1,7 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { Services } from '@/stores/account/types';
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 

@@ -26,7 +26,7 @@ export const calculateAmplifiedGraphPoints = (
       originalDate: new Date(item.date)
     }));
 
-  if (points.length === 0) return [];
+  if (points.length === 0) {return [];}
 
   const values = points.map(p => p.value);
   const dataMin = Math.min(...values);
@@ -71,7 +71,7 @@ export const calculateAmplifiedGraphPoints = (
       .slice(start, end + 1)
       .filter((_, idx) => start + idx !== i);
 
-    if (neighbors.length === 0) return p;
+    if (neighbors.length === 0) {return p;}
 
     const neighborAvg = neighbors.reduce((sum, n) => sum + n.value, 0) / neighbors.length;
     const localDeviation = p.value - neighborAvg;

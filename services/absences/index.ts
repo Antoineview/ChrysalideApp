@@ -2,9 +2,10 @@ import { MMKV } from "react-native-mmkv";
 
 import { addAttendanceToDatabase } from "@/database/useAttendance";
 import { addPeriodsToDatabase } from "@/database/useGrades";
-import { Attendance, Absence } from "@/services/shared/attendance";
+import { Absence,Attendance } from "@/services/shared/attendance";
 import { Period } from "@/services/shared/grade";
-import { AbsencesAPIResponse, AbsenceItem } from "./types";
+
+import {AbsencesAPIResponse } from "./types";
 
 // Initialize MMKV storage
 export const storage = new MMKV({
@@ -97,8 +98,8 @@ class AbsencesAPI {
             semester.periods.forEach(p => {
                 const pStart = new Date(p.beginDate);
                 const pEnd = new Date(p.endDate);
-                if (pStart < start) start = pStart;
-                if (pEnd > end) end = pEnd;
+                if (pStart < start) {start = pStart;}
+                if (pEnd > end) {end = pEnd;}
             });
         } else {
             start = new Date();
@@ -179,7 +180,7 @@ class AbsencesAPI {
     // headers["User-Agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
     
     console.log("Fetching grades with headers (keys):", Object.keys(headers));
-    if (this.token) console.log("Token prefix:", this.token.substring(0, 10) + "...");
+    if (this.token) {console.log("Token prefix:", this.token.substring(0, 10) + "...");}
 
     const response = await fetch(`${BASE_URL}/Users/student/grades`, {
       method: "GET",

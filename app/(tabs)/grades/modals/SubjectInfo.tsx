@@ -1,17 +1,17 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useRoute, useTheme } from "@react-navigation/native";
+import React from "react";
+import LinearGradient from "react-native-linear-gradient";
+
 import ModalOverhead, { ModalOverHeadScore } from "@/components/ModalOverhead";
 import Subject from "@/database/models/Subject";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
+import i18n from "@/utils/i18n";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { Papicons } from "@getpapillon/papicons";
-import { useRoute, useTheme } from "@react-navigation/native";
-import React from "react";
-import { View } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import i18n from "@/utils/i18n";
 
 const SubjectInfo = () => {
   const { params } = useRoute();

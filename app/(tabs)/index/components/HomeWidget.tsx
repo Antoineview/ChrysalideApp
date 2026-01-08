@@ -1,10 +1,11 @@
-import React from 'react';
-import Stack from '@/ui/components/Stack';
-import Icon from '@/ui/components/Icon';
-import Typography from '@/ui/components/Typography';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Papicons } from '@getpapillon/papicons';
 import { useRouter } from 'expo-router';
+import React from 'react';
+
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import Icon from '@/ui/components/Icon';
+import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
 
 export interface HomeWidgetItem {
   icon: React.ReactNode;
