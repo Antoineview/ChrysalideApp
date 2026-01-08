@@ -63,6 +63,7 @@ const SyllabusItem = React.memo(({ syllabus, ...props }: SyllabusItemProps) => {
             </Typography>
             <Typography variant="caption" color="secondary">
                 {syllabus.exams?.length || 0} {t("Syllabus_Exams", { count: syllabus.exams?.length || 0 })}
+                {syllabus.coeff !== undefined && ` • Coeff. ${syllabus.coeff}`}
             </Typography>
 
             <Trailing>

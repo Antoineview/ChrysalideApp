@@ -127,6 +127,14 @@ export default function SyllabusModal() {
               </Typography>
             </Item>
           )}
+          {syllabus.coeff !== undefined && (
+            <Item>
+              <Typography variant="title">{syllabus.coeff}</Typography>
+              <Typography variant="body2" color="secondary">
+                Coefficient
+              </Typography>
+            </Item>
+          )}
 
         </List>
       </Stack>

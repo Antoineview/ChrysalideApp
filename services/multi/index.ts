@@ -31,7 +31,7 @@ export class Multi implements SchoolServicePlugin {
   // Track if this is an Auriga account
   private isAuriga = false;
 
-  constructor(public accountId: string) {}
+  constructor(public accountId: string) { }
 
   async refreshAccount(credentials: Auth): Promise<Multi> {
     const refresh = await refreshMultiSession(this.accountId, credentials);
@@ -237,8 +237,9 @@ export class Multi implements SchoolServicePlugin {
           outOf: { value: 20 },
           grades: [],
         };
-        // Track UE code separately since Subject interface doesn't have it
+        // Track UE code and syllabus coefficient separately
         (subjectsMap[subjectKey] as any)._ueCode = ueCode;
+        (subjectsMap[subjectKey] as any)._syllabusCoeff = matchingSyllabus?.coeff;
       }
 
       const gradeItem: SharedGrade = {
@@ -318,14 +319,21 @@ export class Multi implements SchoolServicePlugin {
         // Check if all subjects are validation-only
         const allValidationOnly = ueSubjects.every(s => s.isValidationOnly);
 
-        // Calculate UE average excluding validation-only subjects
+        // Calculate UE average using weighted coefficients from syllabus
         const numericSubjects = ueSubjects.filter(s => !s.isValidationOnly);
-        const ueTotal = numericSubjects.reduce(
-          (sum, s) => sum + (s.studentAverage?.value || 0),
-          0
-        );
-        const ueAverage =
-          numericSubjects.length > 0 ? ueTotal / numericSubjects.length : 0;
+
+        // Use syllabus coefficients for weighted average calculation
+        let ueWeightedTotal = 0;
+        let ueTotalWeight = 0;
+
+        numericSubjects.forEach(s => {
+          const syllabusCoeff = (s as any)._syllabusCoeff;
+          const weight = syllabusCoeff !== undefined ? syllabusCoeff : 1;
+          ueWeightedTotal += (s.studentAverage?.value || 0) * weight;
+          ueTotalWeight += weight;
+        });
+
+        const ueAverage = ueTotalWeight > 0 ? ueWeightedTotal / ueTotalWeight : 0;
 
         const ueNames: Record<string, string> = {
           PR: "Produire",
