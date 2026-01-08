@@ -1,7 +1,7 @@
 import { Database } from '@nozbe/watermelondb';
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 
-import { Absence, Attendance, Delay, Observation, Punishment } from '@/database/models/Attendance';
+import { Absence, Attendance, AttendancePeriod, Exclusion } from '@/database/models/Attendance';
 import CanteenMenu from '@/database/models/CanteenMenu';
 import { Chat, Message, Recipient } from '@/database/models/Chat';
 import Event from '@/database/models/Event';
@@ -33,10 +33,9 @@ export const database = new Database({
     Grade,
     PeriodGrades,
     Attendance,
-    Delay,
-    Observation,
+    AttendancePeriod,
+    Exclusion,
     Absence,
-    Punishment,
     CanteenMenu,
     Chat,
     Message,

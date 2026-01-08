@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from "@nozbe/watermelondb";
 
 export const mySchema = appSchema({
-  version: 37,
+  version: 38,
   tables: [
     tableSchema({
       name: "events",
@@ -128,10 +128,27 @@ export const mySchema = appSchema({
     tableSchema({
       name: "attendance",
       columns: [
-        { name: "attendanceId", type: "string" },
-        { name: "createdByAccount", type: "string" },
-        { name: "kidName", type: "string", isOptional: true },
-        { name: "period", type: "string" },
+        { name: "levelId", type: "number" },
+        { name: "semesterId", type: "number" },
+        { name: "levelName", type: "string" },
+        { name: "promo", type: "number" },
+      ],
+    }),
+    tableSchema({
+      name: "attendance_periods",
+      columns: [
+        { name: "periodId", type: "number" },
+        { name: "points", type: "number" },
+        { name: "grade", type: "number" },
+        { name: "beginDate", type: "string" },
+        { name: "endDate", type: "string" },
+        { name: "attendanceId", type: "string", isIndexed: true },
+      ],
+    }),
+    tableSchema({
+      name: "exclusions",
+      columns: [
+        { name: "periodId", type: "string", isIndexed: true },
       ],
     }),
     tableSchema({
@@ -160,15 +177,12 @@ export const mySchema = appSchema({
     tableSchema({
       name: "absences",
       columns: [
-        { name: "from", type: "number" },
-        { name: "to", type: "number" },
-        { name: "reason", type: "string", isOptional: true },
-        { name: "justified", type: "boolean" },
-        { name: "attendanceId", type: "string", isIndexed: true },
-        { name: "kidName", type: "string", isOptional: true },
-        { name: "slotId", type: "string", isOptional: true },
-        { name: "subjectName", type: "string", isOptional: true },
-        { name: "mandatory", type: "boolean", isOptional: true },
+        { name: "slotId", type: "number" },
+        { name: "startDate", type: "string" },
+        { name: "subjectName", type: "string" },
+        { name: "justificatory", type: "string" },
+        { name: "mandatory", type: "boolean" },
+        { name: "periodId", type: "string", isIndexed: true },
       ],
     }),
     tableSchema({
