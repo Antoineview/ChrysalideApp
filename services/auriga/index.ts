@@ -6,8 +6,8 @@ import { registerSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { cleanSubjectName } from "@/utils/subjects/utils";
 
-import { GRADES_PAYLOAD, SYLLABUS_PAYLOAD } from "./payloads";
-import { Grade, Syllabus, UserData } from "./types";
+import { GRADES_PAYLOAD, SYLLABUS_PAYLOAD, COEFFS_PAYLOAD } from "./payloads";
+import { Grade, Syllabus, UserData, Coeff } from "./types";
 
 // Initialize MMKV storage
 export const storage = new MMKV({
@@ -35,7 +35,7 @@ export function isBachelorSection(name: string): boolean {
   return /^\d{4}_B_/.test(name);
 }
 
-const BASE_URL = "https://auriga.epita.fr/api"; // Updated base URL to be cleaner
+const BASE_URL = "https://auriga.epita.fr/api";
 
 class AurigaAPI {
   private token: string | null = null;
@@ -63,7 +63,6 @@ class AurigaAPI {
     const { getDatabaseInstance } = await import("@/database/DatabaseProvider");
     const { Grade } = await import("@/database/models/Grades");
 
-    // Check if MMKV cache is empty
     const cachedGrades = storage.getString("auriga_grades");
     if (!cachedGrades || cachedGrades === "[]") {
       try {
@@ -71,12 +70,11 @@ class AurigaAPI {
         const dbGrades = await db.get("grades").query().fetch();
 
         if (dbGrades.length > 0) {
-          // Convert WatermelonDB records to Auriga Grade format
           const grades: Grade[] = dbGrades.map((g: any) => ({
             code: g.gradeId || g.id,
             type: g.description || "",
             name: g.subjectName || "",
-            semester: 0, // Will be extracted from name
+            semester: 0,
             grade: JSON.parse(g.studentScoreRaw || "{}").value || 0,
           }));
 
@@ -108,29 +106,24 @@ class AurigaAPI {
     let fetchedGrades: Grade[] = [];
     let fetchedSyllabus: Syllabus[] = [];
 
-    // 1. Fetch Grades
     log("📊 Fetching Grades...");
     try {
       fetchedGrades = await this.fetchAllGrades();
-      // Only save to cache if we got valid data (prevents wiping cache on 401 errors)
       if (fetchedGrades.length > 0) {
-        // Load existing cached grades to preserve syncedAt dates
         const existingCached = storage.getString("auriga_grades");
         const existingGrades: Grade[] = existingCached
           ? JSON.parse(existingCached)
           : [];
 
-        // Create a map of existing grades by code for quick lookup
         const existingGradesMap = new Map<string, Grade>();
         existingGrades.forEach(g => existingGradesMap.set(g.code, g));
 
-        // Preserve syncedAt dates for existing grades, set new date for new grades
         const now = Date.now();
         fetchedGrades = fetchedGrades.map(g => {
           const existing = existingGradesMap.get(g.code);
           return {
             ...g,
-            syncedAt: existing?.syncedAt || now, // Preserve existing date or set new one
+            syncedAt: existing?.syncedAt || now,
           };
         });
 
@@ -138,7 +131,6 @@ class AurigaAPI {
         log(`✅ Fetched ${fetchedGrades.length} grades.`);
       } else {
         log("⚠️ No grades fetched, keeping existing cache.");
-        // Load existing cached grades instead
         const cached = storage.getString("auriga_grades");
         if (cached) {
           fetchedGrades = JSON.parse(cached);
@@ -146,22 +138,18 @@ class AurigaAPI {
       }
     } catch (e) {
       console.error("Failed to fetch grades:", e);
-      // Keep existing cache
       const cached = storage.getString("auriga_grades");
       if (cached) {
         fetchedGrades = JSON.parse(cached);
       }
     }
 
-    // 2. Fetch Syllabus
     log("📚 Fetching Syllabus...");
     try {
       fetchedSyllabus = await this.fetchAllSyllabus();
-      // Only save to cache if we got valid data (prevents wiping cache on 401 errors)
       if (fetchedSyllabus.length > 0) {
         storage.set("auriga_syllabus", JSON.stringify(fetchedSyllabus));
         log(`✅ Fetched ${fetchedSyllabus.length} syllabus items.`);
-        // Log each syllabus for detailed visibility
         for (const s of fetchedSyllabus) {
           log(
             `[Syllabus] ${s.name} | UE: ${s.UE} | S${s.semester} | ${s.caption?.name || "No caption"}`
@@ -169,14 +157,12 @@ class AurigaAPI {
         }
       } else {
         log("⚠️ No syllabus fetched, keeping existing cache.");
-        // Load existing cached syllabus instead
         const cached = storage.getString("auriga_syllabus");
         if (cached) {
           fetchedSyllabus = JSON.parse(cached);
         }
       }
 
-      // Register syllabus items as subjects in the database
       const subjectsToAdd = fetchedSyllabus.map((s: Syllabus) => ({
         id: s.name || String(s.id),
         name: s.caption?.name || s.name || String(s.id),
@@ -193,19 +179,15 @@ class AurigaAPI {
       await addSubjectsToDatabase(subjectsToAdd);
       log(`📝 Registered ${fetchedSyllabus.length} subjects in database.`);
 
-      // Register subjects in account store for customization UI
       const store = useAccountStore.getState();
       for (const s of fetchedSyllabus) {
         const subjectName = s.caption?.name || s.name || String(s.id);
         const cleanedName = cleanSubjectName(subjectName);
 
-        // Register color (will be generated if not exists)
         registerSubjectColor(subjectName);
 
-        // Get emoji (from subject format or default)
         const emoji = getSubjectEmoji(subjectName);
 
-        // Set all three properties in account store
         store.setSubjectName(cleanedName, subjectName);
         store.setSubjectEmoji(cleanedName, emoji);
       }
@@ -216,12 +198,10 @@ class AurigaAPI {
       console.error("Failed to fetch syllabus:", e);
     }
 
-    // 3. Match grades to subjects and save to database
     log("🔗 Matching grades with subjects...");
     try {
       const { addGradesToDatabase } = await import("@/database/useGrades");
 
-      // Build list of grade subject codes for prefix matching
       const gradeCodePairs: { code: string; grade: Grade }[] = [];
       log(`[Match] Building grade list from ${fetchedGrades.length} grades...`);
       fetchedGrades.forEach(g => {
@@ -233,11 +213,8 @@ class AurigaAPI {
       let totalMatched = 0;
       let totalUnmatched = 0;
 
-      // Process each syllabus and find matching grades using PREFIX matching
       log(`[Match] Processing ${fetchedSyllabus.length} syllabi...`);
       for (const syllabus of fetchedSyllabus) {
-        // Extract base subject code from syllabus name
-        // Syllabus format: [UE]_[PARCOURS?]_[ECUE] (no exam suffix)
         const syllabusSubjectCode = extractSubjectCode(syllabus.name);
         log(
           `[Match] Syllabus: "${syllabus.name}" -> BaseCode: "${syllabusSubjectCode}"`
@@ -246,8 +223,6 @@ class AurigaAPI {
         const displayName =
           syllabus.caption?.name || syllabus.name || String(syllabus.id);
 
-        // Find ALL grades that match this syllabus using PREFIX matching
-        // Grade "MIA_IGM_EXA" matches syllabus "MIA_IGM" because it starts with "MIA_IGM_"
         const matchingGrades = gradeCodePairs.filter(
           ({ code }) =>
             code.startsWith(syllabusSubjectCode + "_") ||
@@ -261,10 +236,7 @@ class AurigaAPI {
         const gradesToSave = [];
 
         for (const { code, grade } of matchingGrades) {
-          // Extract exam part from the grade code (everything after syllabus code)
-          const examPart = code.substring(syllabusSubjectCode.length + 1); // +1 for the underscore
-
-          // Find matching exam in syllabus to get description and weighting
+          const examPart = code.substring(syllabusSubjectCode.length + 1);
           const examParts = examPart.split("_");
           const examType = examParts[0];
           const examIndex = examParts[1]
@@ -275,14 +247,12 @@ class AurigaAPI {
             if (e.type !== examType) {
               return false;
             }
-            // If index is specified in grade, match it; otherwise match by type only
             if (examIndex !== undefined) {
               return e.index === examIndex;
             }
             return true;
           });
 
-          // Build description from exam metadata
           let description = examType || "Note";
           let coefficient = 1;
 
@@ -329,7 +299,6 @@ class AurigaAPI {
         }
       }
 
-      // Count unmatched grades
       const matchedGradeCodes = new Set<string>();
       for (const syllabus of fetchedSyllabus) {
         const syllabusCode = extractSubjectCode(syllabus.name);
@@ -356,8 +325,6 @@ class AurigaAPI {
     };
   }
 
-  // --- Getters (from Storage) ---
-
   getStudentData(): UserData | null {
     const data = storage.getString("auriga_userdata");
     return data ? JSON.parse(data) : null;
@@ -372,6 +339,51 @@ class AurigaAPI {
     return this.getAllGrades().find(g => g.code.toString() === code);
   }
 
+  async getAllCoeffs(): Promise<Coeff[]> {
+    let headers: any = {};
+    if (this.token) {
+      headers = {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/json",
+      };
+    } else {
+      headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Origin: "https://auriga.epita.fr",
+        Referer: "https://auriga.epita.fr/",
+        "X-Requested-With": "XMLHttpRequest",
+      };
+
+      if (this.cookie) {
+        headers["Cookie"] = this.cookie;
+        const xsrfMatch = this.cookie.match(/XSRF-TOKEN=([^;]+)/);
+        if (xsrfMatch) {
+          headers["X-XSRF-TOKEN"] = xsrfMatch[1];
+        }
+      }
+    }
+
+    const response = await fetch(`https://auriga.epita.fr/api/menuEntries/1144/searchResult?size=100&page=1&sort=id`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(COEFFS_PAYLOAD),
+    });
+
+    const contentType = response.headers.get("content-type");
+    if (!response.ok || (contentType && contentType.includes("text/html"))) {
+      console.error(`Auriga API Error [COEFFS] (${response.status}):`);
+      throw new Error(`Auriga API Error (${response.status}) on COEFFS`);
+    }
+
+    const data = await response.json();
+    return data.content.lines.map((coeff: any) => ({
+      name: coeff[2],
+      value: coeff[4],
+    }));
+  }
+
+
   /**
    * Returns grades enriched with syllabus exam descriptions and weightings.
    * Uses PREFIX MATCHING for year/semester-agnostic matching.
@@ -380,14 +392,9 @@ class AurigaAPI {
     const allGrades = this.getAllGrades();
     const syllabusList = this.getAllSyllabus();
 
-    // Enrich each grade by finding matching syllabus using prefix matching
     return allGrades.map(g => {
-      // Extract full code from grade name (includes exam type and index)
-      // e.g., MIA_IGM_EXA or CN_PC_PSE_EXA_1
       const gradeFullCode = extractSubjectCode(g.name);
 
-      // Find matching syllabus using PREFIX matching
-      // Grade "MIA_IGM_EXA" matches syllabus "MIA_IGM" because it starts with "MIA_IGM_"
       const matchingSyllabus = syllabusList.find(s => {
         const syllabusSubjectCode = extractSubjectCode(s.name);
         return (
@@ -398,7 +405,6 @@ class AurigaAPI {
 
       if (matchingSyllabus) {
         const syllabusSubjectCode = extractSubjectCode(matchingSyllabus.name);
-        // Extract exam part from grade code
         const examPart = gradeFullCode.substring(
           syllabusSubjectCode.length + 1
         );
@@ -406,7 +412,6 @@ class AurigaAPI {
         const examType = examParts[0];
         const examIndex = examParts[1] ? parseInt(examParts[1], 10) : undefined;
 
-        // Find matching exam in syllabus
         const matchingExam = matchingSyllabus.exams?.find(e => {
           if (e.type !== examType) {
             return false;
@@ -438,7 +443,6 @@ class AurigaAPI {
         }
       }
 
-      // Fallback: no match found, use grade's own type/name
       return {
         ...g,
         description: g.type || g.name,
@@ -456,14 +460,11 @@ class AurigaAPI {
     return this.getAllSyllabus().filter(s => s.semester === semester);
   }
 
-  // --- Fetch Implementation ---
-
   /**
    * Fetches the access token using the session cookies.
    */
   async fetchToken(): Promise<string | null> {
     try {
-      // Try /api/token as the likely candidate
       const tokenUrl = "https://auriga.epita.fr/api/token";
 
       const headers: any = {
@@ -482,11 +483,9 @@ class AurigaAPI {
       if (this.cookie) {
         headers["Cookie"] = this.cookie;
 
-        // XSRF Protection: Extract XSRF-TOKEN and send as X-XSRF-TOKEN header
         const xsrfMatch = this.cookie.match(/XSRF-TOKEN=([^;]+)/);
         if (xsrfMatch) {
           headers["X-XSRF-TOKEN"] = xsrfMatch[1];
-          console.log("Added X-XSRF-TOKEN header");
         }
       }
 
@@ -520,13 +519,11 @@ class AurigaAPI {
     let headers: any = {};
 
     if (this.token) {
-      // If we have a token, stick to the minimal headers that work (as seen in user's snippet)
       headers = {
         Authorization: `Bearer ${this.token}`,
         "Content-Type": "application/json",
       };
     } else {
-      // Fallback to cookie-based auth if no token (legacy/browser mode)
       headers = {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -537,7 +534,6 @@ class AurigaAPI {
 
       if (this.cookie) {
         headers["Cookie"] = this.cookie;
-        // XSRF Protection for POST requests too
         const xsrfMatch = this.cookie.match(/XSRF-TOKEN=([^;]+)/);
         if (xsrfMatch) {
           headers["X-XSRF-TOKEN"] = xsrfMatch[1];
@@ -560,7 +556,6 @@ class AurigaAPI {
     return await response.json();
   }
 
-  // Using User's endpoints from their code snippet
   private async fetchAllGrades(): Promise<Grade[]> {
     try {
       const allGrades: Grade[] = [];
@@ -584,14 +579,12 @@ class AurigaAPI {
             return;
           }
 
-          const gradeValue = row[1]; // Calculated field: numeric grade or alpha text
-          const itemCode = row[0]; // Obligation ID (numeric)
-          const itemName = row[2]; // Obligation code (string with semester info)
-          const typeName = row[4]; // Exam type code
+          const gradeValue = row[1];
+          const itemCode = row[0];
+          const itemName = row[2];
+          const typeName = row[4];
 
           let semester = 0;
-          // Extract semester from code (e.g. "..._S03_...")
-          // itemName contains the full grade code like 2526_I_INF_FISE_S03_...
           const codeStr = String(itemName);
           const match = codeStr.match(/_S(\d+)_/i);
           if (match) {
@@ -599,7 +592,6 @@ class AurigaAPI {
           }
 
           if (gradeValue !== null && gradeValue !== undefined) {
-            // Check if it's an alpha mark (VA, NV, Validé, Non validé)
             const gradeStr = String(gradeValue).trim();
             let alphaMark: string | undefined;
             let numericGrade = 0;
@@ -609,14 +601,13 @@ class AurigaAPI {
             } else if (gradeStr === "NV" || gradeStr === "Non validé") {
               alphaMark = "NV";
             } else {
-              // Parse as numeric grade
               numericGrade = Number(gradeStr.replace(",", ".")) || 0;
             }
 
             allGrades.push({
-              code: String(itemCode), // Keep ID as code
+              code: String(itemCode),
               type: String(typeName),
-              name: codeStr, // Use string code as name (for matching)
+              name: codeStr,
               semester: semester,
               grade: numericGrade,
               alphaMark: alphaMark,
@@ -679,7 +670,6 @@ class AurigaAPI {
       const definitionUrl =
         "menuEntries/166/courseCatalogDefinitions?sortBy=code,asc";
 
-      // Use strict fetch matching user snippet
       const definitions = await fetchWithToken(definitionUrl, "GET");
 
       if (!definitions || !definitions.content) {
@@ -695,12 +685,10 @@ class AurigaAPI {
 
       for (const element of definitions.content) {
         try {
-          // Update filter ID
           if (payload.searchResultDefinition?.filtersCustom) {
             payload.searchResultDefinition.filtersCustom.id = element.id;
           }
 
-          // Use strict fetch for search
           const response = await fetchWithToken(searchUrl, "POST", payload);
 
           const lines = response?.content?.lines || [];
@@ -727,12 +715,18 @@ class AurigaAPI {
       return [];
     }
 
-    // 2. Fetch Details for each ID
+    console.log("Fetching coefficients...");
+    let coeffs: Coeff[] = [];
+    try {
+      coeffs = await this.getAllCoeffs();
+      console.log(`Fetched ${coeffs.length} coefficients.`);
+    } catch (e) {
+      console.warn("Failed to fetch coefficients:", e);
+    }
+
     console.log("Fetching details for syllabuses...");
     const syllabusDetails: Syllabus[] = [];
 
-    // We can't do too many parallel requests or we might get rate limited/blocked.
-    // Let's do batches of 5.
     const BATCH_SIZE = 5;
     for (let i = 0; i < allIds.length; i += BATCH_SIZE) {
       const batch = allIds.slice(i, i + BATCH_SIZE);
@@ -740,9 +734,8 @@ class AurigaAPI {
         batch.map(async (id: string) => {
           try {
             const endpoint = `menuEntries/166/syllabuses/${id}`;
-            // Use strict fetch format for details too
             const detailRes = await fetchWithToken(endpoint, "GET");
-            const mapped = this.mapSyllabusDetail(detailRes);
+            const mapped = this.mapSyllabusDetail(detailRes, coeffs);
             if (mapped) {
               syllabusDetails.push(mapped);
             }
@@ -783,27 +776,18 @@ class AurigaAPI {
     return await response.json();
   }
 
-  private mapSyllabusDetail(row: any): Syllabus | null {
-    // User mapping logic:
-    // UE: String(element.documents[0].fileName).split("_")[5],
-    // ...
+  private mapSyllabusDetail(row: any, coeffs: Coeff[] = []): Syllabus | null {
     if (!row) {
       return null;
     }
 
     try {
       const fileName = row.documents?.[0]?.fileName || "";
-      // Use row.code as the syllabus code - this is what grade names use for matching
-      // Example: "2526_I_INF_FISE_S03_CN_PC_AL" (from row.code)
-      // vs fileName: "2526_I_INF_FISE_S03_CN_PC_AL_FR" (includes language suffix)
       const syllabusCode = row.code || fileName.replace(/_(FR|EN)$/, "");
 
-      // Extract semester from code using regex (handles all formats)
-      // Pattern: _SXX_ where XX is the semester number
       const semesterMatch = syllabusCode.match(/_S(\d+)_/i);
       const semester = semesterMatch ? parseInt(semesterMatch[1], 10) : 0;
 
-      // Extract subject code (everything after _SXX_) and get UE (first part)
       const subjectCode = extractSubjectCode(syllabusCode);
       const ueCode = subjectCode.split("_")[0] || "Unknown";
 
@@ -811,13 +795,16 @@ class AurigaAPI {
         `[Syllabus] Code: "${syllabusCode}" -> Semester: ${semester}, UE: "${ueCode}", SubjectCode: "${subjectCode}"`
       );
 
+      const coeff = coeffs.find((c) => c.name === syllabusCode);
+
       return {
         id: row.id,
         UE: ueCode,
         semester: semester,
-        name: syllabusCode, // Use the proper syllabus code for matching
-        code: row.field?.code, // This is the field/subject area code
+        name: syllabusCode,
+        code: row.field?.code,
         minScore: row.customAttributes?.miniScore,
+        coeff: coeff ? coeff.value : undefined,
         duration: row.duration,
         period: {
           startDate: row.period?.startDate,
@@ -826,14 +813,14 @@ class AurigaAPI {
         exams:
           row.syllabusAssessmentComponents?.map((e: any, i: number) => ({
             id: e.id,
-            index: e.index ?? i + 1, // Use component's index or 1-based array position
+            index: e.index ?? i + 1,
             description: e.description,
             type: e.examType?.code,
             typeName: e.examType?.caption?.fr,
             weighting: e.weighting,
           })) || [],
         courseDescription: {
-          coursPlan: row.customAttributes?.CoursePlan, // Program
+          coursPlan: row.customAttributes?.CoursePlan,
           expected: [],
         },
         caption: {

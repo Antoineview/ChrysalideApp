@@ -8,6 +8,11 @@ export interface Grade {
   syncedAt?: number; // Timestamp of when this grade was first synced
 }
 
+export interface Coeff {
+  name: string;
+  value: number;
+}
+
 export interface Syllabus {
   id: number;
   UE: string;
@@ -27,6 +32,7 @@ export interface Syllabus {
   locations: Location[];
   grade?: number;
   matchedGrades?: (Grade & { weighting: number })[];
+  coeff?: number;
 }
 
 export interface Period {

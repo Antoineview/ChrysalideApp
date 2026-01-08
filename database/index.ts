@@ -26,7 +26,7 @@ export const database = new Database({
   modelClasses: [
     Event,
     Ical,
-    Subject, 
+    Subject,
     Homework,
     News,
     Period,
