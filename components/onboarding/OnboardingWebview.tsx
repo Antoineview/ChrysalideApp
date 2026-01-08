@@ -1,4 +1,6 @@
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { t } from "i18next";
 import React, { useEffect } from "react";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, View } from "react-native";
@@ -7,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewProps } from "react-native-webview";
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
@@ -22,6 +25,7 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
 }) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
+  const router = useRouter();
   const [totallyLoaded, setTotallyLoaded] = React.useState(false);
 
   const titleOpacity = useSharedValue(1);
@@ -87,20 +91,27 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              paddingTop: 16,
+              paddingVertical: 16,
               paddingHorizontal: 16,
-              paddingBottom: 16,
               backgroundColor: color,
               borderBottomLeftRadius: 42,
               borderBottomRightRadius: 42,
               borderCurve: "continuous",
             }}
           >
-            {/* Spacer for back button (10 padding + 26 icon + 10 padding = 46) */}
-            <View style={{ width: 46, height: 46 }} />
+            <AnimatedPressable
+              onPress={() => router.back()}
+              style={{
+                backgroundColor: '#ffffff42',
+                padding: 10,
+                borderRadius: 100,
+              }}
+            >
+              <Papicons name="ArrowLeft" size={26} fill="#fff" />
+            </AnimatedPressable>
             <Typography
               variant="h3"
-              style={{ color: "#FFFFFF", lineHeight: 28, fontSize: 22, marginLeft: 8 }}
+              style={{ color: "#FFFFFF", lineHeight: 28, fontSize: 22, marginLeft: 12 }}
             >
               {title}
             </Typography>
@@ -187,7 +198,7 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
             </View>
           </View>
         </View>
-        <OnboardingBackButton />
+        {!hideSteps && <OnboardingBackButton />}
       </KeyboardAvoidingView>
     </ViewContainer>
   );
