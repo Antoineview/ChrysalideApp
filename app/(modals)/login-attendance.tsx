@@ -44,13 +44,15 @@ export default function AttendanceLoginScreen() {
       (function() {
         function checkAndPost(data, source) {
             if (data && data.access_token) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'TOKEN',
-                    payload: {
-                        access_token: data.access_token,
-                        source: source
-                    }
-                }));
+                if (window.ReactNativeWebView) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({
+                        type: 'TOKEN',
+                        payload: {
+                            access_token: data.access_token,
+                            source: source
+                        }
+                    }));
+                }
             }
         }
 
