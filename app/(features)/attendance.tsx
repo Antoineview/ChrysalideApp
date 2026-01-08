@@ -316,6 +316,17 @@ export default function AttendanceView() {
             </NativeHeaderPressable>
           </NativeHeaderSide>
 
+          <NativeHeaderSide side="Right" style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }}>
+            <NativeHeaderPressable onPress={() => {
+              AbsencesAPI.logout();
+              router.back();
+            }}>
+              <Icon papicon opacity={0.5}>
+                <Papicons name={"Logout"} />
+              </Icon>
+            </NativeHeaderPressable>
+          </NativeHeaderSide>
+
           <NativeHeaderTitle style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }} key={"att:" + period?.name}>
             <MenuView
               key={String(period?.id ?? "")}

@@ -90,7 +90,7 @@ export function RootNavigator() {
         name="(modals)/login-attendance"
         options={{
           headerShown: false,
-          presentation: "formSheet",
+          presentation: "modal",
         }}
       />
       <Stack.Screen

@@ -1,6 +1,6 @@
 import CookieManager from '@react-native-cookies/cookies';
 import { useTheme } from "@react-navigation/native";
-import { Stack, useLocalSearchParams,useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -153,7 +153,7 @@ export default function AttendanceLoginScreen() {
     }
 
     const startSync = async (accessToken: string) => {
-        if (isSyncing) {return;}
+        if (isSyncing) { return; }
         setIsSyncing(true);
         setShowWebView(false);
 
@@ -241,6 +241,7 @@ export default function AttendanceLoginScreen() {
                     color="#0078D4"
                     step={1}
                     totalSteps={1}
+                    hideSteps={true}
                     webViewRef={webViewRef}
                     webviewProps={{
                         source: { uri: ABSENCES_AUTH_URL },
