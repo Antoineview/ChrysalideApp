@@ -34,11 +34,10 @@ export default function AttendanceLoginScreen() {
     React.useEffect(() => {
         if (isRefresh) {
             setShowWebView(true);
-            setHasInjected(false);
         }
     }, [isRefresh]);
 
-    const [hasInjected, setHasInjected] = useState(false);
+
 
     const FETCH_TOKEN_SCRIPT = `
       (function() {
@@ -192,13 +191,14 @@ export default function AttendanceLoginScreen() {
     const handleNavigationStateChange = async (navState: WebViewNavigation) => {
         const { url } = navState;
         console.log("WebView Nav:", url);
+    };
 
-        if (!isSyncing && !hasInjected && !url.includes("login.microsoftonline.com")) {
-            setHasInjected(true);
-            if (webViewRef.current) {
-                console.log("Injecting Token Interceptor...");
-                webViewRef.current.injectJavaScript(FETCH_TOKEN_SCRIPT);
-            }
+    const handleLoadEnd = () => {
+        // Re-inject on every page load to ensure it works on iOS
+        // iOS WKWebView can lose injected scripts on navigation
+        if (!isSyncing && webViewRef.current) {
+            console.log("Injecting Token Interceptor on load end...");
+            webViewRef.current.injectJavaScript(FETCH_TOKEN_SCRIPT);
         }
     };
 
@@ -221,7 +221,6 @@ export default function AttendanceLoginScreen() {
 
     const handleLogin = () => {
         setShowWebView(true);
-        setHasInjected(false);
     };
 
     if (isSyncing) {
@@ -250,8 +249,11 @@ export default function AttendanceLoginScreen() {
                     webviewProps={{
                         source: { uri: ABSENCES_AUTH_URL },
                         onNavigationStateChange: handleNavigationStateChange,
+                        onLoadEnd: handleLoadEnd,
                         onMessage: handleMessage,
-                        injectedJavaScriptBeforeContentLoaded: FETCH_TOKEN_SCRIPT,
+                        // Use injectedJavaScript instead of injectedJavaScriptBeforeContentLoaded
+                        // as iOS WKWebView doesn't reliably run the latter before page JS
+                        injectedJavaScript: FETCH_TOKEN_SCRIPT,
                         sharedCookiesEnabled: true,
                         javaScriptEnabled: true,
                         domStorageEnabled: true,
