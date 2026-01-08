@@ -131,6 +131,8 @@ export interface GenericInterface {
   createdByAccount: string;
   fromCache?: boolean;
   kidName?: string;
+  id?: string;
+  kidId?: string;
 }
 
 export type FetchOptions<T> = {

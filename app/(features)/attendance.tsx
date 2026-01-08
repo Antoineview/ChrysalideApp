@@ -29,7 +29,6 @@ export default function AttendanceView() {
 
   const search = useLocalSearchParams();
 
-  // Helper for safe JSON parsing
   const parseSafe = <T,>(data: any, fallback: T): T => {
     try {
       return data ? JSON.parse(String(data)) : fallback;
@@ -46,32 +45,55 @@ export default function AttendanceView() {
   const [periods, setPeriods] = useState<Period[]>(initialPeriods);
   const [attendances, setAttendances] = useState<Attendance[]>(initialAttendances);
   const [period, setPeriod] = useState<Period | null>(initialCurrentPeriod);
+  const [rawData, setRawData] = useState<any[]>([]);
 
   useEffect(() => {
     const refreshData = async () => {
       try {
+        let data: any[] = [];
 
         if (AbsencesAPI.isLoggedIn()) {
           try {
-            await AbsencesAPI.sync();
+            data = await AbsencesAPI.sync();
           } catch (syncError) {
             console.warn("Absences sync failed, using cached data:", syncError);
+            data = await AbsencesAPI.initializeFromDatabase();
+          }
+        } else {
+          data = await AbsencesAPI.initializeFromDatabase();
+        }
+
+        setRawData(data);
+
+        if (data && data.length > 0) {
+          const mappedPeriods: Period[] = data.map((level: any) => {
+            let start = new Date();
+            let end = new Date(0);
+
+            if (level.periods && level.periods.length > 0) {
+              const starts = level.periods.map((p: any) => new Date(p.beginDate).getTime());
+              const ends = level.periods.map((p: any) => new Date(p.endDate).getTime());
+              start = new Date(Math.min(...starts));
+              end = new Date(Math.max(...ends));
+            }
+
+            return {
+              id: level.levelName,
+              name: level.levelName,
+              start,
+              end,
+              createdByAccount: "auriga",
+            };
+          });
+
+          mappedPeriods.sort((a, b) => b.start.getTime() - a.start.getTime());
+
+          setPeriods(mappedPeriods);
+          if (mappedPeriods.length > 0) {
+            setPeriod(mappedPeriods[0]);
           }
         }
 
-        const manager = getManager();
-        const freshPeriods = await manager.getAttendancePeriods();
-
-        if (freshPeriods.length > 0) {
-          freshPeriods.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-          const latestPeriod = freshPeriods[freshPeriods.length - 1];
-
-          // Force UI to only show the single latest semester
-          setPeriods([latestPeriod]);
-
-          // Always auto-select the latest period to switch the view
-          setPeriod(latestPeriod);
-        }
       } catch (e) {
         console.error("Failed to refresh attendance data", e);
       }
@@ -79,6 +101,50 @@ export default function AttendanceView() {
 
     refreshData();
   }, []);
+
+  useEffect(() => {
+    if (!period || !rawData.length) return;
+
+    const levelData = rawData.find((l: any) => l.levelName === period.id);
+    if (levelData && levelData.periods) {
+      const allAbsences: any[] = [];
+
+      levelData.periods.forEach((p: any) => {
+        if (p.absences) {
+          p.absences.forEach((abs: any) => {
+            allAbsences.push(abs);
+          });
+        }
+      });
+
+      allAbsences.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+      const mappedAttendance: Attendance = {
+        id: String(levelData.semesterId),
+        kidId: "me",
+        createdByAccount: "auriga",
+        absences: allAbsences.map((abs: any) => ({
+          id: String(abs.slotId) || Math.random().toString(),
+          createdByAccount: "auriga",
+          from: new Date(abs.startDate),
+          to: new Date(new Date(abs.startDate).getTime() + 90 * 60 * 1000),
+          timeMissed: 90,
+          justified: !!abs.justificatory,
+          reason: abs.justificatory || abs.subjectName,
+          subjectName: abs.subjectName,
+        })),
+        delays: [],
+        punishments: [],
+        observations: []
+      };
+
+      mappedAttendance.absences.forEach(a => a.timeMissed = 90);
+
+      setAttendances([mappedAttendance]);
+    } else {
+      setAttendances([]);
+    }
+  }, [period, rawData]);
 
   const { missedTime, missedTimeUnjustified, unjustifiedAbsenceCount, unjustifiedDelayCount, absenceCount, delayCount } = useMemo(() => {
     let missed = 0;
@@ -105,6 +171,7 @@ export default function AttendanceView() {
         missed += delay.duration
       }
     }
+
     return { missedTime: missed, missedTimeUnjustified: unjustified, unjustifiedAbsenceCount: unjustifiedAbs, unjustifiedDelayCount: unjustifiedDelays, absenceCount: Abs, delayCount: Delays };
   }, [period, attendances]);
 
