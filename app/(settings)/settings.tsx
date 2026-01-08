@@ -57,9 +57,9 @@ export default function SettingsIndex() {
   const logout = useCallback(() => {
     const account = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount)
     if (account) {
-      useAccountStore.getState().removeAccount(account)
-      useAccountStore.getState().setLastUsedAccount("")
-      AbsencesAPI.setToken("")
+      //useAccountStore.getState().removeAccount(account)
+      //useAccountStore.getState().setLastUsedAccount("")
+      //AbsencesAPI.setToken("")
       for (const service of account.services) {
         ClearDatabaseForAccount(service.id)
       }
