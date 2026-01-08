@@ -3,110 +3,66 @@
 import { Model } from '@nozbe/watermelondb';
 import { children, field, relation } from '@nozbe/watermelondb/decorators';
 
-import { Attachment } from '@/services/shared/attachment';
-
 export class Attendance extends Model {
   static table = "attendance";
 
   static associations = {
-    delays: { type: 'has_many', foreignKey: 'attendanceId' },
-    absences: { type: 'has_many', foreignKey: 'attendanceId' },
-    observations: { type: 'has_many', foreignKey: 'attendanceId' },
-    punishments: { type: 'has_many', foreignKey: 'attendanceId' },
+    attendance_periods: { type: 'has_many', foreignKey: 'attendanceId' },
   };
   
-  @field('attendanceId') attendanceId: string;
-  @field('createdByAccount') createdByAccount: string;
-	@field('kidName') kidName?: string;
-  @field('period') period: string;
+  @field('levelId') levelId: number;
+  @field('semesterId') semesterId: number;
+  @field('levelName') levelName: string;
+  @field('promo') promo: number;
 
-  @children('delays') delays!: Query<Delay>;
-  @children('absences') absences!: Query<Absence>;
-  @children('observations') observations!: Query<Observation>;
-  @children('punishments') punishments!: Query<Punishment>;
+  @children('attendance_periods') periods: Query<AttendancePeriod>;
 }
 
-export class Delay extends Model {
-  static table = "delays";
+export class AttendancePeriod extends Model {
+  static table = "attendance_periods";
 
   static associations = {
     attendance: { type: 'belongs_to', key: 'attendanceId' },
+    absences: { type: 'has_many', foreignKey: 'periodId' },
+    exclusions: { type: 'has_many', foreignKey: 'periodId' },
   };
 
-  @field('givenAt') givenAt: number;
-  @field('reason') reason?: string;
-  @field('justified') justified: boolean;
-  @field('duration') duration: number;
+  @field('periodId') periodId: number;
+  @field('points') points: number;
+  @field('grade') grade: number;
+  @field('beginDate') beginDate: string;
+  @field('endDate') endDate: string;
   @field('attendanceId') attendanceId: string;
-	@field('kidName') kidName: string;
+
   @relation('attendance', 'attendanceId') attendance: Attendance;
-}
-
-export class Observation extends Model {
-  static table = "observations";
-
-  static associations = {
-    attendance: { type: 'belongs_to', key: 'attendanceId' },
-  };
-
-  @field('givenAt') givenAt: number;
-  @field('sectionName') sectionName: string;
-  @field('sectionType') sectionType: number;
-  @field('subjectName') subjectName?: string;
-  @field('shouldParentsJustify') shouldParentsJustify: boolean;
-  @field('reason') reason?: string;
-  @field('attendanceId') attendanceId: string;
-  @relation('attendance', 'attendanceId') attendance: Attendance;
+  @children('absences') absences: Query<Absence>;
+  @children('exclusions') exclusions: Query<Exclusion>;
 }
 
 export class Absence extends Model {
   static table = "absences";
 
   static associations = {
-    attendance: { type: 'belongs_to', key: 'attendanceId' },
+    attendance_periods: { type: 'belongs_to', key: 'periodId' },
   };
 
-  @field('from') from: number;
-  @field('to') to: number;
-  @field('reason') reason?: string;
-  @field('justified') justified: boolean;
-  @field('attendanceId') attendanceId: string;
-	@field('kidName') kidName: string;
-
-  // New fields
-  @field('slotId') slotId: string;
+  @field('slotId') slotId: number;
+  @field('startDate') startDate: string;
   @field('subjectName') subjectName: string;
+  @field('justificatory') justificatory: string;
   @field('mandatory') mandatory: boolean;
-  @relation('attendance', 'attendanceId') attendance: Attendance;
+  @field('periodId') periodId: string;
+
+  @relation('attendance_periods', 'periodId') period: AttendancePeriod;
 }
 
-export class Punishment extends Model {
-  static table = "punishments";
+export class Exclusion extends Model {
+  static table = "exclusions";
 
   static associations = {
-    attendance: { type: 'belongs_to', key: 'attendanceId' },
+    attendance_periods: { type: 'belongs_to', key: 'periodId' },
   };
 
-  @field('givenAt') givenAt: number;
-  @field('givenBy') givenBy: string;
-  @field('exclusion') exclusion: boolean;
-  @field('duringLesson') duringLesson: boolean;
-  @field('nature') nature: string;
-  @field('duration') duration: number;
-
-  @field('homeworkDocumentsRaw') homeworkDocumentsRaw: string;
-  @field('reasonDocumentsRaw') reasonDocumentsRaw: string;
-  @field('homeworkText') homeworkText: string;
-  @field('reasonText') reasonText: string;
-  @field('reasonCircumstances') reasonCircumstances: string;
-  @field('attendanceId') attendanceId: string;
-  @relation('attendance', 'attendanceId') attendance: Attendance;
-
-  get homeworkDocuments(): Attachment[] {
-    return JSON.parse(this.homeworkDocumentsRaw);
-  }
-
-  get reasonDocuments(): Attachment[] {
-    return JSON.parse(this.reasonDocumentsRaw);
-  }
+  @field('periodId') periodId: string;
+  @relation('attendance_periods', 'periodId') period: AttendancePeriod;
 }

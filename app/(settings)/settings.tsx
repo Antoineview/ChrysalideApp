@@ -19,9 +19,14 @@ import List from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
 import { useAccountStore } from "@/stores/account";
 import { error } from "@/utils/logger/logger";
+<<<<<<< Updated upstream
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import * as WebBrowser from "expo-web-browser";
+=======
+import AbsencesAPI from "@/services/absences";
+
+>>>>>>> Stashed changes
 import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
@@ -44,7 +49,11 @@ export default function SettingsIndex() {
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
+<<<<<<< Updated upstream
     if (!account) return [null, null, null, null];
+=======
+    if (!account) { return [null, null, null, null]; }
+>>>>>>> Stashed changes
 
     let firstName = account.firstName;
     let lastName = account.lastName;
@@ -57,8 +66,13 @@ export default function SettingsIndex() {
   const logout = useCallback(() => {
     const account = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount)
     if (account) {
+<<<<<<< Updated upstream
       useAccountStore.getState().removeAccount(account)
       useAccountStore.getState().setLastUsedAccount("")
+=======
+      //useAccountStore.getState().removeAccount(account)
+      //useAccountStore.getState().setLastUsedAccount("")
+>>>>>>> Stashed changes
       AbsencesAPI.setToken("")
       for (const service of account.services) {
         ClearDatabaseForAccount(service.id)

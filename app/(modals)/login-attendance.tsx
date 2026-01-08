@@ -1,5 +1,9 @@
 import { useTheme } from "@react-navigation/native";
+<<<<<<< Updated upstream
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
+=======
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+>>>>>>> Stashed changes
 import React, { useRef, useState } from "react";
 import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -154,7 +158,11 @@ export default function AttendanceLoginScreen() {
     }
 
     const startSync = async (accessToken: string) => {
+<<<<<<< Updated upstream
         if (isSyncing) return;
+=======
+        if (isSyncing) { return; }
+>>>>>>> Stashed changes
         setIsSyncing(true);
         setShowWebView(false);
 
@@ -162,7 +170,7 @@ export default function AttendanceLoginScreen() {
             AbsencesAPI.setToken(accessToken);
 
             setSyncStatus("Synchronisation des absences...");
-            await AbsencesAPI.sync();
+            await AbsencesAPI.sync(accessToken);
 
             alert.showAlert({
                 title: "Connexion réussie",

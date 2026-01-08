@@ -1,85 +1,71 @@
 import { MMKV } from "react-native-mmkv";
 
+<<<<<<< Updated upstream
 import { addAttendanceToDatabase } from "@/database/useAttendance";
 import { addPeriodsToDatabase } from "@/database/useGrades";
 import { Attendance, Absence } from "@/services/shared/attendance";
 import { Period } from "@/services/shared/grade";
 import { AbsencesAPIResponse, AbsenceItem } from "./types";
 
+=======
+>>>>>>> Stashed changes
 // Initialize MMKV storage
 export const storage = new MMKV({
   id: "absences-storage",
 });
 
-const BASE_URL = "https://absences.epita.net/api";
+const BASE_URL = "https://absences.epita.net/api/Users/student/grades";
 
 class AbsencesAPI {
   private token: string | null = null;
-  private cookies: string | null = null;
 
-  constructor(token?: string) {
+  constructor() {
     const savedToken = storage.getString("absences_token");
-    const savedCookies = storage.getString("absences_cookies");
-    if (token) {
-      this.token = token;
-      this.saveToken(token);
-    } else if (savedToken) {
+    if (savedToken) {
       this.token = savedToken;
-    }
-    
-    if (savedCookies) {
-        this.cookies = savedCookies;
     }
   }
 
   setToken(token: string) {
-    this.token = token;
-    this.saveToken(token);
-  }
-  
-  setCookies(cookies: string) {
-      this.cookies = cookies;
-      storage.set("absences_cookies", cookies);
+    const cleanToken = token.replace('Bearer ', '').trim();
+    this.token = cleanToken;
+    storage.set("absences_token", cleanToken);
   }
 
-  private saveToken(token: string) {
-    storage.set("absences_token", token);
+  isLoggedIn(): boolean {
+    return !!this.token;
   }
 
-  getToken() {
-    return this.token;
-  }
+  async sync(token?: string) {
+    if (token) {
+      this.setToken(token);
+    }
 
-  isLoggedIn() {
-    return !!this.token || !!this.cookies;
-  }
-
-  /**
-   * Syncs all data from Absences API and stores it in database.
-   */
-  async sync(preFetchedData?: AbsencesAPIResponse[]) {
-    console.log("Starting Absences Sync...");
+    if (!this.token) {
+      console.error("No token provided for Absences sync");
+      return;
+    }
 
     try {
-      let responses = preFetchedData || await this.fetchGrades();
-      
-      // Filter to keep only the last semester from the JSON
-      if (responses.length > 0) {
-          // Sort by levelName logic (S1, S2, S3...) to ensure we get the latest
-          responses.sort((a, b) => {
-              const nameA = a.levelName || "";
-              const nameB = b.levelName || "";
-              return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
-          });
+      const response = await fetch(BASE_URL, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+          "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1",
+          Referer: "https://absences.epita.net/parent/home",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      });
 
-          const selectedSemester = responses[responses.length - 1];
-          responses = [selectedSemester];
-          console.log(`Selected latest semester: ${selectedSemester.levelName} from available: ${responses.map(r => r.levelName).join(", ")}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch grades: ${response.status}`);
       }
 
-      storage.set("absences_data", JSON.stringify(responses));
-      console.log(`Fetched ${responses.length} semesters (filtered to last).`);
+      const data = await response.json();
 
+<<<<<<< Updated upstream
       const periodsToSave: Period[] = [];
 
       for (const semester of responses) {
@@ -150,17 +136,27 @@ class AbsencesAPI {
 
       await addPeriodsToDatabase(periodsToSave);
       console.log(`Saved ${periodsToSave.length} periods to database.`);
+=======
+      console.log(`Fetched ${data.length} levels from Absences API`);
+>>>>>>> Stashed changes
       
-    } catch (e) {
-      console.error("Failed to sync absences:", e);
-      throw e;
+      storage.set("absences_grades", JSON.stringify(data));
+      
+      return data;
+    } catch (error) {
+      console.error("Error fetching absences:", error);
+      throw error;
     }
   }
 
-  async fetchGrades(): Promise<AbsencesAPIResponse[]> {
-    if (!this.token && !this.cookies) {
-      throw new Error("No token or cookies provided for Absences API");
+  async initializeFromDatabase() {
+      const cached = storage.getString("absences_grades");
+      if (cached) {
+        return JSON.parse(cached);
+      }
+      return [];
     }
+<<<<<<< Updated upstream
 
     const headers: any = {
       "Content-Type": "application/json",
@@ -194,6 +190,8 @@ class AbsencesAPI {
 
     return await response.json();
   }
+=======
+>>>>>>> Stashed changes
 }
 
 export default new AbsencesAPI();
