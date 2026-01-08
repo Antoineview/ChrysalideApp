@@ -8,6 +8,7 @@ import React, { useCallback, useMemo } from "react";
 import { Alert, Image, Platform, View } from "react-native";
 
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
+import AbsencesAPI from "@/services/absences";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
@@ -42,7 +43,7 @@ export default function SettingsIndex() {
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
-    if (!account) {return [null, null, null, null];}
+    if (!account) { return [null, null, null, null]; }
 
     const firstName = account.firstName;
     const lastName = account.lastName;
@@ -57,7 +58,7 @@ export default function SettingsIndex() {
     if (account) {
       //useAccountStore.getState().removeAccount(account)
       //useAccountStore.getState().setLastUsedAccount("")
-      //AbsencesAPI.setToken("")
+      AbsencesAPI.setToken("")
       for (const service of account.services) {
         ClearDatabaseForAccount(service.id)
       }

@@ -318,7 +318,7 @@ export default function AttendanceView() {
 
           <NativeHeaderSide side="Right" style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }}>
             <NativeHeaderPressable onPress={() => {
-              AbsencesAPI.logout();
+              AbsencesAPI.setToken("")
               router.back();
             }}>
               <Icon papicon opacity={0.5}>
