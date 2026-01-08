@@ -1,8 +1,8 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { FlexAlignType, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
-
+import { FlexAlignType, StyleSheet, ViewProps, ViewStyle } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
+
 import { Animation } from "../utils/Animation";
 
 // Types pour la direction et l'alignement

@@ -1,9 +1,10 @@
-import Icon from "@/ui/components/Icon";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
 import { Papicons } from "@getpapillon/papicons";
 import React from "react";
 import { Linking, View } from "react-native";
+
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 export default function Soon() {
   return (

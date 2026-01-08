@@ -1,11 +1,11 @@
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { Papicons } from '@getpapillon/papicons';
-import Typography from '@/ui/components/Typography';
 import { useTheme } from '@react-navigation/native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
 
 export interface HomeHeaderButtonItem {
   title: string;

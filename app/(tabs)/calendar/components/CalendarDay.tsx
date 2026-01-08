@@ -1,12 +1,14 @@
-import React, { useMemo, useRef } from 'react';
-import { View, FlatList, RefreshControl, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from "expo-router";
 import { t } from "i18next";
-import Course from "@/ui/components/Course";
+import React, { useMemo, useRef } from 'react';
+import { Dimensions,FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
+import Course from "@/ui/components/Course";
 import { Colors, getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from '@/utils/subjects/name';
+
 import { EmptyCalendar } from './EmptyCalendar';
 
 interface CalendarDayProps {
@@ -57,7 +59,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
   const threshold = 30;
 
   const separatedDayEvents = useMemo(() => {
-    if (!dayEvents || dayEvents.length === 0) return dayEvents;
+    if (!dayEvents || dayEvents.length === 0) {return dayEvents;}
     const separated: any[] = [];
     for (let i = 0; i < dayEvents.length; i++) {
       separated.push(dayEvents[i]);

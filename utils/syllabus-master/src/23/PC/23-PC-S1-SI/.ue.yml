@@ -1,0 +1,12 @@
+information:
+  label: Sciences de l'Ingénieur S1
+  level: L1
+  ects: 4
+  coordinator: Anne-Sophie DUJARDIN
+
+description: |
+  L'UE "Sciences de l'Ingénieur" a pour objectif de donner à l'étudiant futur ingénieur une culture générale scientifique.
+  Elle est constituée de plusieurs ECUE issus de disciplines différentes :
+  - L'architecture des ordinateurs : cette matière permettra à l'étudiant de se familiariser avec les systèmes numériques.
+  - L'électronique : cette matière permettra à l'étudiant d'étudier les outils d'analyse d'un circuit, afin d'être capable, au cours de son cursus, de comprendre des systèmes plus complexes (amplificateurs, portes logiques…)
+  - La NTS (Nouvelles Technologies et Société) : Cet enseignement permettra à l'étudiant de découvrir des grands thèmes de l'informatique actuelle.

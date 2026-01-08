@@ -1,0 +1,61 @@
+information:
+  label: Méthodologie de Travail
+  coefficient: 4
+  threshold: 5
+  referents:
+    - Klervi LE COLLEN
+
+summary: |
+  L'entrée dans le supérieur est un choc pour l'étudiant. Le rythme et les méthodes de travail sont très différents du lycée. Cela implique l'apprentissage de nouvelles méthodes de travail pour mieux s'organiser et acquérir de l'autonomie.   
+  L'atelier "méthodologie de travail" permettra à l'étudiant commençant ce nouveau cursus de se familiariser avec des techniques de travail professionnalisantes. Aussi, le cours de "méthodologie de travail" apportera des outils aux étudiants leur permettant de mieux s'organiser au quotidien mais également sur du long terme pour les travaux individuels et les projets de groupe, tout au long de l'année.
+
+outline: |
+  - Semaine 0
+    - Workshop 1: auto évaluation sur la méthodologie: identification des points forts et des points faibles actuels.
+      - Mise à jour sur les outils de performance basiques
+      - Mise en pratique et exercices sur la prise de notes
+      - Correction
+    - Workshop 2: optimiser sa gestion du temps et hiérarchiser ses priorités
+      - État des lieux de la gestion de son temps- Apprendre à s'organiser et à établir une hiérarchisation des tâches-
+      - Théories puis mise en pratique 
+    
+  - Semaine 1 à 5
+    - Le cahier des charges: explications, contenu, enjeux et organisation
+    - Travail en groupe: trouver ses collaborateurs, définir les rôles, hiérarchiser ses priorités, répartir les tâches, faire un planning
+    - Exercices de méthodologie   
+      - Exercices sur la lecture active
+      - Exercices de synthèses à partir de différents supports et média (audiovisuels et documentation écrite)
+      - Apprendre à écrire à plusieurs un document technique en l'harmonisant et avec une unicité de style
+
+tlo: |
+  - Construire une méthodologie de travail dans le cadre d'une stratégie d'apprentissage
+    - Appréhender la prise de notes dans le cadre d'un cours ou d'une présentation afin de faciliter la restructuration et la rétention d'informations
+    - Appréhender la lecture active
+    - Intégrer l'apprentissage par vidéo (mimo) dans les démarches d'acquisitions de connaissances
+    - Pratiquer le travail en groupe
+    - Établir ses priorités (ex: Eisenhower, …)
+    - Optimiser sa gestion du temps (ex: Pareto, Parkinson, Douglas, Illich, Laborit, Ecclésiaste, …)
+  - Concevoir un document technique de cadrage projet
+    - Définir les objectifs du projet en prenant en compte les contraintes imposées
+      - Résultats attendus / Objectifs à atteindre / Délais / Coûts / Qualité
+    - Préciser le périmètre du projet en termes de produits / fonctionnalités / technologies, …
+    - Qualifier et prioriser les cas d'usages / les fonctionnalités
+    - Séquencer le développement du projet
+      - Macro planning de référence incluant les différentes dates-clés et jalons du projet
+      - Appréhender l'outil diagramme de Gantt
+
+activities:
+  - kind: tutorial
+    hours: 14
+    label: Atelier de 2 heures par semaine
+  - kind: personnal
+    hours: 10
+
+evaluations:
+  - kind: report
+    environment: autonomous
+    hours: 0
+    code: RAPPORT
+    coefficient: 1
+    label: Cahier des Charges de projet
+    comments: Réalisation en groupe de 5

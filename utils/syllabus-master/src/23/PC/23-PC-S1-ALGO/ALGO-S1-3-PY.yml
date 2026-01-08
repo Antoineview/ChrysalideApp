@@ -1,0 +1,45 @@
+information:
+  label: Python
+  coefficient: 1
+  threshold: 8
+  referents:
+    - Nathalie BOUQUET
+
+summary: |
+  Des bases du Python impératif jusqu'aux listes  
+  - Utilisation du langage Python pour voir ou revoir les bases de l'impératif :
+    - Bases de Python : fonctions, boucles, tests sur types de données simples
+  - Implémentation en Python des premiers algorithmes classiques sur les structures de données séquentielles
+    - Manipulation des chaînes de caractères et des listes
+    - Algorithmes classiques sur les listes : recherches et tris
+  - Premières notions d'optimisation en temps : règles de base pour limiter les calculs (éviter les calculs inutiles, ne pas répéter des calculs, dans les algorithmes de recherche ou de tests arrêter dès qu'une réponse est donnée...)
+
+outline: |
+  - Bases
+    - Syntaxe Python de base : fonctions, tests
+    - Boucles
+  - Structures linéaires
+    - Manipulation chaînes de caractères - exemples d'applications : conversions décimal binaires, recherche fréquences caractères
+    - Manipulation des listes :
+      - lien avec le type abstrait liste itérative de l'ECUE <code>[ALGO-S1-1-TAA]</code>
+      - classiques (recherche, ajout, suppression) et quelques applications
+    - Algorithmes de tris (insertion, sélection, bulles, fusion) et leur complexité en temps
+
+tlo: |
+  - Implémenter en Python les algorithmes classiques sur les listes (recherches, ajouts, suppression, tris)
+  - Résoudre des problèmes itératifs sur des structures de données linéaires (chaînes de caractères, listes), de manière efficace (application des règles simples d'optimisation en temps) et implémenter les solutions en Python
+
+activities:
+  - kind: tutorial
+    hours: 24
+    label: "Travaux dirigés (TD) : 2 × 2h par semaine sur 6 semaines"
+  - kind: personnal
+    hours: 24
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B2
+    coefficient: 1
+    label: Mi-semestre

@@ -1,0 +1,94 @@
+information:
+  label: Études de fonctions
+  coefficient: 3
+  threshold: 8
+  referents:
+    - Christel TRÉMOULET
+    - Guillaume EUVRARD
+
+prerequisites:
+  - Dans ces prérequis, quand on parle de fonctions, on désigne les fonctions usuelles $x \mapsto a$, $x \mapsto ax+b$, $x \mapsto \sqrt{x}$ et $x \mapsto x^n$ avec $n \in \mathbb{Z}$
+  - Calculer un taux de variations, la pente d'une droite.
+  - Interpréter le nombre dérivé comme la pente de la tangente.
+  - Calculer les dérivées des fonctions usuelles.
+  - Calculer la fonction dérivée d'une somme, d'un produit ou d'un quotient de fonctions.
+  - Déterminer l'équation de la tangente en un point à la courbe représentative d'une fonction.
+  - Étudier les variations d'une fonction définie à partir d'opérations de fonctions usuelles et trouver les extrema locaux.
+  - Pour la fonction exponentielle, utiliser les propriétés algébriques et analytiques, calculer sa dérivée, représenter son graphe.
+  - Pour les fonctions cos et sin, placer un point sur le cercle trigonométrique, lire le cosinus et le sinus d'un angle à partir du cercle trigonométrique, déterminer le cosinus et le sinus de x pour des valeurs remarquables. Traduire graphiquement la parité et la périodicité. Représenter l'allure des deux fonctions entre $-\pi$ et $\pi$.
+  - ECUE <code>[MATH-S1A-1-SEM]</code>
+
+summary: |
+    Ce chapitre concerne l'étude complète (limite, continuité, dérivée, tangente, variations et allure) des fonctions définies à partir des fonctions usuelles, en particulier des fonctions composées. Il permet aussi d'introduire les fonctions logarithme et tangente. 
+
+outline: |
+  - Limite d'une fonction
+    - Définitions et exemples en l'infini et en un point. Limites à droite et à gauche.
+    - Propriétés sur les limites de fonctions : opérations somme, produit, quotient, théorèmes de comparaison (théorème d'encadrement et des gendarmes), limites des fonctions composées.
+    - Croissances comparées.
+  - Continuité des fonctions
+    - Définitions ,continuité des fonctions usuelles sur leur domaine de définition, exemples de fonctions discontinues.
+    - Propriétés : respect des opérations somme, produit, quotient, lien avec la dérivabilité, lien avec les points fixes pour une suite récurrente de type $u_{n+1}=f(u_n)$.
+    - Théorème des valeurs intermédiaires et corollaire.
+  - Fonctions trigonométriques
+    - Rappels sur le cercle trigonométrique.
+    - Parité/imparité et  $2\pi$-périodicité des fonctions sinus et cosinus et propriétés déduites du cercle : $\cos^2(x)+\sin^2(x)=1$, $|\cos(x)|\leq 1$, $|\sin(x)|\leq 1$.
+    - Valeurs remarquables de sinus et cosinus.
+    - Dérivée des fonctions cosinus et sinus, variations, allure sur $[-\pi,\pi]$ puis sur $\mathbb R$.
+    - Fonction tangente : définition, dérivée, allure.
+    - Résolution d'équations (ou inéquations) du type $\cos(x)=\cos(a)$.
+  - Complément de dérivation
+    - Rappels de première : taux d'accroissement, tangente, dérivées des fonctions usuelles, opérations (somme, produit, quotient) sur les dérivées, équation de la tangente en un point.
+    - Lien entre la continuité et la dérivabilité.
+    - Dérivées des fonctions composées, dérivées des fonctions de la forme $v\circ u$ où $v$ est une fonction usuelle.
+    - Variations des fonctions : lien entre la dérivée et la monotonie d'une fonction. Plan d'étude d'une fonction.
+  - Fonction logarithme
+    - Définition en lien avec la fonction exponentielle, propriétés remarquables, lien entre les courbes exponentielle et logarithme.
+    - Monotonie stricte de la fonction $\ln$, conséquence.
+    - Propriétés algébriques de la fonction $\ln$.
+    - Dérivée de la fonction $\ln$, dérivée de $\ln(u).$
+    - Continuité sur $]0,+\infty[$ et limite aux bornes du domaine de définition.
+    - Tableau de variations et allure.
+    - Limite usuelle et croissances comparées en 0 et en $+\infty$.
+    - Autres fonctions liées à $\ln$ : $a^x$  et logarithme en base a : définition et propriétés algébriques.
+
+tlo: |
+  - Limites des fonctions, continuité, fonctions sinus et cosinus, compléments de dérivation
+    - Déterminer dans des cas simples la limite d'une fonction en un point ou en $\pm \infty$ et le traduire graphiquement.
+    - Reconnaitre la continuité d'une fonction réelle simple et l'exploiter dans la résolution d'une équation du type $f(x) = k$.
+    - Manipuler les fonctions sinus et cosinus algébriquement et graphiquement.
+    - Calculer et interpréter graphiquement la dérivée d'une fonction, en particulier pour une fonction composée.
+    - Construire le tableau complet de variations d'une fonction (extrema, monotonie, limites)
+    utilisant des fonctions de référence et ainsi que son allure.
+  - Fonction logarithme
+    - Utiliser les propriétés algébriques et analytiques, calculer sa dérivée et représenter son allure.
+
+activities:
+  - kind: tutorial
+    hours: 20
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 12
+    label: Cours
+  - kind: personnal
+    hours: 32
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.25
+    code: QCM-FCT
+    coefficient: 0.1
+    label: QCM
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: CC-FCT
+    coefficient: 0.3
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B1-FCT
+    hours: 2
+    coefficient: 0.6
+    label: Examen

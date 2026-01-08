@@ -1,14 +1,16 @@
-import { Pressable, Text, View } from "react-native";
-import Typography from "./Typography";
-import { useTheme } from "@react-navigation/native";
-import { t } from "i18next";
-import AnimatedPressable from "./AnimatedPressable";
-import SkeletonView from "@/ui/components/SkeletonView";
-import i18n from "@/utils/i18n";
-import adjust from "@/utils/adjustColor";
-import { LinearGradient } from "expo-linear-gradient";
-import Stack from "./Stack";
 import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { t } from "i18next";
+import { Text, View } from "react-native";
+
+import SkeletonView from "@/ui/components/SkeletonView";
+import adjust from "@/utils/adjustColor";
+import i18n from "@/utils/i18n";
+
+import AnimatedPressable from "./AnimatedPressable";
+import Stack from "./Stack";
+import Typography from "./Typography";
 
 interface CompactGradeProps {
   emoji: string;

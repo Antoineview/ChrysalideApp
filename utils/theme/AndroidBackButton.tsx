@@ -1,9 +1,9 @@
-import React from "react";
-
-import Icon from "@/ui/components/Icon";
 import { Papicons } from "@getpapillon/papicons";
 import { useRouter } from "expo-router";
-import { TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { TouchableNativeFeedback, View } from "react-native";
+
+import Icon from "@/ui/components/Icon";
 
 const AndroidBackButton = () => {
   const router = useRouter();

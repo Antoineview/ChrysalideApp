@@ -1,3 +1,6 @@
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { FlatList } from "react-native";
 import Reanimated, {
   Extrapolate,
   interpolate,
@@ -5,14 +8,12 @@ import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import Stack from "@/ui/components/Stack";
-import { useTranslation } from "react-i18next";
-import Typography from "@/ui/components/Typography";
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import ViewContainer from "@/ui/components/ViewContainer";
-import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { FlatList } from "react-native";
+
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import ViewContainer from "@/ui/components/ViewContainer";
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
 const OnboardingScrollingFlatList = ({ hasReturnButton = true, title, color, step, totalSteps, elements, renderItem }: {

@@ -4,10 +4,10 @@ import React, { useEffect, useRef } from "react";
 import { Platform, Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
 import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
-import { runsIOS26 } from "../utils/IsLiquidGlass";
-import Typography from "./Typography";
-import AnimatedNumber from "./AnimatedNumber";
 import adjust from "@/utils/adjustColor";
+
+import { runsIOS26 } from "../utils/IsLiquidGlass";
+import AnimatedNumber from "./AnimatedNumber";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 // Pre-computed styles for maximum performance

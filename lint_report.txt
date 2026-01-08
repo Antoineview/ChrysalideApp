@@ -1,0 +1,718 @@
+
+> papillon@8.3.1 lint
+> eslint --fix
+
+
+/Users/antoine/Papiga/ChrysalideApp/app.config.ts
+    5:28  error  Expected '===' and instead saw '=='                eqeqeq
+    7:32  error  Expected '===' and instead saw '=='                eqeqeq
+  126:37  error  Identifier 'modular_headers' is not in camel case  camelcase
+  127:45  error  Identifier 'modular_headers' is not in camel case  camelcase
+
+/Users/antoine/Papiga/ChrysalideApp/app/(features)/(news)/specific.tsx
+  21:1  error  '@/ui/components/Typography' import is duplicated  no-duplicate-imports
+
+/Users/antoine/Papiga/ChrysalideApp/app/(features)/attendance.tsx
+   33:32   error    Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+   58:13   error    Unexpected console statement                                                                        no-console
+   76:9    error    Unexpected console statement                                                                        no-console
+   83:46   warning  'unjustifiedAbsenceCount' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+   83:71   warning  'unjustifiedDelayCount' is assigned a value but never used. Allowed unused vars must match /^_/u    unused-imports/no-unused-vars
+  186:74   error    Expected '===' and instead saw '=='                                                                 eqeqeq
+  186:139  error    Expected '===' and instead saw '=='                                                                 eqeqeq
+
+/Users/antoine/Papiga/ChrysalideApp/app/(features)/soon.tsx
+  30:12  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/antoine/Papiga/ChrysalideApp/app/(modals)/login-attendance.tsx
+  142:11  warning  'getCookiesString' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  142:37  warning  'url' is defined but never used. Allowed unused args must match /^_/u                        unused-imports/no-unused-vars
+  146:51  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  150:18  warning  'e' is defined but never used                                                                unused-imports/no-unused-vars
+  176:13  error    Unexpected console statement                                                                 no-console
+  190:9   error    Unexpected console statement                                                                 no-console
+  195:17  error    Unexpected console statement                                                                 no-console
+  201:41  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  204:13  error    Unexpected console statement                                                                 no-console
+  209:21  error    Unexpected console statement                                                                 no-console
+  214:13  error    Unexpected console statement                                                                 no-console
+
+/Users/antoine/Papiga/ChrysalideApp/app/(modals)/news.tsx
+   22:1   error    '@/ui/components/Typography' import is duplicated                                      no-duplicate-imports
+   33:9   warning  'navigation' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  172:34  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                        react/no-unescaped-entities
+
+/Users/antoine/Papiga/ChrysalideApp/app/(modals)/profile.tsx
+  124:15  error  Expected a default case  default-case
+
+/Users/antoine/Papiga/ChrysalideApp/app/(modals)/task.tsx
+  30:3  error  Unexpected console statement  no-console
+
+/Users/antoine/Papiga/ChrysalideApp/app/(modals)/wallpaper.tsx
+   32:10  warning  'error' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  146:7   error    Unexpected console statement                                                      no-console
+  162:30  warning  'index' is defined but never used. Allowed unused args must match /^_/u           unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(new)/event.tsx
+  101:9  error  Unexpected console statement  no-console
+
+/Users/antoine/Papiga/ChrysalideApp/app/(onboarding)/end/color.tsx
+  125:45  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  151:22  error  Component definition is missing display name  react/display-name
+
+/Users/antoine/Papiga/ChrysalideApp/app/(onboarding)/serviceSelection.tsx
+  84:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(onboarding)/university/method.tsx
+   28:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   91:54  error  Expected '===' and instead saw '=='      eqeqeq
+  114:89  error  Expected '===' and instead saw '=='      eqeqeq
+
+/Users/antoine/Papiga/ChrysalideApp/app/(onboarding)/university/multi/aurigaAuth.tsx
+  178:37  warning  'url' is defined but never used. Allowed unused args must match /^_/u                       unused-imports/no-unused-vars
+  182:51  error    Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  186:18  warning  'e' is defined but never used                                                               unused-imports/no-unused-vars
+  222:39  warning  'lastUsedAccount' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  248:21  error    Unexpected console statement                                                                no-console
+  286:21  error    Unexpected console statement                                                                no-console
+  289:17  error    Unexpected console statement                                                                no-console
+  355:38  error    Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  358:13  error    Unexpected console statement                                                                no-console
+  372:9   error    Unexpected console statement                                                                no-console
+  379:17  error    Unexpected console statement                                                                no-console
+  385:41  error    Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  388:13  error    Unexpected console statement                                                                no-console
+  393:21  error    Unexpected console statement                                                                no-console
+  396:21  error    Unexpected console statement                                                                no-console
+  399:17  error    Unexpected console statement                                                                no-console
+  400:17  error    Unexpected console statement                                                                no-console
+  401:17  error    Unexpected console statement                                                                no-console
+  402:17  error    Unexpected console statement                                                                no-console
+  407:13  error    Unexpected console statement                                                                no-console
+
+/Users/antoine/Papiga/ChrysalideApp/app/(onboarding)/utils/constants.tsx
+  24:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  62:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(settings)/about.tsx
+   52:11  warning  'colors' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  128:22  error    A `require()` style import is forbidden                                            @typescript-eslint/no-require-imports
+
+/Users/antoine/Papiga/ChrysalideApp/app/(settings)/settings.tsx
+  31:9  warning  'navigation' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/_layout.tsx
+  29:5   error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  30:7   error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  31:35  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  31:84  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  32:33  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  32:81  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  33:35  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  33:80  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  34:31  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  34:76  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/calendar/components/CalendarDay.tsx
+   21:11   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   25:28   error    Component definition is missing display name                               react/display-name
+   25:42   warning  'dayDate' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+   25:107  warning  'insets' is defined but never used. Allowed unused args must match /^_/u   unused-imports/no-unused-vars
+   26:36   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   29:45   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   32:31   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   32:42   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   46:33   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   63:22   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   74:36   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  111:24   error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/calendar/components/CalendarHeader.tsx
+  17:16  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  21:31  error  Component definition is missing display name  react/display-name
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/calendar/components/EmptyCalendar.tsx
+  10:30  error  Component definition is missing display name  react/display-name
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/calendar/event/[id].tsx
+  19:10  warning  'isLoading' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  78:25  error    Unexpected console statement                                                          no-console
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/calendar/hooks/useCalendarState.ts
+  13:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  72:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/calendar/hooks/useTimetableData.ts
+  15:16  error    Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  18:12  warning  'error' is defined but never used                                          unused-imports/no-unused-vars
+  19:5   error    Unexpected console statement                                               no-console
+  24:39  warning  'account' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/calendar/icals.tsx
+   47:14  warning  'error' is defined but never used                                        unused-imports/no-unused-vars
+  106:33  warning  'index' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+  107:36  error    Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  108:46  error    Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  144:46  error    Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  149:39  error    Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/calendar/index.tsx
+  17:30  error    Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+  25:5   warning  'currentIndex' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/grades/atoms/Averages.tsx
+   12:1   error    'react-native-reanimated' import is duplicated                                     no-duplicate-imports
+   55:11  warning  'router' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+   69:9   error    Unexpected console statement                                                       no-console
+  292:5   error    Unexpected console statement                                                       no-console
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/grades/atoms/Subject.tsx
+  17:76  warning  'getAvgInfluence' is defined but never used. Allowed unused args must match /^_/u       unused-imports/no-unused-vars
+  17:93  warning  'getAvgClassInfluence' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/grades/hooks/useGradeInfluence.ts
+   65:9  error  This assigned value is not used in subsequent statements  no-useless-assignment
+  108:9  error  This assigned value is not used in subsequent statements  no-useless-assignment
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/grades/index.old.tsx
+   65:9   warning  'windowDimensions' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  205:10  warning  'selectionDate' is assigned a value but never used. Allowed unused vars must match /^_/u     unused-imports/no-unused-vars
+  205:25  warning  'setSelectionDate' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  323:60  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  427:9   warning  'insets' is assigned a value but never used. Allowed unused vars must match /^_/u            unused-imports/no-unused-vars
+  583:49  error    Unexpected empty arrow function                                                              no-empty-function
+  610:49  error    Unexpected empty arrow function                                                              no-empty-function
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/grades/index.tsx
+  268:40  warning  'isAurigaRefreshing' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/grades/modals/AboutAverages.tsx
+  16:17   error  A `require()` style import is forbidden                          @typescript-eslint/no-require-imports
+  47:18   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  47:29   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  47:127  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  51:30   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  55:38   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  55:68   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  55:85   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  55:92   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  55:97   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  55:191  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  55:199  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  55:258  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/index/atoms/Wallpaper.tsx
+  44:44  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  62:5   error  Unexpected console statement             no-console
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/index/components/HomeHeaderButton.tsx
+  23:11  warning  'colors' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/index/components/HomeWidget.tsx
+  24:47  error  Component definition is missing display name  react/display-name
+  42:93  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/index/index.old.tsx
+  342:7   error  Missing "key" prop for element in array   react/jsx-key
+  362:5   error  Missing "key" prop for element in array   react/jsx-key
+  510:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  589:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/index/widgets/Grades.tsx
+   62:12  warning  'periods' is assigned a value but never used. Allowed unused vars must match /^_/u     unused-imports/no-unused-vars
+  201:11  warning  'graphWidth' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  229:11  warning  'graphRef' is assigned a value but never used. Allowed unused vars must match /^_/u    unused-imports/no-unused-vars
+  229:29  error    Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/index/widgets/timetable.tsx
+  17:29  error  Component definition is missing display name  react/display-name
+  61:28  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/news/index.old.tsx
+   57:7   error    Identifier 'denominator_plural' is not in camel case                                         camelcase
+   79:7   error    Identifier 'denominator_plural' is not in camel case                                         camelcase
+  207:7   error    Unexpected console statement                                                                 no-console
+  379:23  error    A `require()` style import is forbidden                                                      @typescript-eslint/no-require-imports
+  396:10  warning  'showDatePicker' is assigned a value but never used. Allowed unused vars must match /^_/u    unused-imports/no-unused-vars
+  397:10  warning  'date' is assigned a value but never used. Allowed unused vars must match /^_/u              unused-imports/no-unused-vars
+  397:16  warning  'setDate' is assigned a value but never used. Allowed unused vars must match /^_/u           unused-imports/no-unused-vars
+  419:9   warning  'toggleDatePicker' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/news/index.tsx
+   35:9   warning  'router' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+   65:7   error    Unexpected console statement                                                       no-console
+  119:32  error    Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/syllabus/_layout.tsx
+  6:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/syllabus/utils/pdfGenerator.ts
+  13:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/(tabs)/syllabus/utils/textHelpers.ts
+  19:31  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:14  warning  'error' is defined but never used         unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/app/alert.tsx
+  24:80  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/app/changelog.tsx
+  24:17   error  A `require()` style import is forbidden                          @typescript-eslint/no-require-imports
+  41:46   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  41:113  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  41:156  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  41:216  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  44:62   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  44:133  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  44:152  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  47:29   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  47:40   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  57:30   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  57:66   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  57:150  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  64:10   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  67:152  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  74:16   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  77:56   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/antoine/Papiga/ChrysalideApp/app/consent.tsx
+  106:21  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/Users/antoine/Papiga/ChrysalideApp/app/devmode.tsx
+  27:9   warning  'accountStore' is assigned a value but never used. Allowed unused vars must match /^_/u         unused-imports/no-unused-vars
+  38:10  warning  'showAccountStore' is assigned a value but never used. Allowed unused vars must match /^_/u     unused-imports/no-unused-vars
+  38:28  warning  'setShowAccountStore' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/babel.config.js
+  1:1  error  'module' is not defined  no-undef
+
+/Users/antoine/Papiga/ChrysalideApp/components/AppColorsSelector.tsx
+  98:10  warning  'color' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/components/AurigaRefreshProvider.tsx
+  119:51  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  123:18  warning  'e' is defined but never used             unused-imports/no-unused-vars
+  171:13  error    Unexpected console statement              no-console
+  186:41  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  214:13  error    Unexpected console statement              no-console
+  220:9   error    Unexpected console statement              no-console
+  243:89  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/components/FakeSplash.tsx
+  5:23  warning  'isAppReady' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/components/onboarding/OnboardingScrollingFlatList.tsx
+  25:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  26:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/components/onboarding/OnboardingWebview.tsx
+   6:1   error  'react-native-reanimated' import is duplicated                                                                                                                                                                                                                                                                                                                                             no-duplicate-imports
+  21:40  error  The `{}` ("empty object") type allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+
+/Users/antoine/Papiga/ChrysalideApp/constants/LayoutScreenOptions.ts
+   8:10  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+   9:12  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  10:11  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  11:13  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  12:9   error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  13:10  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  14:11  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  15:3   error  Identifier 'serif_light' is not in camel case    camelcase
+  15:16  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  16:3   error  Identifier 'serif_regular' is not in camel case  camelcase
+  16:18  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  17:3   error  Identifier 'serif_medium' is not in camel case   camelcase
+  17:17  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  18:3   error  Identifier 'serif_bold' is not in camel case     camelcase
+  18:15  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+  19:3   error  Identifier 'serif_black' is not in camel case    camelcase
+  19:16  error  A `require()` style import is forbidden          @typescript-eslint/no-require-imports
+
+/Users/antoine/Papiga/ChrysalideApp/database/DatabaseProvider.tsx
+  97:9  warning  'totalDuplicatesFound' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/database/models/Event.ts
+   1:1   error  Do not use "@ts-nocheck" because it alters compilation errors  @typescript-eslint/ban-ts-comment
+  22:24  error  Identifier 'subject_id' is not in camel case                   camelcase
+  23:48  error  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/database/models/Ical.ts
+  1:1  error  Do not use "@ts-nocheck" because it alters compilation errors  @typescript-eslint/ban-ts-comment
+
+/Users/antoine/Papiga/ChrysalideApp/database/useAttendance.ts
+  232:12  warning  'err' is defined but never used  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/database/useEvents.ts
+  9:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/database/useIcals.ts
+  24:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/database/usePeriodsCache.tsx
+  11:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/database/useTimetable.ts
+  176:7  error  Unexpected console statement  no-console
+
+/Users/antoine/Papiga/ChrysalideApp/hooks/useAppInitialization.ts
+  23:13  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  61:9   error  Unexpected console statement             no-console
+
+/Users/antoine/Papiga/ChrysalideApp/plugins/withXcodeSchemes.js
+    1:30  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+    1:30  error  'require' is not defined                 no-undef
+    2:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+    2:12  error  'require' is not defined                 no-undef
+    3:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+    3:14  error  'require' is not defined                 no-undef
+  218:7   error  Unexpected console statement             no-console
+  227:1   error  'module' is not defined                  no-undef
+
+/Users/antoine/Papiga/ChrysalideApp/scripts/generateFonts.js
+   13:22  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   13:22  error  'require' is not defined                 no-undef
+   14:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   14:12  error  'require' is not defined                 no-undef
+   15:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   15:14  error  'require' is not defined                 no-undef
+   17:31  error  '__dirname' is not defined               no-undef
+   55:3   error  Unexpected console statement             no-console
+   56:3   error  Unexpected console statement             no-console
+   60:5   error  Unexpected console statement             no-console
+   63:5   error  Unexpected console statement             no-console
+   64:5   error  Unexpected console statement             no-console
+   70:3   error  Unexpected console statement             no-console
+   71:3   error  Unexpected console statement             no-console
+   77:5   error  Unexpected console statement             no-console
+   78:5   error  Unexpected console statement             no-console
+   79:5   error  'process' is not defined                 no-undef
+   84:21  error  '__dirname' is not defined               no-undef
+   90:5   error  Unexpected console statement             no-console
+   91:5   error  'process' is not defined                 no-undef
+   94:3   error  Unexpected console statement             no-console
+   95:3   error  Unexpected console statement             no-console
+  107:3   error  Unexpected console statement             no-console
+  108:3   error  Unexpected console statement             no-console
+  113:5   error  Unexpected console statement             no-console
+
+/Users/antoine/Papiga/ChrysalideApp/services/absences/index.ts
+   62:5   error  Unexpected console statement                                                                                         no-console
+   78:11  error  Unexpected console statement                                                                                         no-console
+   82:7   error  Unexpected console statement                                                                                         no-console
+  132:15  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  149:9   error  Unexpected console statement                                                                                         no-console
+  153:7   error  Unexpected console statement                                                                                         no-console
+  156:7   error  Unexpected console statement                                                                                         no-console
+  166:20  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  182:5   error  Unexpected console statement                                                                                         no-console
+  183:22  error  Unexpected console statement                                                                                         no-console
+  192:7   error  Unexpected console statement                                                                                         no-console
+
+/Users/antoine/Papiga/ChrysalideApp/services/absences/types.ts
+  16:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/services/auriga/index.ts
+   64:13  warning  'Grade' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+   75:52  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+   84:11  error    Unexpected console statement                                                      no-console
+   89:9   error    Unexpected console statement                                                      no-console
+  100:7   error    Unexpected console statement                                                      no-console
+  148:7   error    Unexpected console statement                                                      no-console
+  216:7   error    Unexpected console statement                                                      no-console
+  349:7   error    Unexpected console statement                                                      no-console
+  469:22  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  489:11  error    Unexpected console statement                                                      no-console
+  499:9   error    Unexpected console statement                                                      no-console
+  501:9   error    Unexpected console statement                                                      no-console
+  507:9   error    Unexpected console statement                                                      no-console
+  514:7   error    Unexpected console statement                                                      no-console
+  519:61  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  520:9   error    This assigned value is not used in subsequent statements                          no-useless-assignment
+  520:18  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  556:7   error    Unexpected console statement                                                      no-console
+  572:9   error    Unexpected console statement                                                      no-console
+  582:29  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  627:9   error    Unexpected console statement                                                      no-console
+  636:7   error    Unexpected console statement                                                      no-console
+  647:14  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  653:22  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  678:7   error    Unexpected console statement                                                      no-console
+  689:7   error    Unexpected console statement                                                      no-console
+  707:37  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  712:11  error    Unexpected console statement                                                      no-console
+  716:11  error    Unexpected console statement                                                      no-console
+  724:7   error    Unexpected console statement                                                      no-console
+  725:14  warning  'e' is defined but never used                                                     unused-imports/no-unused-vars
+  726:7   error    Unexpected console statement                                                      no-console
+  731:5   error    Unexpected console statement                                                      no-console
+  750:13  error    Unexpected console statement                                                      no-console
+  760:20  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  786:34  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  810:7   error    Unexpected console statement                                                      no-console
+  827:53  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  847:45  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  856:46  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  863:38  error    Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  869:7   error    Unexpected console statement                                                      no-console
+
+/Users/antoine/Papiga/ChrysalideApp/services/ecoledirecte/balance.ts
+  20:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/services/ecoledirecte/homework.ts
+  46:10  warning  'mapEDAttachments' is defined but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  80:1   error    'date-fns' import is duplicated                                                     no-duplicate-imports
+
+/Users/antoine/Papiga/ChrysalideApp/services/lannion/grades.ts
+  154:7  error  This assigned value is not used in subsequent statements  no-useless-assignment
+
+/Users/antoine/Papiga/ChrysalideApp/services/lannion/index.ts
+  59:11  error  Unexpected console statement         no-console
+  75:25  error  Expected '===' and instead saw '=='  eqeqeq
+
+/Users/antoine/Papiga/ChrysalideApp/services/local/ical-database.ts
+  15:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/services/local/ical.ts
+  48:5   error  Unexpected console statement              no-console
+  53:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  78:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:7   error  Unexpected console statement              no-console
+
+/Users/antoine/Papiga/ChrysalideApp/services/local/parsers/ade-parser.ts
+  62:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  63:7  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/antoine/Papiga/ChrysalideApp/services/multi/index.ts
+  152:7   error  Unexpected console statement              no-console
+  241:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  305:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/services/multi/refresh.ts
+  17:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/services/pronote/chat.ts
+  147:36  warning  'resource' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/services/skolengo/homework.ts
+  60:7  error  This assigned value is not used in subsequent statements  no-useless-assignment
+
+/Users/antoine/Papiga/ChrysalideApp/stores/global/index.ts
+   7:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:9   error  Unexpected console statement              no-console
+  34:9   error  Unexpected console statement              no-console
+
+/Users/antoine/Papiga/ChrysalideApp/stores/settings/index.ts
+  22:11  warning  'get' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/AlertProvider.tsx
+    3:1   error  'react' import is duplicated              no-duplicate-imports
+  201:81  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/AnimatedModalLayout.tsx
+  60:9   warning  'corners' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  68:29  error    Component definition is missing display name                                        react/display-name
+  69:28  error    Component definition is missing display name                                        react/display-name
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/AnimatedNumber.tsx
+  116:30  error  Expected '===' and instead saw '=='  eqeqeq
+  116:46  error  Expected '===' and instead saw '=='  eqeqeq
+  129:5   error  Unexpected console statement         no-console
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/AnimatedPressable.tsx
+  55:9  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:9  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Button.tsx
+   44:18  error  Unexpected empty method 'onPress'                                                                                                                              no-empty-function
+   89:5   error  Expected an assignment or function call and instead saw an expression                                                                                          no-unused-expressions
+   89:5   error  Expected an assignment or function call and instead saw an expression                                                                                          @typescript-eslint/no-unused-expressions
+  180:9   error  Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer  @typescript-eslint/ban-ts-comment
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Calendar.tsx
+  25:18  error    Component definition is missing display name                                       react/display-name
+  32:11  warning  'colors' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  44:32  error    Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/ChipButton.tsx
+  18:10  warning  'onPress' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/ContainedNumber.tsx
+  12:93  warning  'rest' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Dynamic.tsx
+  28:24  error  Component definition is missing display name  react/display-name
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Grade.tsx
+  28:37  error  Component definition is missing display name  react/display-name
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Icon.tsx
+   44:50  error    Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
+   47:21  error    Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
+   60:55  error    Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
+   65:54  error    Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
+   94:27  warning  'childColor' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  150:10  error    Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Item.tsx
+   16:7   warning  'LEADING_STYLE' is assigned a value but never used. Allowed unused vars must match /^_/u   unused-imports/no-unused-vars
+   17:7   warning  'TRAILING_STYLE' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+   38:21  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+   39:22  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  116:45  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  136:46  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  161:42  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  172:24  error    Expected '!==' and instead saw '!='                                                        eqeqeq
+  204:70  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  208:31  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  229:23  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  249:23  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  257:53  error    Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  266:10  warning  'e' is defined but never used                                                              unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/List.tsx
+   11:10  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+   33:7   warning  'EMPTY_OBJECT' is assigned a value but never used. Allowed unused vars must match /^_/u      unused-imports/no-unused-vars
+   62:33  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+   75:19  error    Expected '!==' and instead saw '!='                                                          eqeqeq
+   76:29  error    Expected '!==' and instead saw '!='                                                          eqeqeq
+   77:27  error    Expected '!==' and instead saw '!='                                                          eqeqeq
+   78:22  error    Expected '!==' and instead saw '!='                                                          eqeqeq
+   79:25  error    Expected '!==' and instead saw '!='                                                          eqeqeq
+   80:23  error    Expected '!==' and instead saw '!='                                                          eqeqeq
+   81:24  error    Expected '!==' and instead saw '!='                                                          eqeqeq
+   86:35  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+   88:38  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+   91:39  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  165:39  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  187:7   warning  'areChildrenEqual' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  253:46  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  294:11  warning  'styleCache' is assigned a value but never used. Allowed unused vars must match /^_/u        unused-imports/no-unused-vars
+  356:46  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  362:65  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  372:33  error    Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/NativeHeader.tsx
+   61:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  156:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  218:79  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Search.tsx
+  55:24  error  Unexpected empty arrow function  no-empty-function
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/SkeletonView.tsx
+   7:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+  15:9   error  Identifier 'window_width' is not in camel case                    camelcase
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Stack.tsx
+   30:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:70  error  Expected '===' and instead saw '=='       eqeqeq
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/TabFlatList.tsx
+   15:50  error    Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+   30:49  error    Component definition is missing display name              react/display-name
+   51:7   error    This assigned value is not used in subsequent statements  no-useless-assignment
+  247:10  warning  'error' is defined but never used                         unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/TabHeader.tsx
+  21:27  error    Unexpected empty arrow function                                                         no-empty-function
+  25:3   warning  'shouldCollapseHeader' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/TabHeaderTitle.tsx
+  38:19  error  Unexpected empty arrow function  no-empty-function
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/TableFlatList.tsx
+   23:16  error    Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+   26:22  error    Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+   33:20  error    Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+   51:15  error    Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+   94:49  error    Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  151:44  warning  'tagIndex' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Task.tsx
+  38:3  warning  'title' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/components/Typography.tsx
+  166:3  warning  'inline' is assigned a value but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/ui/utils/Animation.ts
+   7:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  13:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/utils/adjustColor.ts
+  38:5  error  Unexpected console statement  no-console
+
+/Users/antoine/Papiga/ChrysalideApp/utils/colorCheck.ts
+   4:11  warning  'ContrastCheckResult' is defined but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  47:10  error    Identifier 'L_light' is not in camel case                                              camelcase
+  47:19  error    Identifier 'L_dark' is not in camel case                                               camelcase
+  48:11  error    Identifier 'L_light' is not in camel case                                              camelcase
+  48:30  error    Identifier 'L_dark' is not in camel case                                               camelcase
+  69:16  warning  'error' is defined but never used                                                      unused-imports/no-unused-vars
+  74:12  warning  'error' is defined but never used                                                      unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/utils/debounce.ts
+  11:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/utils/github/contributors.ts
+  16:5  error  Unexpected console statement  no-console
+
+/Users/antoine/Papiga/ChrysalideApp/utils/i18n.ts
+  23:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/utils/magic/ModelManager.ts
+   38:46  error    Unexpected any. Specify a different type                                            @typescript-eslint/no-explicit-any
+   67:28  error    Unexpected any. Specify a different type                                            @typescript-eslint/no-explicit-any
+   71:48  error    Unexpected any. Specify a different type                                            @typescript-eslint/no-explicit-any
+  355:16  warning  '_cleanupError' is defined but never used                                           unused-imports/no-unused-vars
+  448:26  warning  'verbose' is assigned a value but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/utils/magic/prediction.ts
+  20:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/utils/magic/updater/extract.ts
+  51:9  warning  'tfliteName' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+
+/Users/antoine/Papiga/ChrysalideApp/utils/news/cleanUpHTMLNews.ts
+  44:32  error  Unnecessary escape character: \•  no-useless-escape
+  44:34  error  Unnecessary escape character: \-  no-useless-escape
+  50:47  error  Unnecessary escape character: \/  no-useless-escape
+
+/Users/antoine/Papiga/ChrysalideApp/utils/notification/reminder/helper.ts
+  43:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/utils/services/helper.ts
+  23:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  25:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  27:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  29:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  31:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  38:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  40:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  42:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  44:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  46:14  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  73:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/antoine/Papiga/ChrysalideApp/utils/theme/ScreenOptions.tsx
+  24:26  error  Expected '===' and instead saw '=='      eqeqeq
+  25:31  error  Expected '===' and instead saw '=='      eqeqeq
+  27:13  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  29:27  error  Expected '===' and instead saw '=='      eqeqeq
+  30:34  error  Expected '===' and instead saw '=='      eqeqeq
+
+✖ 474 problems (397 errors, 77 warnings)
+

@@ -1,0 +1,23 @@
+information:
+  label: Mathématiques S2
+  level: L1
+  ects: 8
+  coordinator: Guillaume EUVRARD
+
+description: |
+  Le second semestre se répartit en trois grandes parties : l'analyse, l'algèbre linéaire et le projet AFIT. 
+  
+  La partie Analyse a pour but de découvrir des nouvelles méthodes de calcul. La résolution d'équations différentielles en est un exemple. Imaginez que vous conceviez une application informatique à même de piloter un drone. Le comportement du drone est régi, par les commandes qu'on lui donne d'une part, et par un système d'équations différentielles d'autre part. De même, l'ensemble " drone + système de commande " est régi par un système différentiel. Il vous faudra alors savoir raisonner sur ces équations. Vous savez déjà, depuis le lycée, en résoudre certaines. Vous verrez ce semestre d'autres méthodes de résolution. 
+  
+  La partie " Algèbre Linéaire " (les ECUE " Espaces Vectoriels " et " Applications Linéaires et Matrices ") élargit la notion de vecteur. Vous avez déjà manipulé des vecteurs : c'étaient des flèches dans le plan ou l'espace, représentées par deux ou trois coordonnées. Au cours de votre formation à l'EPITA, vous serez amenés à manipuler des vecteurs de dimensions bien supérieures à trois. Par exemple, une image de 100x100 pixels est représentée par 10000 nombres, les niveaux de gris de chaque pixel. Une telle image peut donc être considérée comme un vecteur de dimension 10000. Des logiciels de traitement d'image comme Photoshop utilisent, pour de nombreux effets, cette représentation d'une image comme un vecteur. Un objectif de ce semestre est de développer les outils qui vous permettront d'adapter un raisonnement géométrique, en deux ou trois dimensions, à des dimensions supérieures. 
+  
+  Enfin, le projet AFIT est l'occasion d'utiliser vos connaissances mathématiques dans une application numérique. Il s'agit de coder des méthodes de cryptage/décryptage de messages. Ces méthodes font appel à des propriétés des nombres entiers étudiées au premier semestre dans l'ECUE Arithmétique. Cette fois, les nombres considérés seront bien plus élevés et vous vous frotterez à la complexité des algorithmes : les exécuter avec des nombres entiers de plusieurs centaines de chiffres vous feront sentir leurs limites en termes de temps d'exécution.  
+  
+  Format des activités (sauf ECUE AFIT) : Cours (MiMos + remédiation) et TD 
+  
+  Chaque semaine :  
+  - Un programme de MiMos à étudier en autonomie. 
+  - Une séance de remédiation d'une heure. Un enseignant revient sur les MiMos de la semaine, aide à les décortiquer. Cette séance est facultative et placée en fin de semaine. Pour qu'elle soit profitable il est indispensable d'avoir déjà étudié les MiMos de la semaine. 
+  - Cinq heures de Travaux Dirigés. 
+  
+  Format des activités AFIT : séances de TP en salle machine + séance d'explications mathématiques

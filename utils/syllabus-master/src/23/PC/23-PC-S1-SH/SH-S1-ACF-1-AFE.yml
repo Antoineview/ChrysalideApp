@@ -1,0 +1,59 @@
+information:
+  label: Anglais Formel à l'Écrit
+  coefficient: 3
+  threshold: 5
+  referents:
+    - Max TESTEMALE
+
+prerequisites:
+  - Niveau d'anglais B1 sur l'échelle du Cadre européen commun de référence pour les langues (CECRL)
+
+summary: |
+  L'une des principales différences entre l'anglais formel et l'anglais informel est le vocabulaire utilisé. L'anglais formel utilise généralement un vocabulaire soutenu et des expressions plus complexes, tandis que l'anglais informel utilise des mots plus courants et des expressions plus familières. La grammaire et la structure des phrases diffèrent également entre l'anglais formel et l'anglais informel. L'anglais formel utilise habituellement des structures de phrases plus complexes, comme des subordonnées et des phrases relatives mais aussi évite l'utilisation des verbes à particules.
+  - Comprendre les différentes formes de l'anglais.
+  - Acquérir un nouveau vocabulaire.
+  - Appliquer des règles de grammaire ainsi qu'une structure adaptée aux situations.
+
+outline: |
+  - Introduction de l'anglais formel
+  - Academic Writing for Graduate Students 1
+    - Notion de vocabulaire: "Single verbs" et "phrasal verbs"
+      - Task 11, 12 et 13
+  - Academic Writing for Graduate Students 2
+    - "Informalities" : Les dix caractéristiques stylistiques.
+      - Task 14
+  - Structure rédactionnelle
+    - "Paragraphing"
+    - Structure et cohérence de texte
+    - "Topic sentence"
+  - Evaluation en cours
+    - 45 min de devoir surveillé (DS).
+      - Mettre en pratique les notions acquises dans une rédaction de paragraphe(s) en anglais formel.
+
+tlo: |
+  - Distinguer l'anglais formel de l'anglais informel (notamment le vocabulaire)
+  - Déterminer la structure grammaticale de la langue anglaise formelle
+  - Utiliser les dix caractéristiques stylistiques d'AWGS
+  - Rédiger un texte en anglais formel en suivant un contexte donné
+
+activities:
+  - kind: tutorial
+    hours: 5
+    label: Travaux dirigés sur 1h par semaine
+  - kind: personnal
+    hours: 10
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: QCM
+    coefficient: 0.3
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: classroom
+    hours: 0.75
+    code: EVAL-B1
+    coefficient: 0.7
+    label: Rédaction
+    comments: Écriture d'un paragraphe

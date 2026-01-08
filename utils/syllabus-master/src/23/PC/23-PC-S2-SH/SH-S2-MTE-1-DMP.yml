@@ -1,0 +1,49 @@
+information:
+  label: Découverte du monde professionnel
+  coefficient: 4
+  threshold: 5
+  referents:
+    - Klervi LE COLLEN
+
+summary: |
+  L'atelier "découverte du monde professionnel" offre un premier regard à l'étudiant lui permettant de découvrir les rouages du fonctionnement d'une entreprise. Plusieurs exercices aideront l'étudiant à se familiariser avec la notion d'une "entreprise".
+
+outline: |
+  - Découvrir le monde du travail
+    - Rechercher, lister et présenter les métiers du génie informatique et les différents secteurs professionnels
+    - Découvrir le monde de l'entreprise (secteur privé/public; entreprises à but lucratif, associations,…)
+    - Faire une veille stratégique en faisant preuve de curiosité.
+    - Réfléchir aux "enjeux de demain" concernant l'environnement, les IA, l'écologie digitale.
+  - Le documentaire
+    - Trouver une problématique
+    - Apprendre à structurer un plan de documentaire
+    - Réaliser une interview d'un professionnel (comment le contacter, réaliser un plan d'interview)
+  - Répondre à une offre d'emploi
+    - Apprendre à rédiger une lettre de motivation et un CV
+    - Jeu de rôle autour de l'entretien d'embauche
+
+tlo: |
+  - Découvrir les différents métiers du génie informatique ainsi que les différentes secteurs professionnels. Comprendre les organisations du champs professionnel.
+  - inclue la découverte, les interviews et les champs lexicaux
+  - Construire un CV en l'adaptant au contexte visé
+  - Rédiger une lettre de motivation en l'adaptant à un contexte visé
+  - Simuler (sous forme de jeu de rôle) un entretien d'embauche en tant que candidat dans un domaine du génie informatique
+    - Anticiper les questions du recruteur et les questions à poser
+    - Convaincre le recruteur en mettant en relation son profil et la proposition d'embauche
+    - Négocier une proposition d'embauche
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Atelier de 2 heures par semaine
+  - kind: personnal
+    hours: 10
+
+evaluations:
+  - kind: project
+    environment: autonomous
+    hours: 0
+    code: PROJET
+    coefficient: 1
+    label: Documentaire
+    comments: 3 minutes par groupe de 3 étudiants

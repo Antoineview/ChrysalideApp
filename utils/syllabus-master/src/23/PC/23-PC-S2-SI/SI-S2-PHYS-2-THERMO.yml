@@ -1,0 +1,46 @@
+information:
+  label: Equations d'état, bilans énergétiques.
+  coefficient: 1
+  threshold: 5
+  referents:
+    - Laura CERDAN
+
+prerequisites:
+  - "Outils mathématiques : Bases de calcul littéral."
+
+summary: |
+  La thermodynamique est la branche de la physique qui étudie les échanges d'énergie (thermique et mécanique), et de matière. Nous justifierons l'intérêt d'adopter une approche en termes de variables macroscopiques décrivant un état physique d'un système constitué d'un très grand nombre de particules. Puis nous étudierons des systèmes grâce à l'équation d'état qui relie ces grandeurs.
+  Une autre notion importante est celle du bilan d'énergie. Pour cela, nous considèrerons des systèmes fermés (sans échange de matière avec l'extérieur).
+  Nous nous intéresserons au premier et au second principe de la thermodynamique, qui permettent de faire des bilans d'énergie interne et d'entropie d'un système, qui permettent de quantifier l'énergie produite ou consommée par un système, ou de calculer des grandeurs d'état à l'équilibre thermodynamique. Nous nous intéresserons aux ordres de grandeurs de ces transferts.
+
+outline: |
+  - Variables macroscopiques, équation d'état
+  - Gaz Parfait
+  - Energie interne et entropie
+  - Transferts énergétiques, bilans d'énergie, ordres de grandeur des transferts
+
+tlo: |
+  - Utiliser une équation d'état d'un système thermodynamique (loi des gaz parfaits, gaz de Van der Waals…) pour déduire une variable thermodynamique dans un état donné du système.
+  - Utiliser le premier principe de la thermodynamique pour réaliser un bilan de transfert d'énergie et en déduire la variation d'énergie interne d'un système, ou une grandeur thermodynamique.
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux dirigés
+  - kind: personnal
+    hours: 9
+    label: Le travail personnel inclu l'étude du cours donné sous forme de polycopié
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B4
+    coefficient: 0.75
+    label: Mi-semestre

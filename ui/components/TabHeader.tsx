@@ -1,19 +1,12 @@
 
-import React, { useEffect } from 'react';
-
-import { Dimensions, Platform, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { NativeHeaderHighlight } from '@/ui/components/NativeHeader';
-import Typography from '@/ui/components/Typography';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from './Icon';
-import { TouchableOpacity } from 'react-native';
-import TabHeaderTitle, { TabHeaderTitleProps } from './TabHeaderTitle';
-import Search from './Search';
-import Reanimated, { FadeIn, FadeOut, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useTheme } from '@react-navigation/native';
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
+import React, { useEffect } from 'react';
+import { Platform, View } from 'react-native';
+import Reanimated from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { TabHeaderTitleProps } from './TabHeaderTitle';
 
 
 interface TabHeaderProps {

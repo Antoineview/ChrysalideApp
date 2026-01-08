@@ -1,0 +1,72 @@
+information:
+  label: Arbres de Recherche
+  coefficient: 3
+  threshold: 7
+  referents:
+    - Nathalie BOUQUET
+
+prerequisites:
+  - UE <code>[23_PC_S1_ALGO]</code>
+  - ECUE <code>[ALGO-S2-2-ABG]</code>
+
+summary: |
+  Sont présentés les arbres de recherche : en cours les types de données abstraits et les algorithmes classiques associés (recherche, ajout et suppression) pour les arbres binaires de recherche, les A-V .L. et les arbres 2-3-4.
+  Les TD permettent l'implémentation de ces algorithmes sur les arbres binaires de recherche et AVL en Python.
+
+outline: |
+  - Cours
+    - les arbres binaires de recherche (ABR)
+    - les AVL, des ABR h-équilibrés
+    - les arbres 2-3-4 (A234)
+  - TD
+    - Arbres binaires de recherche :
+      - Recherche, ajouts, suppression
+      - En plus : Construction, tests
+    - AVL :
+      - Ajout et suppression
+      - En plus : Conversions ABR -> AVL, test h-équilibré…
+
+tlo: |
+  - Décrire les propriétés des arbres de recherche (ABR, AVL et A234)
+  - Expliquer, décrire et illustrer les opérations de modifications sur des arbres de recherche (insertions et suppression)
+  - Implémenter en Python les algorithmes classiques sur les ABR et AVL : recherche, ajouts et suppression
+  - Résoudre des problèmes sur les ABR et AVL de manière optimale (optimisation en temps) et implémenter les solutions en Python
+
+references:
+  - kind: link
+    url: https://algo.infoprepa.epita.fr/index.php/Epita_Algo_Cours_Info-Sup.html
+    label: Epita Algo Cours (FR)
+  - kind: link
+    url: https://algo.infoprepa.epita.fr/english/index.php/Epita_Algo_Course_Info-Sup.html
+    label: Epita Algo Course (EN)
+  - kind: book
+    isbn-13: 978-0262046305
+    label: Introduction to Algorithms. Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest and Clifford Stein - MIT press (fourth edition, April 2022)
+
+activities:
+  - kind: lecture
+    hours: 14
+    label: "Cours magistraux (anglais) / MiMos (français) pendant 7 semaines (commençant fin de la période B3)"
+  - kind: tutorial
+    hours: 20
+    label: "Travaux dirigés (TD) : 2 × 2h par semaine sur 5 semaines"
+  - kind: remediation
+    hours: 7
+    label: Remédiation
+  - kind: personnal
+    hours: 34
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire (B3)
+    comments: Sur le contenu du cours
+  - kind: exam
+    environment: exam-room
+    hours: 3
+    code: EXAM-B4
+    coefficient: 0.75
+    label: Mi-semestre

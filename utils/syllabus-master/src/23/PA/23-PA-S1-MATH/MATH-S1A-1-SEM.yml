@@ -1,0 +1,53 @@
+information:
+  label: Séminaire
+  coefficient: 1
+  threshold: 6
+  referents:
+    - Christel TRÉMOULET
+    - Guillaume EUVRARD
+
+prerequisites:
+  - Calculer des sommes, produits, quotients de fractions élémentaires.
+  - Effectuer des calculs numériques ou littéraux mettant en jeu des puissances, des racines carrées, des écritures fractionnaires.
+  - Résoudre des équations et des inéquations simples du premier degré.
+  - Trouver les racines d'une fonction polynôme du second degré lorsque son discriminant est positif.
+  - Calculer la forme factorisée d'une fonction polynôme du second degré à discriminant positif.
+  - Étudier le signe d'une fonction polynôme du second degré donnée sous forme factorisée lorsque son discriminant est positif.
+  - Donner l'allure du graphe d'une fonction polynôme du second degré lorsque son discriminant est positif.
+
+summary: |
+  Il s'agit dans un premier temps de faire des révisions en mathématiques de la spécialité maths de Première, puis de donner des rudiments de logique élémentaire.
+
+outline: |
+  - Révisions de la spécialité Maths de Première
+    - Calculs fractionnaires.
+    - Somme et factorielles.
+    - Résolution d'équations ou d'inéquations du premier et second degré.
+    - Fonctions usuelles ($x\longmapsto ax+b, \sqrt{x}, x^n, e^x, |x|, n\in \mathbb Z$) : allure, dérivée, variations.
+  - Logique
+    - logique propositionnelle : assertion, négation, conjonction, disjonction, implication, équivalence, tables de vérité.
+    - Quantificateurs : existentiel et universel, négation, ordre des quantificateurs.
+    - Les différents types de raisonnement : direct, par contraposée, par l'absurde et par récurrence.
+
+tlo: |
+  - Mener des calculs élémentaires mettant en jeu des fonctions usuelles (puissances, racines carrées, valeur absolue, résolution d'équations).
+  - Traduire et interpréter des assertions en syntaxe mathématique et les combiner pour démontrer une propriété.
+  - Formuler un raisonnement direct, par implication, équivalence, contraposée ou par récurrence.
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 12
+    label: Cours
+  - kind: personnal
+    hours: 24
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: QCM-SEM
+    coefficient: 1.0
+    label: QCM journalier

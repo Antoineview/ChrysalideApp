@@ -208,15 +208,15 @@ function withXcodeSchemes(config) {
       // Write the scheme files
       fs.writeFileSync(
         path.join(schemesDir, `${projectName}.xcscheme`),
-        debugScheme
+        releaseScheme
       );
       fs.writeFileSync(
-        path.join(schemesDir, `${projectName} (Release).xcscheme`),
-        releaseScheme
+        path.join(schemesDir, `${projectName} (Debug).xcscheme`),
+        debugScheme
       );
 
       console.log(
-        `[withXcodeSchemes] Created schemes: ${projectName}.xcscheme and ${projectName} (Release).xcscheme`
+        `[withXcodeSchemes] Created schemes: ${projectName}.xcscheme and ${projectName} (Debug).xcscheme`
       );
 
       return config;

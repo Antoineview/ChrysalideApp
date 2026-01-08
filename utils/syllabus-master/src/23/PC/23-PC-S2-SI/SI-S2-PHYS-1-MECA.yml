@@ -1,0 +1,65 @@
+information:
+  label: Dynamique en référentiel galiléen, cinématique en coordonnées cartésiennes et cylindriques.
+  coefficient: 1
+  threshold: 5
+  referents:
+    - Laura CERDAN
+
+prerequisites:
+  - "Outils mathématiques : dérivées et primitives usuelles et de fonctions composées, géométrie vectorielle, trigonométrie de base. Bases de mathématiques (résolution de systèmes et calculs fractionnaires)."
+
+summary: |
+  La mécanique est la partie de la physique qui étudie les mouvements des corps en tenant compte des causes. Dans notre programme, on s'intéresse à la mécanique classique (ou Newtonienne) qui traite les mouvements des corps ayant une vitesse très faible devant celle de la lumière. On admet les postulats de la mécanique classique qui sont : Temps absolu, l'existence des référentiels galiléens et une trajectoire déterministe.
+  Ce cours traite des mouvements circulaire, elliptique, spirale et hélicoïdal, ce qui nous amène à travailler dans différentes bases (cartésienne, polaire, cylindrique…). Les équations horaires permettent d'établir les vecteurs vitesses et accélération ainsi que les équations de trajectoire.
+  Les notions de forces extérieures et d'équilibre d'un système seront aussi abordées.
+  Une partie du cours concernera la cinématique (étude du mouvement à partir des équations horaires, sans étude des causes).
+
+outline: |
+  - Grandeurs cinématiques : vecteurs position, vitesse et accélération en coordonnées cartésiennes.
+  - Cinématique en coordonnées polaires (et cylindriques).
+  - Equations de différents types de trajectoires.
+  - Bilan des forces extérieures
+  - Lois de Newton, Principe Fondamental de la Dynamique
+  - Equilibre statique de forces
+
+tlo: |
+  - Utiliser les lois de Newton en référentiel galiléen (étude d'un équilibre statique, déduction de l'intensité d'une force, d'une variable inconnue, d'une vitesse ou accélération, lien entre les forces en jeu dans une interaction réciproque), dans le cadre d'un mouvement de translation rectiligne, ou d'un mouvement circulaire.
+  - Utiliser la seconde loi de Newton pour retrouver les équations horaires du mouvement d'un objet ponctuel soumis à des forces extérieures dans un référentiel galiléen.
+  - Etudier un mouvement en calculant un vecteur vitesse, un vecteur accélération, leurs normes, et l'équation de la trajectoire.
+  - Interpréter un résultat obtenu dans le contexte de l'étude du mouvement (trajectoire, composantes des vecteurs sur chaque axe), en commentant l'homogénéité d'une formule et les liens entre ses termes.
+
+references:
+  - kind: link
+    url: http://ressources.univ-lemans.fr/AccesLibre/UM/Pedago/physique/02/
+    label: Site de simulation en physique
+  - kind: link
+    url: http://hdehaan.free.fr/index.htm](http://hdehaan.free.fr/index.htm
+    label: Site d'exercices corrigés
+  - kind: book
+    label: Mécanique Cours et exercices corrigés, Jean-Pierre Durandeau, Paul Bramand, Philippe Faye, Georges Thomassier, EDISCIENCE INTERNATIONAL.
+    isbn-13: 978-2840740100
+  - kind: book
+    label: Physique, Les fondamentaux en Licence 1, C. Cerruti, VUIBERT
+    isbn-13: 978-2311010978
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux dirigés
+  - kind: personnal
+    hours: 9
+    label: Le travail personnel inclu l'étude du cours donné sous forme de polycopié
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B3
+    coefficient: 0.75
+    label: Mi-semestre

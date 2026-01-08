@@ -26,21 +26,21 @@ function buildFonttoolsArgs(params) {
   const args = [];
 
   // Standard axes (lowercase)
-  if (params.wght !== undefined) args.push(`wght=${params.wght}`);
-  if (params.wdth !== undefined) args.push(`wdth=${params.wdth}`);
-  if (params.slnt !== undefined) args.push(`slnt=${params.slnt}`);
-  if (params.opsz !== undefined) args.push(`opsz=${params.opsz}`);
+  if (params.wght !== undefined) {args.push(`wght=${params.wght}`);}
+  if (params.wdth !== undefined) {args.push(`wdth=${params.wdth}`);}
+  if (params.slnt !== undefined) {args.push(`slnt=${params.slnt}`);}
+  if (params.opsz !== undefined) {args.push(`opsz=${params.opsz}`);}
 
   // Parametric axes (uppercase)
-  if (params.GRAD !== undefined) args.push(`GRAD=${params.GRAD}`);
-  if (params.XOPQ !== undefined) args.push(`XOPQ=${params.XOPQ}`);
-  if (params.XTRA !== undefined) args.push(`XTRA=${params.XTRA}`);
-  if (params.YOPQ !== undefined) args.push(`YOPQ=${params.YOPQ}`);
-  if (params.YTAS !== undefined) args.push(`YTAS=${params.YTAS}`);
-  if (params.YTDE !== undefined) args.push(`YTDE=${params.YTDE}`);
-  if (params.YTFI !== undefined) args.push(`YTFI=${params.YTFI}`);
-  if (params.YTLC !== undefined) args.push(`YTLC=${params.YTLC}`);
-  if (params.YTUC !== undefined) args.push(`YTUC=${params.YTUC}`);
+  if (params.GRAD !== undefined) {args.push(`GRAD=${params.GRAD}`);}
+  if (params.XOPQ !== undefined) {args.push(`XOPQ=${params.XOPQ}`);}
+  if (params.XTRA !== undefined) {args.push(`XTRA=${params.XTRA}`);}
+  if (params.YOPQ !== undefined) {args.push(`YOPQ=${params.YOPQ}`);}
+  if (params.YTAS !== undefined) {args.push(`YTAS=${params.YTAS}`);}
+  if (params.YTDE !== undefined) {args.push(`YTDE=${params.YTDE}`);}
+  if (params.YTFI !== undefined) {args.push(`YTFI=${params.YTFI}`);}
+  if (params.YTLC !== undefined) {args.push(`YTLC=${params.YTLC}`);}
+  if (params.YTUC !== undefined) {args.push(`YTUC=${params.YTUC}`);}
 
   return args.join(" ");
 }

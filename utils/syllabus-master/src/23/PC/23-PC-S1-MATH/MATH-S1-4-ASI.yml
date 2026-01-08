@@ -1,0 +1,70 @@
+information:
+  label: Analyse (suites et intégrales)
+  coefficient: 3
+  threshold: 8
+  referents:
+    - Christel TRÉMOULET
+
+prerequisites:
+  - ECUE <code>[MATH-S1-1-LE]</code>
+  - Reconnaître une suite arithmétique ou géométrique, passer d'une définition par récurrence à une définition par formule directe et inversement, et calculer une somme de termes consécutifs.
+  - Déterminer les limites en $\pm\infty$ de fractions rationnelles, de fractions avec numérateur et dénominateur logarithmes, exponentiels ou polynomiaux.
+  - "Dresser le tableau de variations d'une fonction réelle définie à partir des fonctions usuelles : dérivées, limites, monotonie"
+  - Calculer les dérivées usuelles et les dérivées usuelles des fonctions composées
+  - Déterminer les primitives des fonctions usuelles et les primitives usuelles des fonctions composées.
+
+summary: |
+  Le chapitre suites réelles est la continuité du chapitre vu au lycée en Terminale. Après des rappels, on y ajoute en particulier la notion de suites adjacentes, de suites extraites et de suites récurrentes. On étudie aussi le comportement des suites en $+\infty$ à l'aides des comparateurs de Landau.
+  Le chapitre sur les intégrales aborde essentiellement le problème du calcul d'une intégrale quand il n'y a pas de primitive directe. Pour cela, on étudie l'intégration par parties et l'intégration par changement de variable. 
+
+outline: |
+  - Suites réelles
+    - Rappels des définitions liées aux suites à l'aide des quantificateurs : monotonie, suite majorée, minorée, bornée.
+    - Suites convergentes et suites divergentes : définitions avec les quantificateurs. Rappels sur les opérations avec les limites et les théorèmes d'encadrement. Exemples.
+    - Suites monotones : théorème de convergence monotone, suites adjacentes et théorème de convergence des suites adjacentes.
+    - Suites extraites : définition, propriétés de convergence et de divergence. Cas des deux suites $(u_{2n})$ et $(u_{2n+1})$. Théorème de Bolzano-Weierstrass.
+    - Comparaison de suites : suites négligeables, suites dominées, suites équivalentes. Notations de Landau.
+    - Suites récurrentes $u_{n+1}=f(u_n)$ avec $f$ continue : généralités, lien de la convergence de $(u_n)$ avec les points fixes de $f$. Étude du cas $f$ croissante, étude du cas $f$ décroissante.
+  - Compléments de calcul intégral.
+    - Révisions sur le calcul direct de primitives.
+    - Intégration par parties
+    - Intégration par changement de variable.
+
+tlo: |
+  - Modéliser un problème de domaines divers (informatique ou vie courante) donné via un calcul de suites numériques.
+  - Formaliser et utiliser les concepts liés aux suites, en particulier établir une monotonie, une majoration, une minoration par exemple.
+  - Étudier le comportement à l'infini d'une suite définie explicitement ou par récurrence, notamment une suite modélisant un phénomène : convergence ou divergence, comparaison à une autre suite (notations de Landau).
+  - Calculer des intégrales (primitives, intégration par parties ou par changement de variable)
+
+activities:
+  - kind: tutorial
+    hours: 20
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 12
+    label: Cours
+  - kind: remediation
+    hours: 4
+    label: Remédiation
+  - kind: personnal
+    hours: 36
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.75
+    code: QCMs-ASI
+    coefficient: 0.30
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 0.25
+    code: CC-ASI
+    coefficient: 0.10
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B2-ASI
+    hours: 2
+    coefficient: 0.6
+    label: Examen

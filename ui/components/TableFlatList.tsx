@@ -69,7 +69,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
 
   // render section title and items in same level array
   const data = sections.reduce((acc, section) => {
-    if (!section) return acc;
+    if (!section) {return acc;}
     if (section.title) {
       acc.push({ type: 'title', title: section.title, icon: section.icon, papicon: section.papicon, hideTitle: section.hideTitle });
     }

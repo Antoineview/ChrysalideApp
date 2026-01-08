@@ -1,0 +1,59 @@
+information:
+  label: "Outils d'analyse de circuits : Définitions, Lois et Théorèmes"
+  coefficient: 1
+  threshold: 5
+  referents:
+    - Anne-Sophie DUJARDIN
+
+prerequisites:
+  - Bases de mathématiques (résolution de systèmes et calculs fractionnaires)
+
+summary: |
+  Ce cours fait partie du module Sciences de l'Ingénieur (SI), donc l'objectif est de donner à l'élève Ingénieur une culture générale scientifique.
+  Ce cours consiste en l'apprentissage des méthodes d'analyse de circuits, afin de fournir à l'étudiant les techniques nécessaires pour la compréhension de circuits électriques, dans un premier temps pour des signaux continus.
+
+outline: |
+  - Définitions 
+    - Circuit électrique
+    - Courant et tension 
+    - Vocabulaire de l'électronique
+    - Dipôles
+      - La résistance
+      - Les générateurs
+      - Associations de dipôles
+  - Outils d'étude de circuits électroniques
+    - Lois de Kirchhoff - Ponts diviseurs de tension et de courant
+    - Équivalences Thévenin/Norton
+    - Théorème de Millman
+
+tlo: |
+  - Décrire un circuit avec le vocabulaire spécifique à l'électronique (nœud, branche, maille, dipôles en série ou en parallèle).
+  - Reconnaître dans un schéma les résistances, les générateurs de tension et les générateurs de courant.
+  - Associer les résistances en série et en parallèle pour déterminer la résistance équivalente.
+  - Flécher les courants et les tensions en respectant les conventions générateurs ou récepteur de l'électronique.
+  - Appliquer les lois de Kirchhoff (loi des mailles et loi des nœuds) et la loi d'Ohm dans un circuit donné pour déterminer et calculer les courants et les tensions dans ce circuit.
+  - Appliquer les formules du pont diviseur de tension et du pont diviseur de courant pour déterminer et calculer les courants et les tensions dans un circuit.
+  - Simplifier un circuit électronique linéaire résistif en régime continu en utilisant les équivalences Thévenin/Norton.
+
+activities:
+  - kind: tutorial
+    hours: 10
+    label: Travaux Dirigés
+  - kind: personnal
+    hours: 7
+    label: Le travail personnel inclu l'étude du cours donné sous forme de polycopié
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B1
+    coefficient: 0.75
+    label: Mi-semestre
+    comments: Pas de calculatrice ni document

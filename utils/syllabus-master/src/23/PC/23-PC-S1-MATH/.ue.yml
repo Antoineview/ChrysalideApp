@@ -1,0 +1,23 @@
+information:
+  label: Mathématiques S1
+  level: L1
+  ects: 9
+  coordinator: Guillaume EUVRARD
+
+description: |
+  Le programme de l'enseignement mathématique est conçu pour répondre aux besoins de l'ingénierie du numérique. Nous ne faisons pas des maths pour les maths, notre but est de vous donner des outils et méthodes d'analyse, que vous pourrez utiliser dans la suite de votre parcours, à l'école comme en entreprise. 
+
+  Ainsi par exemple, les méthodes de dénombrement vous permettront non seulement de calculer des probabilités, mais aussi à l'avenir d'évaluer la complexité d'une procédure informatique. Cette évaluation demande en effet d'énumérer et de compter les opérations élémentaires que la procédure devra exécuter, pour prévoir son temps d'exécution. 
+  
+  La complexité algorithmique est un élément clef des méthodes de cryptage : un message doit être difficile à décrypter pour un intrus qui l'aurait intercepté. De nombreuses méthodes font appel à l'arithmétique des nombres entiers. Après tout, un message n'est qu'une suite de bits et peut donc être interprété comme un nombre entier. On peut donc le crypter ou décrypter au moyen d'une suite d'opérations arithmétiques. L'ECUE Arithmétique donne les outils mathématiques pour cela, vous le mettrez en œuvre informatiquement au second semestre dans l'ECUE AFIT. 
+  
+  De même, quand une procédure entre dans une boucle, il y a très souvent une suite numérique qui entre en jeu : une variable est modifiée à chaque itération et ses valeurs successives définissent une suite numérique. Certaines procédures informatiques de résolution d'équations, par exemple, sont basées sur ce principe. Elles génèrent d'abord une approximation initiale grossière de la solution, puis entrent dans une boucle ou cette approximation est affinée à chaque itération. La suite numérique ainsi définie converge vers la solution. 
+  
+  Ce sont là des exemples de thèmes qui seront étudiés ce semestre. Ils sont tous reliés d'une façon ou d'une autre aux besoins du numérique. 
+  
+  Format des activités : Cours (MiMos + remédiation) et TD (Travaux Dirigés)
+  
+  Chaque semaine :  
+  - Un programme de MiMos à étudier en autonomie. 
+  - Une séance de remédiation d'une heure. Un enseignant revient sur les MiMos de la semaine, aide à les décortiquer. Cette séance est facultative et placée en fin de semaine. Pour qu'elle soit profitable il est indispensable d'avoir déjà étudié les MiMos de la semaine. 
+  - Cinq heures de Travaux Dirigés.

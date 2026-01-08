@@ -1,0 +1,114 @@
+information:
+  label: AR / VR
+  coefficient: 1
+  threshold: 5
+  referents:
+    - Owen DUFFOURG
+    - Marion DEMOTIÉ
+
+prerequisites:
+  - Base de C#
+
+summary: |
+  Les étudiants découvriront, via ce cours, comment créer une expérience de réalité virtuelle et augmentée en utilisant Unity 3D, le moteur de jeu multiplateforme. Ils devront assimiler le fonctionnement du logiciel et les différents concepts liés à la création d'un projet.
+
+outline: |
+  - Vidéo d'introduction à la réalité virtuelle et augmentée
+    - Historique et état des lieux
+    - Périphériques et fonctionnement
+    - Différents domaines d'application
+    - Cas d'usages
+  - TP 1 - Découverte et utilisation de Unity 3D
+    - Installer le logiciel et les modules pré requis
+    - Appréhender l'interface du logiciel
+    - Créer une scène de jeu
+    - Mettre en place un environnement virtuelle
+    - Importer des éléments 3D
+    - Utiliser les *Materials*
+    - Utiliser les *Prefabs*
+    - Bases de programmation C# et script
+      - Apparition
+      - Déplacement
+    - Utiliser le système de physique dans Unity
+    - Utiliser la lumière temps réel
+    - Exporter un projet sous forme d'exécutable pour PC ou Mac
+  - TP 2 - Créer une expérience AR avec Unity 3D
+    - Installer les modules pré requis pour l'AR
+    - Utilisation du framework *AR Foundation*
+    - Créer une scène pour l'AR
+    - Utiliser les fonctionnalités de l'AR
+    - Détecter des plans
+    - Instancier des objets
+    - Utiliser les *Raycasts*
+    - Créer une interface utilisateur
+    - Déployer l'app sur un téléphone Android
+
+tlo: |
+  - Installer l'ensemble des pré requis pour créer une expérience avec Unity3D
+  - Construire une architecture pour un projet Unity3D
+  - Importer un objet 3D, lui attribuer un Material, et créer un Prefab
+  - Instancier un Prefab
+  - Construire un interface graphique
+  - Faire fonctionner des interactions au toucher de l'écran
+  - Créer un script C# et d'utiliser les types de variables, les fonctions et les inputs system Unity3D
+  - Créer un exécutable pour PC ou Mac d'un mini jeu 3D. Déplacement d'un player via clavier/souris, gestion de la physique, interaction avec des items, création d'une interface graphique UI.
+  - Créer deux .apk pour Android d'applications en Réalité Augmentée. Une application avec détection de points de tracking dans l'espace, mini-jeu 3D où l'on interagit grâce au Touch du smartphone avec un envoi de raycasts sur des ennemis pour les détruire. Une seconde application AR avec détection de plans verticaux/horizontaux dans l'espace et, interaction avec ces plans 3D et instanciation d'objets.
+
+references:
+  - kind: link
+    url: https://unity.com
+    label: Unity
+  - kind: link
+    url: https://unity.com/fr/unity/features/arfoundation
+    label: AR Foundation
+  - kind: link
+    url: https://visualstudio.microsoft.com/fr
+    label: Visual Studio
+
+activities:
+  - kind: lecture
+    hours: 2
+    label: Conférences et vidéos
+  - kind: practical
+    hours: 8
+    label: Travaux pratiques guidés
+  - kind: personnal
+    hours: 9
+    label: Travail personnel de recherche, conception et réalisation
+
+evaluations:
+  - kind: project
+    environment: autonomous
+    hours: 1
+    code: PROJECT
+    coefficient: 0.6
+    label: Projet en groupe
+    comments: Voir la section "Informations complémentaires"
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: QCM1
+    coefficient: 0.2
+    label: QCM sur la première vidéo
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: QCM2
+    coefficient: 0.2
+    label: QCM sur la deuxième vidéo
+
+others: |
+  - Détails du projet
+    - Les étudiants travaillent en groupe.
+    - Ils doivent rendre une application .apk déployable sur Android.
+    - Ils ont 3h pour créer une expérience en AR, en tenant compte des contraintes suivantes :
+      - [2] Application de réalité augmentée + ReadMe.txt
+      - [2] Avoir un Gameplay (Interactions, un but, une victoire ou une défaite).
+      - [2] Instancier un minimum d'un objet 3D dans la scène.
+      - [2] Avoir différents matériaux dans la scène.
+      - [2] Avoir un texte de score dans l'UI (interface utilisateur).
+      - [2] Avoir au moins une interaction tactile.
+      - [2] Avoir au moins un bouton UI.
+      - [2] Avoir au moins un système de particules.
+      - [2] Faire en sorte que le jeu soit aussi agréable et amusant que possible, thématique libre.
+      - [2] Extras (timer, audio, animation, menu, etc.).  

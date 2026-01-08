@@ -1,4 +1,5 @@
 import { Grade } from "@/services/shared/grade";
+
 import { ScoreProperty } from "./helpers";
 
 const PapillonWeightedAvg = (grades: Grade[], key: ScoreProperty = "studentScore"): number => {

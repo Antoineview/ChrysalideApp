@@ -1,14 +1,15 @@
+import * as ExpoHaptics from "expo-haptics";
 import React, { useCallback, useMemo, useRef } from "react";
 import { Platform, PressableProps } from "react-native";
+import { Pressable, TapGestureHandler } from "react-native-gesture-handler";
 import Reanimated, {
   LinearTransition,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-import * as ExpoHaptics from "expo-haptics";
+
 import { Animation } from "../utils/Animation";
-import { Pressable, TapGestureHandler } from "react-native-gesture-handler";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 

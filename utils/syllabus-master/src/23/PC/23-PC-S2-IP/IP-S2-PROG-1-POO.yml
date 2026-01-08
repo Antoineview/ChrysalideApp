@@ -1,0 +1,54 @@
+information:
+  label: Programmation Orientée Objet
+  coefficient: 5
+  threshold: 5
+  referents:
+    - Paul HERVOT
+
+prerequisites:
+  - ECUE <code>[IP-S1-PROG-2-DS]</code>
+
+summary: |
+  Introduction à la programmation orientée objet en C#
+
+outline: |
+  - Programmation orientée objet: interfaces et classes abstraites
+  - Polymorphisme ad-hoc (surcharge de méthodes et d'opérateurs) (ad-hoc polymorphism (method and operator overloading))
+  - Polymorphisme de sous-typage (subtyping)
+  - Composition vs héritage (composition over inheritance)
+
+tlo: |
+  - Appréhender et utiliser les notions et les différences entre classes, interfaces et classes abstraites
+  - Déterminer les bons modificateurs (`public`, `private`, `protected` et `static`) à utiliser
+  - Mettre en œuvre le polymorphisme ad-hoc
+  - Mettre en œuvre le polymorphisme de sous-typage
+  - Mettre en œuvre la composition de classes
+  - Utiliser des types existants mettant en œuvre le polymorphisme paramétrique
+  - Employer la surcharge d'opérateur
+
+activities:
+  - kind: practical
+    hours: 18
+    label: Travaux Pratique d'application du cours en salle machine
+  - kind: lecture
+    hours: 4
+    label: Cours magistral
+  - kind: remediation
+    hours: 2
+    label: Séances de remédiation
+  - kind: personnal
+    hours: 36
+
+evaluations:
+  - kind: exam
+    environment: computer-room
+    hours: 3
+    code: EXAM-B1
+    coefficient: 0.8
+    label: Travaux pratique en condition d'examen
+  - kind: exercices
+    environment: intranet
+    hours: 0
+    code: TPs
+    coefficient: 0.2
+    label: Travaux pratique hebdomadaire

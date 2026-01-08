@@ -10,8 +10,9 @@ import Typography from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
+
 import { getStatusText } from '../../calendar/components/CalendarDay';
+import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 
 const HomeTimeTableWidget = React.memo(() => {
   const navigation = useNavigation();

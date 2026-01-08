@@ -1,9 +1,8 @@
-import React from 'react';
-import { Pressable, View } from 'react-native';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
+import React from 'react';
+
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import Icon from '@/ui/components/Icon';
 import Stack from '@/ui/components/Stack';
 
 interface HomeTopBarButtonProps {

@@ -1,0 +1,18 @@
+information:
+  label: Algorithmique S1
+  level: L1
+  ects: 7
+  coordinator: Nathalie BOUQUET
+
+description: |
+  L'algorithmique donne les bases théoriques nécessaires à tout informaticien et fournit les outils pour concevoir rigoureusement des programmes efficaces.
+  
+  La résolution de problèmes informatiques (la programmation) de manière efficace nécessite de connaitre les structures de données utilisées et les algorithmes attachés indépendamment des considérations matérielle ou systèmes. 
+  
+  <hr>
+  
+  Ce premier semestre présente les types de données simples, avec le formalisme des _types algébriques abstraits_ (ECUE TAA). Ainsi que les premiers algorithmes classique de recherche sur les listes.
+  Parallèlement deux styles de programmation, permettant d'implémenter les algorithmes, sont présentés : 
+  
+  - la programmation fonctionnelle avec Caml, qui permettra d'aborder le raisonnement récursif
+  - la programmation impérative avec Python

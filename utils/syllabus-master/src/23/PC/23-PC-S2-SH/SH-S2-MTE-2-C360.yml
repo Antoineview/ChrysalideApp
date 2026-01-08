@@ -1,0 +1,34 @@
+information:
+  label: Communication 360
+  coefficient: 4
+  threshold: 5
+  referents:
+    - Klervi LE COLLEN
+
+summary: |
+  Un projet s'accompagne d'une stratégie de communication. L'objectif de cet atelier résidera dans l'apprentissage des différents outils de communication, dans la stratégie du choix de cet outil et dans sa réalisation.
+
+outline: |
+  - Découvrir les bases de la stratégie de communication 360 dans le but de valoriser son projet: le logo, le choix des couleurs, l'ergonomie du site Internet, la présence sur les RS.
+  - Apprendre les fondamentaux de la stratégie digitale
+  - Exercices autour de la création et de la réalisation d'un produit de communication afin de valoriser son projet
+
+tlo: |
+  - Appréhender la stratégie de communication 360, notamment en marketing digital et savoir l'appliquer pour valoriser le projet info
+  - Réaliser en groupe un produit de communication original (?) et efficient sur un thème donné
+  - Adapter la stratégie de communication 360 dans le cadre d'un projet informatique donné
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Atelier de 2 heures par semaine
+  - kind: personnal
+    hours: 10
+
+evaluations:
+  - kind: defense
+    environment: exam-room
+    hours: 0.5
+    code: SOUTENAN1E
+    coefficient: 1
+    label: Soutenance de projet et stratégie de communication lors de la soutenance

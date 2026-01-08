@@ -5,6 +5,7 @@ import React, { memo } from "react";
 import { Dimensions, FlatList, FlatListProps, Platform, View } from "react-native";
 import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
@@ -50,7 +51,7 @@ const TabFlatList: React.FC<TabFlatListProps> = memo(({
   let tabBarHeight = 0;
   try {
     tabBarHeight = 80;
-    if (isNaN(tabBarHeight)) tabBarHeight = 0;
+    if (isNaN(tabBarHeight)) {tabBarHeight = 0;}
   } catch {
     tabBarHeight = 0;
   }

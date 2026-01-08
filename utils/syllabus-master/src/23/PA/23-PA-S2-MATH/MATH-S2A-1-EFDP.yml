@@ -1,0 +1,75 @@
+information:
+  label: Ensembles, fonctions, dénombrement et probabilités
+  coefficient: 3
+  threshold: 7
+  referents:
+    - Christel TRÉMOULET
+    - Guillaume EUVRARD
+
+prerequisites:
+  - Souvenirs du primaire et du collège.
+  - ECUE <code>[MATH-S1A-1-SEM]</code>
+
+summary: |
+  Dans un premier temps, on s'intéresse à la notion d'ensembles en toute généralité puis à la notion de fonction, essentiellement les notions de fonctions injectives, surjectives et bijectives ainsi qu'à l'image directe ou réciproque d'un ensemble par une fonction.
+  Dans un second temps, nous donnerons les outils utiles au dénombrement (arrangement, permutation, combinaison, cardinal des ensembles finis).
+  Nous finirons par des probabilités discrètes et finies: vocabulaire probabiliste, équiprobabilité, probabilités conditionnelles, indépendance d'événements et variable aléatoire discrète finie
+
+outline: |
+  - Ensembles, fonctions
+    - Définition, écriture d'un ensemble. Appartenance.
+    - Sous-ensembles : inclusion, égalité, intersection, union, complémentaire, partition, produit cartésien, ensemble des parties. Propriétés.
+    - Ensembles finis : cardinal, cardinal d'une union.
+    - Définition d'une fonction. Composition. Image directe et réciproque d'un ensemble par une fonction.
+    - Définition d'une fonction injective, surjective, bijective. Définition de la fonction réciproque d'une fonction bijective ainsi que la condition nécessaire et suffisante de bijectivité. Exemple de la fonction arctangente.
+  - Dénombrement
+    - Cardinaux d'ensembles finis. Comptage du nombre de façons de piocher des éléments, avec ou sans remise, avec ou sans répétition.
+    - Dénombrement de référence : arrangement, permutation, combinaison.
+    - Formule de Pascal et formule du binôme de Newton.
+  - Probabilités finies
+    - Espace probabilisé, univers, événements. Définition d'une probabilité.
+    - Equiprobabilité
+    - Probabilités conditionnelles : définition, formules de Bayes, formule des probabilités totales.
+    - Indépendance d'événements.
+    - Variables aléatoires finies discrètes : définition, loi, espérance, variance. Propriétés.
+
+tlo: |
+  - Manipuler les opérations sur les ensembles et les sous-ensembles (inclusion, intersection, union, complémentaire, partition, produit cartésien, image et image réciproque par une fonction) en utilisant correctement la syntaxe mathématique ensembliste.
+  - Identifier les propriétés d'une fonction usuelle ou définie par un graphe (surjectivité, injectivité, bijectivité).
+  - Formuler et effectuer des dénombrements d'ensembles finis s'identifiant à des arrangements, combinaisons et permutations.
+  - Modéliser des expériences aléatoires simples en utilisant le langage probabiliste (espace probabilisé, loi d'une variable aléatoire par exemple).
+  - Calculer les probabilités dans des situations d'équiprobabilité, probabilités conditionnelles et événements indépendants.
+  - Interpréter l'espérance et la variance d'une variable aléatoire simple discrète et finie ainsi que les transformations affines de celle-ci.
+
+activities:
+  - kind: tutorial
+    hours: 25
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 15
+    label: Cours
+  - kind: remediation
+    hours: 4
+    label: Remédiation
+  - kind: personnal
+    hours: 40
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.75
+    code: QCM-EFDP
+    coefficient: 0.2
+    label: QCM
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: CC-EFDP
+    coefficient: 0.2
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B3-EFDP
+    hours: 2.5
+    coefficient: 0.6
+    label: Examen

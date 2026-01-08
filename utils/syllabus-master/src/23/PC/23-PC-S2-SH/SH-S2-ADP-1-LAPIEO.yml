@@ -1,0 +1,59 @@
+information:
+  label: Lecture d'articles de la presse internationale et expression orale
+  coefficient: 3
+  threshold: 5
+  referents:
+    - Fuji FRANK
+
+prerequisites:
+  - ECUE <code>[SH-S1-ADP-1-ECPE]</code>
+  - ECUE <code>[SH-S1-ADP-2-SEOG]</code>
+
+summary: |
+  Le temps que les jeunes passent à la lecture est en baisse constante. En même temps, Epita demande un score élevé au test TOEIC-dont la moitié est la lecture-pour l'obtention du diplôme. Les articles que les étudiants liront ici sont bien plus intéressants (traitant de l'actualité, de l'informatique, et des sciences humaines) que ceux trouvés au TOEIC. Ils devront par la suite formuler une opinion sur ce qu'ils ont lu. L'étude de grammaire se poursuit sous forme de pratique orale.
+
+outline: |
+  - Révision de grammaire, niveau B2
+  - Analyse d'un article de la presse en vue de le présenter à la classe
+  - L'étudiant va dégager les points importants, les ordonner, et enfin déterminer son opinion
+  - Présenter l'ensemble devant la classe
+
+tlo: |
+  - À partir de la lecture d'un article, analyser son contenu et reformuler les points de l'auteur
+  - Formuler un point de vue personnel avec les points principaux qui justifient cette opinion
+  - Réaliser un oral de 6 mn à partir d'un article de presse de qualité sur l'actualité (ex. *NY Times*) dans un anglais formel
+  - Présenter l'exposé devant la classe dans un format prédéterminé.
+  - Utiliser les temps grammaticaux niveau B2 : *passive forms, past perfect continuous*
+
+activities:
+  - kind: tutorial
+    hours: 6
+    label: Travaux dirigés sur 1h par semaine
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCM
+    coefficient: 0.2
+    label: QCM hebdomadaire
+  - kind: defense
+    environment: classroom
+    hours: 0.25
+    code: EXPOSÉ
+    coefficient: 0.4
+    label: Exposé en cours
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: TOEIC
+    coefficient: 0.1
+    label: TOEIC
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: EXAM-B3
+    coefficient: 0.3
+    label: Mi-semestre

@@ -1,23 +1,22 @@
-import React from 'react';
-import Stack from './Stack';
-import Typography from './Typography';
-import { formatHTML } from '@/utils/format/html';
-import { useTheme } from '@react-navigation/native';
-import adjust from '@/utils/adjustColor';
-import { Text } from 'react-native';
-
-import { formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
-import * as DateLocale from 'date-fns/locale';
-import i18n from '@/utils/i18n';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Papicons } from '@getpapillon/papicons';
-import Icon from './Icon';
+import { useTheme } from '@react-navigation/native';
+import { formatDistanceToNow } from 'date-fns';
+import * as DateLocale from 'date-fns/locale';
+import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { Text } from 'react-native';
+import { LinearTransition } from 'react-native-reanimated';
+
+import adjust from '@/utils/adjustColor';
+import { formatHTML } from '@/utils/format/html';
+import i18n from '@/utils/i18n';
+
+import { Animation } from '../utils/Animation';
 import AnimatedPressable from './AnimatedPressable';
 import { Dynamic } from './Dynamic';
-import { Animation } from '../utils/Animation';
-import { LinearTransition } from 'react-native-reanimated';
-import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
-import { t } from 'i18next';
+import Icon from './Icon';
+import Stack from './Stack';
+import Typography from './Typography';
 
 interface TaskProps {
   subject: string;

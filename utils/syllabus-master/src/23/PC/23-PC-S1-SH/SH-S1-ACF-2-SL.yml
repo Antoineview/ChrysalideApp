@@ -1,0 +1,61 @@
+information:
+  label: Stratégie de Lecture
+  coefficient: 3
+  threshold: 5
+  referents:
+    - Max TESTEMALE
+
+prerequisites:
+  - ECUE <code>[SH-S1-ACF-1-AFE]</code>
+
+summary: |
+  Tout comme le compréhension orale, la compréhension de lecture est importante. Dans le monde professionnel, chacun sera amené à lire des articles, rapports ou autres supports afin d'en tirer des avis, des conclusions ou bien d'en faire des synthèses. L'approche pour certains documents peut être différentes et il est important de mieux s'y préparer. Que les informations à comprendre soient scientifiques ou générales, appliquer une stratégie de lecture peut aider à mieux en saisir le sens.
+  - Hiérarchiser l'information
+  - Assimiler les différentes stratégies de compréhension de textes.
+  - Travaux pratiques sur différentes types d'examens.
+
+outline: |
+  - Introduction des différents supports de compréhension de lecture.
+  - IELTS task 1 part 1.
+    - Série d'exercices sur la "Task 1" du test IELTS.
+  - IELTS task 1 part 2.
+    - Série d'exercices sur la "Task 1" du test IELTS.
+  - IELTS Task 1 exercice.
+    - Test en mode TP
+  - Toeic Strategy.
+    - Parties 5, 6 et 7.
+  - "Expeditious vs Intensive/careful reading".
+    - Études de textes.
+
+tlo: |
+  - Identifier l'idée principale et les détails la concernant à partir d'un texte/article.
+  - Retranscrire de façon structurée les informations obtenues depuis un texte/article.
+  - Analyser les informations obtenues provenant d'un texte donné afin de proposer des réponses à des questions données.
+  - Lire en utilisant la stratégie "careful reading"
+
+activities:
+  - kind: tutorial
+    hours: 6
+    label: Travaux dirigés sur 1h par semaine
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCM
+    coefficient: 0.3
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: classroom
+    hours: 1
+    code: EVAL-B2
+    coefficient: 0.3
+    label: IELTS task 1 exercice
+  - kind: exam
+    environment: classroom
+    hours: 1.5
+    code: EXAM-B2
+    coefficient: 0.3
+    label: QCM de compréhension de lecture

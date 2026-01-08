@@ -1,6 +1,7 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useMemo,useRef } from 'react';
+import Reanimated, { AnimateProps,LinearTransition, withDelay, withSpring } from 'react-native-reanimated';
+
 import Typography, { TypographyProps } from './Typography';
-import Reanimated, { LinearTransition, withDelay, withSpring, AnimateProps } from 'react-native-reanimated';
 
 interface AnimatedNumberProps extends TypographyProps {
   distance?: number; // Distance to translate the number

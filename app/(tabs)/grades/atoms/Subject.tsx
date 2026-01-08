@@ -7,7 +7,6 @@ import { Text, TouchableOpacity } from 'react-native';
 
 import { Grade, Subject } from '@/services/shared/grade';
 import Item, { Trailing } from '@/ui/components/Item';
-import List from '@/ui/components/List';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import adjust from '@/utils/adjustColor';

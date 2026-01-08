@@ -1,6 +1,6 @@
-import { useMemo, useCallback } from 'react';
-import { Grade, Subject } from "@/services/shared/grade";
+import { useCallback,useMemo } from 'react';
 
+import { Grade, Subject } from "@/services/shared/grade";
 import { getSubjectAverageByProperty as getSubjectAverageByPropertyHelper } from "@/utils/grades/algorithms/helpers";
 import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
 
@@ -50,12 +50,12 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
     const subjectId = grade.subjectId;
     const currentSubjectAvg = subjectAverages[subjectId];
 
-    if (currentSubjectAvg === undefined || currentSubjectAvg === -1) return 0;
+    if (currentSubjectAvg === undefined || currentSubjectAvg === -1) {return 0;}
 
     // Calculate what the subject average would be without this grade
     // We need to find the subject and filter the grade out
     const subject = getSubjectById(subjectId);
-    if (!subject) return 0;
+    if (!subject) {return 0;}
 
     const newSubjectAvg = getSubjectAverage(subject.grades.filter(g => g.id !== grade.id));
 
@@ -98,10 +98,10 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
     const subjectId = grade.subjectId;
     const currentSubjectAvg = subjectClassAverages[subjectId];
 
-    if (currentSubjectAvg === undefined || currentSubjectAvg === -1) return 0;
+    if (currentSubjectAvg === undefined || currentSubjectAvg === -1) {return 0;}
 
     const subject = getSubjectById(subjectId);
-    if (!subject) return 0;
+    if (!subject) {return 0;}
 
     const newSubjectAvg = getSubjectAverageByPropertyHelper(subject.grades.filter(g => g.id !== grade.id), "averageScore");
 

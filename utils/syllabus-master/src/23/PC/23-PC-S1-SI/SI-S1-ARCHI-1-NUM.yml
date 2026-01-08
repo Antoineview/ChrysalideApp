@@ -1,0 +1,50 @@
+information:
+  label: Numération
+  coefficient: 1
+  threshold: 5
+  referents:
+    - David BOUCHET
+
+prerequisites:
+  - Bases de mathématiques (addition, soustraction, multiplication, division euclidienne)
+
+summary: |
+  Ce cours fait partie de l'Unité d'Enseignement Sciences de l'Ingénieur (SI), dont l'objectif est de donner à l'élève Ingénieur une culture générale scientifique.
+  Ce cours doit permettre aux étudiants d'acquérir les bases nécessaires à la manipulation des nombres entiers et réels en informatique.
+
+outline: |
+  - Étude des différentes bases (en particulier le binaire et l'hexadécimal)
+  - Changement de base
+  - Opérations arithmétiques dans ces bases
+  - Codage des nombres entiers (entiers et non signés)
+  - Autres types de code (Gray, BCD, ASCII)
+  - Les nombres à virgule flottante - Norme IEEE 754
+
+tlo: |
+  - Convertir une valeur réelle dans une base de numération, en particulier en binaire (base 2) et en hexadécimal (base16)
+  - Réaliser des additions, soustractions, multiplications et divisions sur des entiers en base 2.
+  - Convertir toute valeur réelle dans le format IEEE754.
+
+
+activities:
+  - kind: tutorial
+    hours: 10
+    label: Travaux Dirigés
+  - kind: personnal
+    hours: 7.5
+    label: Le travail personnel inclu l'étude du cours donné sous forme de polycopié
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B1
+    coefficient: 0.75
+    label: Mi-semestre
+    comments: Pas de calculatrice ni document

@@ -1,0 +1,100 @@
+title: EPITA - Syllabus - Cycle Préparatoire
+lang: fr
+
+preamble: Préambule
+preamble-header: Présentation générale de la formation
+
+
+# Year
+'23': 2023-24
+'24': 2023-24
+
+# Cycles
+PC: Parcours Classique
+PA: Parcours Adapté
+
+# Semester
+S1: 1<sup>er</sup> semestre
+S2: 2<sup>ème</sup> semestre
+S3: 3<sup>ème</sup> semestre
+S4: 4<sup>ème</sup> semestre
+
+
+# UE
+MATH: Mathématiques
+ALGO: Algorithmique
+IP: Informatique Pratique
+# sub UE
+PROG: Programmation
+PROJ: Projet
+SI: Sciences de l'Ingénieur
+# sub UE
+ELEC: Électronique
+ARCHI: Architecture
+PHYS: Physique
+NTS: Nouvelles Technologies et Société
+SH: Sciences Humaines
+# Sub UE
+ADP: Anglais Documents et Presses
+ACF: Anglais Communication Formelle
+MTE: Méthodologie et Techniques d'Expressions
+ANAC: Activités Non Académiques
+
+level: Niveau
+semester: Semestre
+ects: ECTS
+coordinator: Coordinateur
+ue: UE
+ecue: ECUE
+
+referent: Référent
+
+ecue-coefficient: ECUE et coefficients dans l'UE
+
+# ECUE card
+prerequisites: Prérequis
+summary: Résumé de l'ECUE
+outline: Plan de cours
+tlo: Acquis d'Apprentissage Visés
+tlo-intro: "À l'issue de cet ECUE, les étudiants sont capables de :"
+activities: Format des activités
+evaluations: Évaluation(s)
+evaluations-label: Nom
+evaluations-kind: Type
+evaluations-environment: Environnement
+evaluations-code: Code
+evaluations-comments: Commentaires
+grading: Calcul de la note finale
+grading-grade: Note Finale
+references: Références et bibliographie
+others: Information complémentaires
+
+info: Informations
+info-coefficient: Coefficient dans l'UE
+info-threshold: Note seuil
+
+info-hours: Répartition du volume horaire attendu
+global-hours: Répartition volume horaire global
+
+# Activités
+lecture: Cours
+remediation: Remédiation
+tutorial: Travaux Dirigés
+practical: Travaux Pratiques
+personnal: Travail Personnel
+total: Total
+supervised: <i>dont Face-à-Face</i>
+
+# Évaluations
+exam: Examen
+project: Projet
+report: Rapport
+defense: Soutenance
+exercices: Exercices
+
+# Environnement
+exam-room: Salle d'Examen
+computer-room: Salle Machine
+intranet: Intranet Assistant
+autonomous: Travail en autonomie
+classroom: Salle de cours

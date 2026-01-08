@@ -49,7 +49,7 @@ export const cleanHtmlForArticle = (htmlString: string): string => {
         // a) Remove remaining disallowed tags from within the block, keeping their content.
         block = block.replace(new RegExp(`<(?!\/?(?:${allowedTagsRegex})\\b)[^>]+>`, 'ig'), '').trim();
 
-        if (block.length === 0) return; // Skip empty blocks after cleanup
+        if (block.length === 0) {return;} // Skip empty blocks after cleanup
 
         // Prevent nested <p> tags by stripping leading/trailing <p> tags from the block content
         block = block.replace(/^<p>\s*/i, '').replace(/\s*<\/p>$/i, '').trim();

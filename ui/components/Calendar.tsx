@@ -1,18 +1,13 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useTheme } from "@react-navigation/native";
-import * as Haptics from "expo-haptics";
-import * as Localization from "expo-localization";
-import React, { useState, useEffect } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
-
-import { PapillonAppearIn, PapillonAppearOut, PapillonSpringIn, PapillonSpringOut, PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
-import Reanimated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring, withDelay } from "react-native-reanimated";
-import { BlurView } from "expo-blur";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { runsIOS26 } from '../utils/IsLiquidGlass';
-
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import { PapillonSplashOut } from '@/components/FakeSplash';
+import * as Localization from "expo-localization";
+import React, { useEffect,useState } from "react";
+import { Platform, Pressable } from "react-native";
+import Reanimated from "react-native-reanimated";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { PapillonSpringIn, PapillonSpringOut } from "../utils/Transition";
 
 
 export interface CalendarProps {
@@ -54,7 +49,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
   };
 
   if (Platform.OS === "android") {
-    if (!visible) return null;
+    if (!visible) {return null;}
     return (
       <DateTimePicker
         value={date}

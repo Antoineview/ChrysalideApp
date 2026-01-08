@@ -1,0 +1,51 @@
+information:
+  label: Systèmes à microprocesseurs
+  coefficient: 1
+  threshold: 5
+  referents:
+    - David BOUCHET
+
+prerequisites:
+  - ECUE <code>[SI-S2-ARCHI-1-LSBC]</code>
+
+summary: |
+  Ce cours fait partie de l'Unité d'Enseignement Sciences de l'Ingénieur (SI), dont l'objectif est de donner à l'élève Ingénieur une culture générale scientifique.
+  Ce cours doit permettre aux étudiants de comprendre comment il est possible d'assembler des mémoires afin d'augmenter leur capacité et d'étudier comment le microprocesseur peut gérer les circuits qui lui sont connectés. Pour ce dernier point, les méthodes de bases ainsi que quelques variantes d'optimisation seront abordées. 
+
+outline: |
+  - Les mémoires
+    - Définitions
+    - Les bus
+    - Assemblage de mémoires
+  - Décodage d'adresse
+
+tlo: |
+  - Nommer les différents types de mémoire et lister leurs caractéristiques élémentaires.
+  - Nommer les différents bus d'entrée et de sortie des mémoires.
+  - Définir et calculer les caractéristiques d'une mémoire (capacité, largeur, profondeur)
+  - Associer des mémoires en série et/ou en parallèle pour augmenter leur capacité.
+  - Utiliser les techniques d'adressage de base pour la gestion par le microprocesseur des composants qui lui sont connectés.
+  - Mettre en œuvre les méthodes d'optimisation proposées pour la gestion par le microprocesseur des composants qui lui sont connectés.
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux Dirigés
+  - kind: personnal
+    hours: 9
+    label: Le travail personnel inclu l'étude du cours donné sous forme de polycopié
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.25
+    code: QCMs
+    coefficient: 0.25
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: EXAM-B4
+    coefficient: 0.75
+    label: Mi-semestre
+    comments: Pas de calculatrice ni document

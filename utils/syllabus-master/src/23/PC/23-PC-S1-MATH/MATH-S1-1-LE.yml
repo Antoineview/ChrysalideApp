@@ -1,0 +1,69 @@
+information:
+  label: Logique et ensembles
+  coefficient: 3
+  threshold: 6
+  referents:
+    - Christel TRÉMOULET
+
+prerequisites:
+  - Reconnaître si un nombre est entier, rationnel ou réel
+  - Résoudre une équation algébrique de degré 1 ou 2 à solutions réelles
+
+summary: |
+  Ce chapitre donne des outils à la démarche mathématique  : des rudiments de logique élémentaire, le vocabulaire ensembliste et la notion de fonction. Il propose aussi l'étude de l'ensemble $\mathbb{C}$.
+
+outline: |
+  - Logique propositionnelle : assertion, négation, conjonction, disjonction, implication, équivalence, tables de vérité.
+  - Quantificateurs : existentiel et universel, négation, ordre des quantificateurs.
+  - Les différents types de raisonnement : direct, par contraposée, par l'absurde et par récurrence.
+  - Notion d'ensemble, écriture d'un ensemble. Appartenance.
+  - Sous-ensembles : inclusion, égalité, intersection, union, complémentaire, partition, produit cartésien, ensembles des parties. Propriétés.
+  - Ensembles finis : cardinal, cardinal d'une union.
+  - Notion de fonction. Composition. Image directe et réciproque d'un ensemble par une fonction.
+  - Définition d'une fonction injective, surjective, bijective. Définition de la fonction réciproque d'une fonction bijective ainsi que la condition nécessaire et suffisante de bijectivité. Exemple de la fonction arctangente.
+  - Définition d'un nombre complexe, partie réelle et partie imaginaire, égalité de deux nombres complexes.
+  - Opérations dans $\mathbb{C}$  : addition, produit, inverse et quotient.
+  - Conjugué d'un nombre complexe. Propriétés.
+  - Représentation graphique. Affixe d'un point.
+  - Module d'un nombre complexe. Propriétés.
+  - Argument d'un nombre complexe. Forme trigonométrique. Propriétés.
+  - Forme exponentielle. Propriétés.
+  - Résolution des équations du second degré à coefficients réels.
+
+tlo: |
+  - Traduire et interpréter des assertions en syntaxe mathématique et les combiner pour démontrer une propriété.
+  - Formuler un raisonnement direct, par implication, équivalence, contraposée, par l'absurde ou par récurrence.
+  - Manipuler les opérations sur les ensembles et les sous-ensembles (inclusion, intersection, union, complémentaire, partition, produit cartésien, image et image réciproque par une fonction) en utilisant correctement la syntaxe mathématique ensembliste.
+  - Identifier les propriétés d'une fonction usuelle ou définie par un graphe (surjectivité, injectivité, bijectivité).
+  - Identifier le type et représenter graphiquement une relation binaire.
+  - Mener des calculs mettant en jeu des nombres complexes, (module, argument, équation de degré 2 à coefficients réels).
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 12
+    label: Cours
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 1.5
+    code: QCMs-LE
+    coefficient: 0.20
+    label: QCM journalier
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: CC-LE
+    coefficient: 0.3
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B1-LE
+    hours: 1
+    coefficient: 0.5
+    label: Examen

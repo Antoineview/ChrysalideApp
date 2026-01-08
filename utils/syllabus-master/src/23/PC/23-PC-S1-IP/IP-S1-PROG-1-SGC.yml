@@ -1,0 +1,59 @@
+information:
+  label: Environnement de travail EPITA et bases de programmation
+  coefficient: 1
+  threshold: 5
+  referents:
+    - Martin VAN LAERE
+
+summary: |
+  - Découverte du Parc Informatique d'Epita (PIE)
+  - Prise en main des outils de développement et d'aide au développement
+  - Introduction au C#
+
+outline: |
+  - Shell, git et utilisation de la moulinette
+  - Prise en main de l'ide Rider et introduction au testing
+  - Récursivité, exceptions et mise en place du testing
+  - Boucles, exceptions et mise en place du testing
+  - Entrées / sorties via les fichiers
+
+tlo: |
+  - Opérer dans un environnement unix via terminal en utilisant les commandes de navigation système et de manipulation de fichiers
+    - commandes : `ls`, `cd`, `cp`, `mv`, `rm`, `mkdir`, …
+  - Employer un logiciel de versionning git dans le cadre d'un travail individuel
+    - commandes : `clone`, `status`, `diff`, `log`, `add`, `commit`, `tag`, `push`, `pull`
+    - utilisation et configuration du `.gitignore`
+  - Opérer dans l'environnement de développement Rider (IDE)
+    - création de solution / compilation / exécution / débogage
+  - Mettre en œuvre un outil d'automatisation de tests Xunit, Nunit,... dans le cadre des travaux pratiques
+  - Développer des algorithmes simples* en utilisant la récursivité
+  - Développer des algorithmes simples* en utilisant les boucles : `while`, `for` et `foreach`
+  - Utiliser les différentes classes d'exception de C# pour gérer les cas d'erreurs dans les différentes implémentations d'algorithmes simples
+  - Utiliser les entrées sorties via des fichiers pour lire et stocker tous types d'informations
+
+activities:
+  - kind: practical
+    hours: 18
+    label: Travaux Pratique d'application du cours en salle machine
+  - kind: lecture
+    hours: 4
+    label: Cours magistral
+  - kind: remediation
+    hours: 1
+    label: Séance de remédiation
+  - kind: personnal
+    hours: 36
+
+evaluations:
+  - kind: exam
+    environment: computer-room
+    hours: 3
+    code: EXAM-B1
+    coefficient: 0.8
+    label: Travaux pratique en condition d'examen
+  - kind: exercices
+    environment: intranet
+    hours: 0
+    code: TPs
+    coefficient: 0.2
+    label: Travaux pratique hebdomadaire

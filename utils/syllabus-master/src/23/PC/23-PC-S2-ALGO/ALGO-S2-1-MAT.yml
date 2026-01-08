@@ -1,0 +1,37 @@
+information:
+  label: Matrices
+  coefficient: 1
+  threshold: 6
+  referents:
+    - Nathalie BOUQUET
+
+prerequisites:
+  - UE <code>[23_PC_S1_ALGO]</code>
+
+summary: |
+  Manipulations classiques des matrices en Python.
+  Les TDs présentent quelques algorithmes classiques de manipulation des matrices en Python toujours en appliquant les règles d'optimisation vues en S1.
+
+outline: |
+  - Présentation de l'implémentation matrices sous formes de listes de listes en Python
+  - Parcours de matrices complets : affichage, calculs mathématiques (somme, produit)
+  - Parcours interrompus : recherches, tests propriétés en limitant les calculs (complexité en temps comme vu en S1)
+  - Problème de recherche de chemin maximal : introduction aux algorithmes gloutons, programmation dynamique et brut force avec étude de complexité en temps
+
+tlo: |
+  - Résoudre des problèmes itératifs sur des structures de données en deux dimensions (matrices), de manièr efficace (application des règles simples d'optimisation en temps) et les implémenter en Python.
+
+activities:
+  - kind: tutorial
+    hours: 12
+    label: Travaux dirigés (TD)
+  - kind: personnal
+    hours: 12
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.75
+    code: EXAM-B3
+    coefficient: 1
+    label: Mi-semestre

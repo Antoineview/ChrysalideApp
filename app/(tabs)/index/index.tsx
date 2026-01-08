@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
-import Wallpaper from './atoms/Wallpaper';
-import HomeHeader from './atoms/HomeHeader';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import HomeTopBar from './atoms/HomeTopBar';
-import HomeTimeTableWidget from './widgets/timetable';
 import { Papicons } from '@getpapillon/papicons';
-import { t } from 'i18next';
 import { LegendList } from '@legendapp/list';
-import { useHomeData } from './hooks/useHomeData';
-import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useRouter } from 'expo-router';
+import { t } from 'i18next';
+import React, { useEffect } from 'react';
+import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { useAccountStore } from '@/stores/account';
+
+import HomeHeader from './atoms/HomeHeader';
+import HomeTopBar from './atoms/HomeTopBar';
+import Wallpaper from './atoms/Wallpaper';
+import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
+import { useHomeData } from './hooks/useHomeData';
+import HomeTimeTableWidget from './widgets/timetable';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();

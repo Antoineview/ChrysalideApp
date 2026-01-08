@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "information": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string",
+          "pattern": "^(L1|L2|L3|M1|M2)$"
+        },
+        "ects": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "coordinator": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "level",
+        "ects",
+        "coordinator"
+      ]
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

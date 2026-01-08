@@ -1,10 +1,11 @@
+import MaskedView from '@react-native-masked-view/masked-view';
+import { useIsFocused } from '@react-navigation/native';
+import { File, Paths } from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
 import { Image, StatusBar, StyleSheet } from 'react-native';
-import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
-import { useIsFocused } from '@react-navigation/native';
+
 import { useSettingsStore } from '@/stores/settings';
-import { File, Paths } from 'expo-file-system';
 
 const Wallpaper = ({ height = 400, dim = true }) => {
   try {

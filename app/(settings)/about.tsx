@@ -16,46 +16,32 @@ import { Contributor, getContributors } from "@/utils/github/contributors";
 
 export const Teams = [
   {
-    title: "Vince Linise",
-    description: "Président",
-    login: "ecnivtwelve",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Vince Linise")} imageUrl="https://avatars.githubusercontent.com/u/32978709?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/vincelinise/")
+    title: "Antoine RC",
+    description: "Développeur",
+    login: "Antoine",
+    leading: <Avatar size={40} shape="square" initials={getInitials("Vince Linise")} imageUrl="https://media.discordapp.net/attachments/1457379222078357546/1458833709930123509/611336794_18089322398057388_9199737324387566678_n3x.jpg?ex=69611444&is=695fc2c4&hm=4a4010939e5bd4bac02514c0aeffa5bee28e62482f695bcb513efb658f624181&=&format=webp&width=252&height=270" />,
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/antoine-rc/")
   },
   {
-    title: "Lucas Lavajo",
-    description: "Vice-Président",
-    login: "tryon-dev",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Lucas Lavajo")} imageUrl="https://avatars.githubusercontent.com/u/68423470?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/lucas-lavajo/")
+    title: "Gaël B",
+    description: "Développeur",
+    login: "YouLLox",
+    leading: <Avatar size={40} shape="square" initials={getInitials("Lucas Lavajo")} imageUrl="https://media.discordapp.net/attachments/679589369593462787/1458836222343512124/IMG_4260-3.jpeg?ex=6961169b&is=695fc51b&hm=293011b8d6481a8e4ae47a49031c48d3f911bbb08ca705c3d2855cdf52e6f7ac&=&format=webp&width=1118&height=1491" />,
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/ga%C3%ABl-benmahieddine/")
   },
   {
-    title: "Raphaël Schröder",
-    description: "Trésorier Adjoint",
-    login: "raphckrman",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Raphaël Schröder")} imageUrl="https://avatars.githubusercontent.com/u/41128238?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/raphckrman/")
+    title: "Maxime H",
+    description: "Développeur",
+    login: "Maxime",
+    leading: <Avatar size={40} shape="square" initials={getInitials("Raphaël Schröder")} imageUrl="https://media.licdn.com/dms/image/v2/D4D03AQEvgVA35d_Sgg/profile-displayphoto-shrink_800_800/B4DZdGNzLLHkAg-/0/1749229713281?e=1769644800&v=beta&t=TRRtpEmyAnYpwYa9fq3sN8WvInogyu297RAFC54JbHg" />,
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/icimaxhwl/")
   },
   {
-    title: "Tom Hélière",
-    login: "tom-things",
-    description: "Secrétaire",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Tom Hélière")} imageUrl="https://avatars.githubusercontent.com/u/135361669?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/tom-heliere/")
-  },
-  {
-    title: "Rémy Godet",
-    description: "Secrétaire Adjoint",
-    login: "godetremy",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Rémy Godet")} imageUrl="https://avatars.githubusercontent.com/u/77058107?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/godetremy/")
-  },
-  {
-    title: "Mael Duret",
-    description: "Membre",
-    login: "ryzenixx",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Mael Duret")} imageUrl="https://avatars.githubusercontent.com/u/96339570?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/mael-duret/")
+    title: "Equipe Papillon",
+    description: "",
+    login: "",
+    leading: <Avatar size={40} shape="square" initials={getInitials("Lucas Lavajo")} imageUrl="https://play-lh.googleusercontent.com/wpV-VScxugHvexfYPURrkhpCxr1un_eJupTk9rHFf9TKfCBlYcrPoqyaJCVtWlX4Zw" />,
+    onPress: () => Linking.openURL("https://papillon.bzh/")
   }
 ]
 
@@ -90,14 +76,14 @@ export default function SettingsAbout() {
       title: t("Settings_About_Discord"),
       description: t("Settings_About_Discord_Description"),
       leading: <Papicons name="TextBubble" />,
-      onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
+      onPress: () => Linking.openURL('https://discord.gg/6Nqnbamze7'),
     },
-    {
+    /*{
       title: t("Settings_About_Github"),
-      description: t("Settings_About_Github_Description"),
-      leading: <Papicons name="Ghost" />,
-      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
-    },
+    description: t("Settings_About_Github_Description"),
+    leading: <Papicons name="Ghost" />,
+    onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
+    },*/
   ];
 
   const [tapCount, setTapCount] = React.useState(0);

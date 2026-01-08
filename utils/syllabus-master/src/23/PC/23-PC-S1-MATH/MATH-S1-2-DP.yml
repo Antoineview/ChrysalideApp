@@ -1,0 +1,64 @@
+information:
+  label: Dénombrement et probabilités
+  coefficient: 3
+  threshold: 7
+  referents:
+    - Christel TRÉMOULET
+
+prerequisites:
+  - ECUE <code>[MATH-S1-1-LE]</code>
+
+summary: |
+  Le premier chapitre donne les outils utiles au dénombrement (arrangement, permutation, combinaison, cardinal des ensembles finis).
+  Le second chapitre est consacré aux probabilités discrètes et finies: vocabulaire probabiliste, équiprobabilité, probabilités conditionnelles, indépendance d'événements et variable aléatoire discrète finie.
+
+outline: |
+  - Dénombrement
+    - Cardinaux d'ensembles finis. Comptage du nombre de façon de piocher des éléments, avec ou sans remise, avec ou sans répétition.
+    - Dénombrement de référence : arrangement, permutation, combinaison.
+    - Formule de Pascal et formule du binôme de Newton.
+  - Probabilités
+    - Espace probabilisé, univers, événements. Définition d'une probabilité.
+    - Equiprobabilité
+    - Probabilités conditionnelles : définition, formules de Bayes, formule des probabilités totales.
+    - Indépendance d'événements.
+    - Variables aléatoires finies discrètes : définition, loi, espérance, variance. Propriétés.
+
+tlo: |
+  - Formuler et effectuer des dénombrements d'ensembles finis s'identifiants à des arrangements, combinaisons et permutations
+  - Modéliser des expériences aléatoires simples en utilisant le langage probabiliste (espace probabilisé ou loi d'une variable aléatoire par exemple)
+  - Calculer les probabilités dans des situations d'équiprobabilités, probabilités conditionnelles et évènements indépendants
+  - Interpréter l'espérance et la variance d'une variable aléatoire simple discrète et finie ainsi que des transformations affines de celle-ci
+
+activities:
+  - kind: tutorial
+    hours: 25
+    label: Travaux Dirigés
+  - kind: lecture
+    hours: 12
+    label: Cours
+  - kind: remediation
+    hours: 4
+    label: Remédiation
+  - kind: personnal
+    hours: 41
+
+evaluations:
+  - kind: exam
+    environment: exam-room
+    hours: 0.75
+    code: QCMs-DP
+    coefficient: 0.10
+    label: QCM hebdomadaire
+  - kind: exam
+    environment: exam-room
+    hours: 0.5
+    code: CC-DP
+    coefficient: 0.3
+    label: Contrôle de Cours
+  - kind: exam
+    environment: exam-room
+    code: EXAM-B1-DP
+    hours: 2
+    coefficient: 0.6
+    label: Examen

@@ -1,27 +1,27 @@
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
-import { router, useLocalSearchParams } from "expo-router";
-import { Platform, ScrollView, View } from "react-native";
 import { Papicons } from "@getpapillon/papicons"
-import { useTheme } from "@react-navigation/native";
-import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
-import { Period } from "@/services/shared/grade";
-import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
-import { useEffect, useMemo, useState } from "react";
-import { Attendance } from "@/services/shared/attendance";
-import Stack from "@/ui/components/Stack";
-import { useHeaderHeight } from "@react-navigation/elements";
-import AnimatedNumber from "@/ui/components/AnimatedNumber";
-import adjust from "@/utils/adjustColor";
-import List from "@/ui/components/List";
-import Item, { Trailing } from "@/ui/components/Item";
+import { useTheme } from "@react-navigation/native";
+import { router, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
-import i18n from "@/utils/i18n";
-import { getManager } from "@/services/shared";
+import { useEffect, useMemo, useState } from "react";
+import { Platform, ScrollView, View } from "react-native";
+
 import AbsencesAPI from "@/services/absences";
+import { getManager } from "@/services/shared";
+import { Attendance } from "@/services/shared/attendance";
+import { Period } from "@/services/shared/grade";
+import AnimatedNumber from "@/ui/components/AnimatedNumber";
+import { Dynamic } from "@/ui/components/Dynamic";
+import Icon from "@/ui/components/Icon";
+import Item, { Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
+import i18n from "@/utils/i18n";
 import { error } from "@/utils/logger/logger";
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 
 export default function AttendanceView() {
   const theme = useTheme()
@@ -312,6 +312,17 @@ export default function AttendanceView() {
             <NativeHeaderPressable onPress={() => { router.back() }}>
               <Icon papicon opacity={0.5}>
                 <Papicons name={"Cross"} />
+              </Icon>
+            </NativeHeaderPressable>
+          </NativeHeaderSide>
+
+          <NativeHeaderSide side="Right" style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }}>
+            <NativeHeaderPressable onPress={() => {
+              AbsencesAPI.logout();
+              router.back();
+            }}>
+              <Icon papicon opacity={0.5}>
+                <Papicons name={"Logout"} />
               </Icon>
             </NativeHeaderPressable>
           </NativeHeaderSide>

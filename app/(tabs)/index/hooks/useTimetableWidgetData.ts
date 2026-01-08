@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
-import { useAccountStore } from "@/stores/account";
+import { useEffect, useMemo,useState } from "react";
+
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
 import { Course as SharedCourse } from "@/services/shared/timetable";
+import { useAccountStore } from "@/stores/account";
 
 export const useTimetableWidgetData = () => {
   const now = new Date();
