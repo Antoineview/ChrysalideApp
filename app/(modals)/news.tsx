@@ -17,7 +17,7 @@ export default function AttendanceLoginScreen() {
         // Print intracom login page
         <>
             <OnboardingWebview
-                title="Connexion Absences"
+                title="Connexion Intracom"
                 color="#0078D4"
                 step={1}
                 totalSteps={1}
