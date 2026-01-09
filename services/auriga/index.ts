@@ -6,8 +6,8 @@ import { registerSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { cleanSubjectName } from "@/utils/subjects/utils";
 
-import { GRADES_PAYLOAD, SYLLABUS_PAYLOAD, COEFFS_PAYLOAD } from "./payloads";
-import { Grade, Syllabus, UserData, Coeff } from "./types";
+import { COEFFS_PAYLOAD, GRADES_PAYLOAD, SYLLABUS_PAYLOAD } from "./payloads";
+import { Coeff, Grade, Syllabus, UserData } from "./types";
 
 // Initialize MMKV storage
 export const storage = new MMKV({
@@ -364,7 +364,7 @@ class AurigaAPI {
       }
     }
 
-    const response = await fetch(`https://auriga.epita.fr/api/menuEntries/1144/searchResult?size=100&page=1&sort=id`, {
+    const response = await fetch(`https://auriga.epita.fr/api/menuEntries/1144/searchResult?size=300&page=1&sort=id`, {
       method: "POST",
       headers: headers,
       body: JSON.stringify(COEFFS_PAYLOAD),
