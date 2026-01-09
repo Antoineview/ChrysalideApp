@@ -259,8 +259,8 @@ export const generateFullPdfHtml = (
 
       <!-- Table of Contents (Split by Semester) -->
       ${semesters
-        .map(
-          sem => `
+      .map(
+        sem => `
         <div class="page-auto">
           <div class="card">
              <h1>Sommaire — Semestre ${sem.semester}</h1>
@@ -270,8 +270,8 @@ export const generateFullPdfHtml = (
                 Semestre ${sem.semester}
              </div>
              ${sem.ueGroups
-               .map(
-                 group => `
+            .map(
+              group => `
                 <div style="margin-left: 10px; margin-top: 8px; font-weight: 600; font-size: 11px; color: #3A3A3C;">
                    ${group.name}
                 </div>
@@ -286,8 +286,8 @@ export const generateFullPdfHtml = (
                   )
                   .join("")}
              `
-               )
-               .join("")}
+            )
+            .join("")}
           </div>
           <div class="footer">
              <span>${parcoursLabel}</span>
@@ -295,28 +295,26 @@ export const generateFullPdfHtml = (
           </div>
         </div>
       `
-        )
-        .join("")}
+      )
+      .join("")}
 
       <!-- Recap Table (Split by Semester) -->
       ${semesters
-        .map(sem => {
-          let rows = "";
-          sem.ueGroups.forEach(group => {
-            let groupCoef = 0;
+      .map(sem => {
+        let rows = "";
+        sem.ueGroups.forEach(group => {
+          let groupCoef = 0;
 
-            const itemRows = group.items
-              .map(item => {
-                const stats = calculateStats(item.activities || []);
-                const coef =
-                  item.exams?.reduce((acc, e) => acc + (e.weighting || 0), 0) ||
-                  0;
-                groupCoef += coef;
-                const subjColor = getSubjectColor(
-                  item.caption?.name || item.name
-                );
+          const itemRows = group.items
+            .map(item => {
+              const stats = calculateStats(item.activities || []);
+              const coef = item.coeff !== undefined ? item.coeff : ((item.exams?.reduce((acc, e) => acc + (e.weighting || 0), 0) || 0) / 100);
+              groupCoef += coef;
+              const subjColor = getSubjectColor(
+                item.caption?.name || item.name
+              );
 
-                return `
+              return `
                  <tr>
                     <td style="border:none;"></td>
                     <td>
@@ -327,23 +325,23 @@ export const generateFullPdfHtml = (
                     <td align="right">${stats.tutorial + stats.practical > 0 ? formatHours(stats.tutorial + stats.practical) : "-"}</td>
                     <td align="right">${stats.personal > 0 ? formatHours(stats.personal) : "-"}</td>
                     <td align="right"><b>${formatHours(stats.total)}</b></td>
-                    <td align="center">${coef > 0 ? coef / 100 : "-"}</td>
+                    <td align="center">${coef > 0 ? coef : "-"}</td>
                  </tr>
                `;
-              })
-              .join("");
+            })
+            .join("");
 
-            rows += `
+          rows += `
               <tr class="recap-ue-row">
                  <td></td>
                  <td colspan="5" style="text-transform:uppercase; font-size:9px; letter-spacing:0.5px;">${group.name}</td>
-                 <td align="center"><b>${groupCoef / 100}</b></td>
+                 <td align="center"><b>${groupCoef}</b></td>
               </tr>
               ${itemRows}
             `;
-          });
+        });
 
-          return `
+        return `
           <div class="page" id="recap-${sem.semester}">
              <div class="card">
                <h1>Découpage — Semestre ${sem.semester}</h1>
@@ -376,22 +374,20 @@ export const generateFullPdfHtml = (
              </div>
           </div>
          `;
-        })
-        .join("")}
+      })
+      .join("")}
 
       <!-- Course Pages -->
       ${semesters
-        .flatMap(sem =>
-          sem.ueGroups.flatMap(group =>
-            group.items.map(item => {
-              const stats = calculateStats(item.activities || []);
-              const coef =
-                item.exams?.reduce((acc, e) => acc + (e.weighting || 0), 0) ||
-                0;
-              const sColor = getSubjectColor(item.caption?.name || item.name);
-              const sEmoji = getSubjectEmoji(item.caption?.name || item.name);
+      .flatMap(sem =>
+        sem.ueGroups.flatMap(group =>
+          group.items.map(item => {
+            const stats = calculateStats(item.activities || []);
+            const coef = item.coeff !== undefined ? item.coeff : ((item.exams?.reduce((acc, e) => acc + (e.weighting || 0), 0) || 0) / 100);
+            const sColor = getSubjectColor(item.caption?.name || item.name);
+            const sEmoji = getSubjectEmoji(item.caption?.name || item.name);
 
-              return `
+            return `
            <div class="page" id="course-${item.code || item.id}">
               <div class="card" style="margin-bottom: 20px;">
                  <div class="course-header" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
@@ -403,7 +399,7 @@ export const generateFullPdfHtml = (
                        <div class="course-subtitle">${group.name} • ${item.code || "CODE"}</div>
                     </div>
                     <div style="text-align:right;">
-                      <div style="font-size:18px; font-weight:700; color:${sColor};">${coef > 0 ? coef / 100 : "-"}</div>
+                      <div style="font-size:18px; font-weight:700; color:${sColor};">${coef > 0 ? coef : "-"}</div>
                       <div style="font-size:10px; color:#8E8E93; text-transform:uppercase;">Coefficient</div>
                     </div>
                  </div>
@@ -418,16 +414,15 @@ export const generateFullPdfHtml = (
                    </div>
 
                    <!-- Acquis -->
-                   ${
-                     item.caption?.program?.fr
-                       ? `
+                   ${item.caption?.program?.fr
+                ? `
                       <div class="card">
                          <h4>Acquis d'Apprentissage</h4>
                          <p>${parseDeltaToText(cleanHtml(item.caption.program.fr))}</p>
                       </div>
                    `
-                       : ""
-                   }
+                : ""
+              }
 
                    <!-- Hours Box -->
                    <div class="card">
@@ -458,11 +453,10 @@ export const generateFullPdfHtml = (
                     <!-- Referent -->
                     <div class="card">
                        <h4>Référent</h4>
-                       ${
-                         item.responsables && item.responsables.length > 0
-                           ? item.responsables
-                               .map(
-                                 r => `
+                       ${item.responsables && item.responsables.length > 0
+                ? item.responsables
+                  .map(
+                    r => `
                            <div style="display:flex; align-items:center; margin-bottom:8px;">
                               <div style="width:24px; height:24px; background:#F2F2F7; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-right:8px; color:#8E8E93; font-size:10px;">
                                 ${r.firstName.charAt(0)}${r.lastName.charAt(0)}
@@ -470,10 +464,10 @@ export const generateFullPdfHtml = (
                               <div style="font-weight:500;">${r.firstName} ${r.lastName}</div>
                            </div>
                          `
-                               )
-                               .join("")
-                           : '<div style="color:#8E8E93; font-style:italic;">Non renseigné</div>'
-                       }
+                  )
+                  .join("")
+                : '<div style="color:#8E8E93; font-style:italic;">Non renseigné</div>'
+              }
                     </div>
 
                     <!-- Info -->
@@ -482,24 +476,24 @@ export const generateFullPdfHtml = (
                        <div class="info-row"><span class="info-label">Semestre</span><span class="info-value">S${sem.semester}</span></div>
                        <div class="info-row"><span class="info-label">UE</span><span class="info-value">${group.name}</span></div>
                        <div class="info-row"><span class="info-label">Seuil</span><span class="info-value">${item.minScore !== undefined ? item.minScore : 6}</span></div>
+                       ${item.coeff !== undefined ? `<div class="info-row"><span class="info-label">Coefficient</span><span class="info-value">${item.coeff}</span></div>` : ""}
                     </div>
 
                     <!-- Evals -->
-                    ${
-                      item.exams && item.exams.length > 0
-                        ? `
+                    ${item.exams && item.exams.length > 0
+                ? `
                       <div class="card">
                          <h4>Évaluations</h4>
                          <ul class="activity-list">
                             ${item.exams
-                              .map(e => {
-                                const desc =
-                                  typeof e.description === "string"
-                                    ? e.description
-                                    : e.description?.fr ||
-                                      e.description?.en ||
-                                      "";
-                                return `
+                  .map(e => {
+                    const desc =
+                      typeof e.description === "string"
+                        ? e.description
+                        : e.description?.fr ||
+                        e.description?.en ||
+                        "";
+                    return `
                               <li class="activity-item" style="display:block;">
                                  <div style="display:flex; justify-content:space-between;">
                                     <span style="font-weight:600;">${e.typeName || e.type || "Exam"}</span>
@@ -508,13 +502,13 @@ export const generateFullPdfHtml = (
                                  ${desc ? `<div style="font-size:9px; color:#8E8E93; margin-top:4px; line-height:1.3;">${cleanHtml(desc)}</div>` : ""}
                               </li>
                             `;
-                              })
-                              .join("")}
+                  })
+                  .join("")}
                          </ul>
                       </div>
                     `
-                        : ""
-                    }
+                : ""
+              }
                  </div>
               </div>
 
@@ -525,10 +519,10 @@ export const generateFullPdfHtml = (
              </div>
            </div>
          `;
-            })
-          )
+          })
         )
-        .join("")}
+      )
+      .join("")}
 
     </body>
     </html>
