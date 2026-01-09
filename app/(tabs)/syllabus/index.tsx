@@ -1,6 +1,8 @@
 import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
+// Legacy import for SDK 54 compatibility
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -154,11 +156,30 @@ const SyllabusView: React.FC = () => {
         height: 842, // A4 height in points (72 dpi)
         margins: { left: 0, right: 0, top: 0, bottom: 0 } // Critical: Remove default OS margins
       });
+
+      const currentYear = new Date().getFullYear();
+      const startYear = new Date().getMonth() < 8 ? currentYear - 1 : currentYear;
+      const yearStr = `${startYear}-${startYear + 1}`;
+
+      const semesters = groupedSyllabus.map(s => s.semester).sort((a, b) => a - b);
+      const semStr = semesters.length > 0
+        ? (semesters.length > 1 ? `S${semesters[0]}-S${semesters[semesters.length - 1]}` : `S${semesters[0]}`)
+        : "Syllabus";
+
+      const fileName = `Syllabus ${yearStr} - ${semStr} - généré par Chrysalide.pdf`;
+      // Cast FileSystem to any to avoid type errors with cacheDirectory
+      const newPath = `${(FileSystem as any).cacheDirectory}${fileName}`;
+
+      await FileSystem.moveAsync({
+        from: uri,
+        to: newPath
+      });
+
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, {
+        await Sharing.shareAsync(newPath, {
           UTI: 'com.adobe.pdf',
           mimeType: 'application/pdf',
-          dialogTitle: 'Syllabus complet'
+          dialogTitle: fileName
         });
       }
     } catch {
