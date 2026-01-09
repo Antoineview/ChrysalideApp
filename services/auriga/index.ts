@@ -384,8 +384,8 @@ class AurigaAPI {
     }
 
     return data.content.lines.map((coeff: any) => ({
-      name: coeff[0], // Code (e.g. "MIA_IGM")
-      value: coeff[3], // Coefficient (e.g. 1.5)
+      name: coeff[2],
+      value: coeff[4],
     }));
   }
 
