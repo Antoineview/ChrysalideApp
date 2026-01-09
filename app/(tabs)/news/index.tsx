@@ -1,13 +1,34 @@
-import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Papicons } from '@getpapillon/papicons'
+import { useTheme } from '@react-navigation/native'
+import { useRouter } from 'expo-router'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { FlatList, Pressable, StyleSheet, View } from 'react-native'
+import { useBottomTabBarHeight } from 'react-native-bottom-tabs'
+import { RefreshControl } from 'react-native-gesture-handler'
+import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import Typography from '@/ui/components/Typography';
-import { router } from 'expo-router';
+import News from '@/database/models/News'
+import { useNews } from '@/database/useNews'
+import { getManager, subscribeManagerUpdate } from '@/services/shared'
+import AnimatedPressable from '@/ui/components/AnimatedPressable'
+import Avatar from '@/ui/components/Avatar'
+import { Dynamic } from '@/ui/components/Dynamic'
+import Icon from '@/ui/components/Icon'
+import Item, { Leading } from '@/ui/components/Item'
+import Search from '@/ui/components/Search'
+import Stack from '@/ui/components/Stack'
+import TabHeader from '@/ui/components/TabHeader'
+import TabHeaderTitle from '@/ui/components/TabHeaderTitle'
+import Typography from '@/ui/components/Typography'
+import { useKeyboardHeight } from '@/ui/hooks/useKeyboardHeight'
+import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition'
+import { getProfileColorByName } from '@/utils/chats/colors'
+import { getInitials } from '@/utils/chats/initials'
+import { warn } from '@/utils/logger/logger'
+
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { useTranslation } from 'react-i18next';
 
 const styles = StyleSheet.create({
   headerBtn: {
@@ -21,50 +42,238 @@ const styles = StyleSheet.create({
 });
 
 const NewsView = () => {
+
   const { t } = useTranslation();
-  const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
 
   const onPress = () => {
     router.push("/(modals)/news");
   };
 
-  return (
-    <View style={{ paddingHorizontal: 16, paddingVertical: 12, width: "100%", flex: 1 }}>
-      <View style={{ height: insets.top + 56 }} />
-      <LiquidGlassView
-        glassOpacity={0.7}
-        glassTintColor={colors.card}
-        glassType='regular'
-        isInteractive={true}
-        style={{
-          borderRadius: 22
-        }}
-      >
-        <Pressable
-          style={styles.headerBtn}
-          onPress={onPress}
-        >
-          <View
-            style={{
-              backgroundColor: "#2B7ED6" + "30",
-              borderRadius: 50,
-              padding: 7
-            }}
-          >
-            <Papicons name="newspaper" color="#2B7ED6" size={25} />
-          </View>
-          <View style={{
-            flex: 1,
-            overflow: 'hidden'
-          }}>
-            <Typography nowrap variant="h6" color={colors.text + "95"} style={{ lineHeight: 0 }}>{t("Tab_News")}</Typography>
-            <Typography nowrap variant="title" color={colors.text + "60"} style={{ lineHeight: 0 }}>{t("Intracom")}</Typography>
-          </View>
-        </Pressable>
-      </LiquidGlassView>
-    </View>
-  );
-};
+  const theme = useTheme()
+  const colors = theme.colors
+  const insets = useSafeAreaInsets()
+  const router = useRouter()
 
-export default NewsView;
+  const [headerHeight, setHeaderHeight] = useState(0)
+  const bottomTabBarHeight = useBottomTabBarHeight();
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [isManuallyLoading, setIsManuallyLoading] = useState(false)
+
+  const keyboardHeight = useKeyboardHeight();
+
+  const footerStyle = useAnimatedStyle(() => ({
+    height: keyboardHeight.value - bottomTabBarHeight,
+  }));
+
+  const news = useNews();
+
+  const sortedNews = useMemo(() => {
+    return news.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }, [news]);
+
+  const fetchNews = useCallback(() => {
+    try {
+      setIsLoading(true)
+      const manager = getManager();
+      if (!manager) {
+        warn("Manager is null, skipping news fetch");
+        return;
+      }
+      manager.getNews();
+    } catch (error) {
+      console.error("Error fetching news:", error);
+    } finally {
+      setIsLoading(false)
+      setIsManuallyLoading(false)
+    }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = subscribeManagerUpdate((_) => {
+      fetchNews();
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const [searchText, setSearchText] = useState('');
+
+  const filteredNews = useMemo(() => {
+    return sortedNews.filter((news) => news.title.toLowerCase().includes(searchText.toLowerCase()));
+  }, [sortedNews, searchText]);
+
+  return (
+    <>
+      <TabHeader
+        onHeightChanged={setHeaderHeight}
+        title={
+          <TabHeaderTitle
+            color={colors.primary}
+            leading={t("Tab_News")}
+            chevron={false}
+            loading={isLoading}
+          />
+        }
+        bottom={
+          <View style={{ gap: 10, width: '100%', paddingHorizontal: 16 }}>
+            <LiquidGlassView
+              glassOpacity={0.7}
+              glassTintColor={colors.card}
+              glassType='regular'
+              isInteractive={true}
+              style={{
+                borderRadius: 22
+              }}
+            >
+              <Pressable
+                style={styles.headerBtn}
+                onPress={onPress}
+              >
+                <View
+                  style={{
+                    backgroundColor: "#2B7ED6" + "30",
+                    borderRadius: 50,
+                    padding: 7
+                  }}
+                >
+                  <Papicons name="newspaper" color="#2B7ED6" size={25} />
+                </View>
+                <View style={{
+                  flex: 1,
+                  overflow: 'hidden'
+                }}>
+                  <Typography nowrap variant="h6" color={colors.text + "95"} style={{ lineHeight: 0 }}>{t("Tab_News")}</Typography>
+                  <Typography nowrap variant="title" color={colors.text + "60"} style={{ lineHeight: 0 }}>{t("Intracom")}</Typography>
+                </View>
+              </Pressable>
+            </LiquidGlassView>
+            <Search placeholder={t('News_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />
+          </View>
+        }
+      />
+
+      <LayoutAnimationConfig skipEntering>
+        <FlatList
+          contentContainerStyle={{
+            paddingBottom: insets.bottom + bottomTabBarHeight,
+            paddingHorizontal: 16,
+            gap: 9,
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isManuallyLoading}
+              onRefresh={() => {
+                setIsManuallyLoading(true)
+                fetchNews()
+              }}
+              progressViewOffset={headerHeight}
+            />
+          }
+          data={filteredNews}
+          keyExtractor={(item: any) => item.id}
+          ListFooterComponent={<Reanimated.View style={footerStyle} />}
+          renderItem={({ item }) => <NewsItem item={item} />}
+          scrollIndicatorInsets={{ top: headerHeight - insets.top }}
+          ListHeaderComponent={<View style={{ height: headerHeight }} />}
+          ListEmptyComponent={
+            <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
+              <Stack
+                hAlign="center"
+                vAlign="center"
+                flex
+                style={{ width: "100%", marginTop: 16 }}
+              >
+                <Icon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+                  <Papicons name={searchText ? "Search" : "Newspaper"} />
+                </Icon>
+                <Typography variant="h4" color="text" align="center">
+                  {searchText ? t('News_Search_NoResults') : t('News_Empty_Title')}
+                </Typography>
+                <Typography variant="body2" color="secondary" align="center">
+                  {searchText ? t('News_Search_NoResults_Description') : t('News_Empty_Description')}
+                </Typography>
+              </Stack>
+            </Dynamic>
+          }
+        />
+      </LayoutAnimationConfig>
+    </>
+  )
+}
+
+const NewsItem = ({ item }: { item: News }) => {
+  const router = useRouter()
+
+  const profileColor = useMemo(() => getProfileColorByName(item.author), [item.author]);
+  const profileInitials = useMemo(() => getInitials(item.author), [item.author]);
+
+  return (
+    <AnimatedPressable
+      onPress={() => router.push({
+        pathname: "/(modals)/news",
+        params: { news: JSON.stringify(item) },
+      })}
+    >
+      <Stack card>
+        <Item isLast>
+          <Leading>
+            <Avatar
+              size={40}
+              color={profileColor}
+              initials={profileInitials}
+            />
+          </Leading>
+
+          <Typography variant='title' numberOfLines={2}>
+            {item.title}
+          </Typography>
+          <Typography variant='body1' color='secondary' numberOfLines={3}>
+            {item.content ? truncateString(cleanContent(item.content), 100) : ""}
+          </Typography>
+
+
+          <Stack
+            direction='horizontal'
+            gap={4}
+            style={{ marginTop: 4 }}
+            hAlign='center'
+          >
+            <Typography nowrap weight='medium' style={{ flex: 1 }} variant='caption' color='secondary'>
+              {item.author}
+            </Typography>
+
+            <Typography nowrap weight='medium' variant='caption' color='secondary'>
+              {item.createdAt.toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </Typography>
+
+            {item.attachments.length > 0 && (
+              <Icon size={18} opacity={0.4}>
+                <Papicons name={"link"} />
+              </Icon>
+            )}
+          </Stack>
+        </Item>
+      </Stack>
+    </AnimatedPressable>
+  )
+}
+
+function cleanContent(html: string): string {
+  html = html.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'");
+  html = html.replace(/\n/g, " ");
+  return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+}
+
+function truncateString(str: string, maxLength: number): string {
+  if (str.length <= maxLength) {
+    return str;
+  }
+  return str.slice(0, maxLength) + "...";
+}
+
+export default NewsView
