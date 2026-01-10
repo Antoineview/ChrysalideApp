@@ -42,10 +42,12 @@ export function RootNavigator() {
       <Stack.Screen
         name="(modals)/syllabus"
         options={{
-          headerShown: Platform.OS !== 'ios',
+          headerShown: false,
           headerTitle: "",
-          headerLargeTitle: false,
-          presentation: "modal",
+          presentation: Platform.OS === 'ios' ? "modal" : "formSheet",
+          sheetAllowedDetents: Platform.OS === 'ios' ? undefined : [0.95],
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 20,
         }}
       />
       <Stack.Screen
