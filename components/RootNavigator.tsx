@@ -80,10 +80,13 @@ export function RootNavigator() {
       <Stack.Screen
         name="(modals)/grade"
         options={{
-          headerShown: Platform.OS !== 'ios',
+          headerShown: false,
           headerTitle: t("Modal_Grades_Title"),
           headerLargeTitle: false,
-          presentation: "modal",
+          presentation: "formSheet",
+          sheetAllowedDetents: [0.50, 0.90],
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 20,
         }}
       />
       <Stack.Screen
