@@ -175,7 +175,7 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           presentation: "formSheet",
-          sheetAllowedDetents: [0.55],
+          sheetAllowedDetents: [0.38],
           sheetGrabberVisible: true,
           sheetCornerRadius: 20,
         }}

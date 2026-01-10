@@ -1,7 +1,9 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { FlexAlignType, StyleSheet, ViewProps, ViewStyle } from "react-native";
+import { FlexAlignType, StyleSheet, TouchableOpacity, ViewProps, ViewStyle } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
+
+const AnimatedTouchableOpacity = Reanimated.createAnimatedComponent(TouchableOpacity);
 
 import { Animation } from "../utils/Animation";
 
@@ -29,6 +31,8 @@ interface StackProps extends ViewProps {
   noShadow?: boolean;
   layout?: any;
   style?: ViewStyle | ViewStyle[];
+  onPress?: () => void;
+  activeOpacity?: number;
 }
 
 // Pre-computed alignment maps for maximum performance
@@ -96,6 +100,8 @@ const Stack: React.FC<StackProps> = ({
   children,
   noShadow = false,
   animated = false,
+  onPress,
+  activeOpacity,
   ...rest
 }) => {
   const theme = useTheme();
@@ -123,7 +129,7 @@ const Stack: React.FC<StackProps> = ({
       paddingHorizontal: padding instanceof Array ? padding[0] : undefined,
       paddingVertical: padding instanceof Array ? padding[1] : undefined,
       margin,
-      width: width,
+      width: width as any,
       height: height,
       alignItems: ALIGN_ITEMS_MAP[hAlign],
       justifyContent: JUSTIFY_CONTENT_MAP[vAlign],
@@ -142,7 +148,7 @@ const Stack: React.FC<StackProps> = ({
     // Handle inline with React Native compatible values
     if (inline) {
       dynamicStyle.alignSelf = "center";
-      dynamicStyle.width = width !== undefined ? width : "auto";
+      dynamicStyle.width = (width !== undefined ? width : "auto") as any;
       dynamicStyle.flex = flex ? 1 : 0;
     }
 
@@ -181,10 +187,18 @@ const Stack: React.FC<StackProps> = ({
     return finalStyle;
   }, [cacheKey, direction, gap, padding, margin, hAlign, vAlign, backgroundColor, radius, inline]);
 
+  const Component = (onPress ? AnimatedTouchableOpacity : Reanimated.View) as any;
+
   return (
-    <Reanimated.View style={[computedStyle, style]} layout={rest.layout || (animated ? Animation(LinearTransition) : undefined)} {...rest}>
+    <Component
+      style={[computedStyle, style]}
+      layout={rest.layout || (animated ? Animation(LinearTransition) : undefined)}
+      onPress={onPress}
+      activeOpacity={activeOpacity}
+      {...rest}
+    >
       {children}
-    </Reanimated.View>
+    </Component>
   );
 };
 

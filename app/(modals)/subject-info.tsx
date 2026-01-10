@@ -4,8 +4,13 @@ import React from "react";
 import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
+import { useRouter } from "expo-router";
+
 import ModalOverhead, { ModalOverHeadScore } from "@/components/ModalOverhead";
 import Subject from "@/database/models/Subject";
+import { extractSubjectCode, storage } from "@/services/auriga";
+import { Syllabus } from "@/services/auriga/types";
+import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
@@ -15,43 +20,17 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 const SubjectInfo = () => {
+  const router = useRouter();
   const { params } = useRoute();
   const theme = useTheme();
   const colors = theme.colors;
 
-  const subject: Subject = params?.subject;
+  const subject: Subject = (params as any)?.subject;
   const subjectColor = getSubjectColor(subject?.name);
   const subjectName = getSubjectName(subject?.name);
   const subjectEmoji = getSubjectEmoji(subject?.name);
 
   const outOf = subject?.outOf?.value ?? 20;
-
-  const averagesData = [
-    {
-      title: i18n.t("SubjectInfo_ClassAverage_Label"),
-      subtitle: i18n.t("SubjectInfo_ClassAverage_Description"),
-      disabled: subject?.classAverage?.disabled ?? true,
-      value: subject?.classAverage?.value?.toFixed(2) ?? "N/A",
-      status: subject?.classAverage?.status ?? "N/A",
-      icon: "GraduationHat",
-    },
-    {
-      title: i18n.t("SubjectInfo_MaxAverage_Label"),
-      subtitle: i18n.t("SubjectInfo_MaxAverage_Description"),
-      disabled: subject?.maximum?.disabled ?? true,
-      value: subject?.maximum?.value?.toFixed(2) ?? "N/A",
-      status: subject?.maximum?.status ?? "N/A",
-      icon: "ArrowRightUp",
-    },
-    {
-      title: i18n.t("SubjectInfo_MinAverage_Label"),
-      subtitle: i18n.t("SubjectInfo_MinAverage_Description"),
-      disabled: subject?.minimum?.disabled ?? true,
-      value: subject?.minimum?.value?.toFixed(2) ?? "N/A",
-      status: subject?.minimum?.status ?? "N/A",
-      icon: "Minus",
-    }
-  ]
 
   return (
     <>
@@ -99,6 +78,54 @@ const SubjectInfo = () => {
                 />
               }
             />
+
+            <Stack
+              card
+              width={"100%"}
+              style={{ alignItems: "center", justifyContent: "center", paddingVertical: 8 }}
+              onPress={() => {
+                const data = storage.getString("auriga_syllabus");
+                const allSyllabus: Syllabus[] = data ? JSON.parse(data) : [];
+
+                const subjectCode = extractSubjectCode(subject.name);
+
+                const foundSyllabus = allSyllabus.find(s => {
+                  const syllabusCode = extractSubjectCode(s.name);
+
+                  if (subjectCode.startsWith(syllabusCode + "_") || subjectCode === syllabusCode) return true;
+
+                  if (s.caption?.name === subject.name || s.caption?.name === subjectName) return true;
+
+                  if (s.name === subject.name) return true;
+
+                  return false;
+                });
+
+                if (foundSyllabus) {
+                  router.push({
+                    pathname: '/(modals)/syllabus',
+                    params: { syllabusData: JSON.stringify(foundSyllabus) },
+                  });
+                } else {
+                  console.log("No syllabus found for", subject.name);
+                }
+              }}
+            >
+              <Stack
+                direction="horizontal"
+                vAlign="center"
+                hAlign="center"
+                padding={12}
+                gap={12}
+              >
+                <Icon papicon opacity={0.5}>
+                  <Papicons name={"ArrowRightUp"} />
+                </Icon>
+                <Typography color="secondary" style={{ textAlign: 'center' }}>
+                  {i18n.t("Grades_Look_Syllabus")}
+                </Typography>
+              </Stack>
+            </Stack>
           </View>
         }
 

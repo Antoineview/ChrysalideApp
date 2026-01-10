@@ -17,26 +17,6 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
       padding={[20, 0]}
       style={style}
     >
-      <View
-        style={{
-          backgroundColor: color + "22",
-          width: 48,
-          height: 48,
-          borderRadius: 120,
-          alignItems: "center",
-          justifyContent: "center",
-          borderColor: color + "22",
-          borderWidth: 1,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 28
-          }}
-        >
-          {emoji}
-        </Text>
-      </View>
 
       {overhead}
 
