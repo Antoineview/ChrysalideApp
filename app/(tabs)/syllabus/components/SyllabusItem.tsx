@@ -197,10 +197,10 @@ const styles = StyleSheet.create({
         ...Platform.select({
             ios: {
                 fontFamily: 'System',
-                fontWeight: '700',
+                fontWeight: '600',
             },
             android: {
-                fontWeight: 'bold',
+                fontWeight: '600',
             },
         }),
     },

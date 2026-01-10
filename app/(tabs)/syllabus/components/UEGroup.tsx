@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     header: {
         paddingHorizontal: 18,
         paddingVertical: 8,
+        paddingTop: 16,
     },
     headerText: {
         ...Platform.select({
@@ -66,8 +67,8 @@ const styles = StyleSheet.create({
                 fontStyle: 'italic',
             },
         }),
-        fontSize: 15,
-        letterSpacing: 0.15,
+        fontSize: 18,
+        letterSpacing: 1,
     },
     itemsContainer: {
         flexDirection: 'column',
