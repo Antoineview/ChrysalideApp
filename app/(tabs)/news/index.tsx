@@ -110,7 +110,7 @@ const NewsView = () => {
   const { t } = useTranslation();
 
   const onPress = () => {
-    router.push("/(modals)/news");
+    router.push("/(modals)/login-intracom");
   };
 
   const theme = useTheme()
@@ -335,7 +335,7 @@ const NewsItem = ({ item }: { item: News }) => {
   return (
     <AnimatedPressable
       onPress={() => router.push({
-        pathname: "/(modals)/news",
+        pathname: "/(modals)/login-intracom",
         params: { news: JSON.stringify(item) },
       })}
     >
