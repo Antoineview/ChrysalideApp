@@ -1,10 +1,11 @@
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Reanimated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import Reanimated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Syllabus } from '@/services/auriga/types';
 import Typography from '@/ui/components/Typography';
@@ -18,26 +19,52 @@ interface SyllabusItemProps {
     syllabus: Syllabus;
 }
 
+/**
+ * SyllabusItem - A card-style component for displaying syllabus entries.
+ * Inherits animation pattern from Item component but with custom Figma card layout.
+ */
 const SyllabusItem = React.memo(({ syllabus }: SyllabusItemProps) => {
     const { t } = useTranslation();
     const { colors, dark } = useTheme();
     const router = useRouter();
 
-    // Animation
-    const scale = useSharedValue(1);
-    const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: scale.value }],
-    }));
+    // Animation pattern from Item component
+    const animationValue = useSharedValue(0);
+    const isAnimatingRef = useRef(false);
+
+    const animatedStyle = useAnimatedStyle(() => {
+        const progress = animationValue.value;
+        return {
+            transform: [{ scale: 1 - progress * 0.03 }],
+            opacity: 1 - progress * 0.3,
+        };
+    }, []);
+
+    const setAnimatingFalse = () => { isAnimatingRef.current = false; };
 
     const handlePressIn = useCallback(() => {
-        scale.value = withTiming(0.97, { duration: 100 });
-    }, [scale]);
+        if (isAnimatingRef.current) {
+            animationValue.value = 0;
+        }
+        isAnimatingRef.current = true;
+        animationValue.value = withTiming(1, {
+            duration: 100,
+            easing: Easing.out(Easing.exp)
+        });
+    }, [animationValue]);
 
     const handlePressOut = useCallback(() => {
-        scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    }, [scale]);
+        animationValue.value = withSpring(0, {
+            mass: 1,
+            damping: 15,
+            stiffness: 300
+        }, () => {
+            'worklet';
+            runOnJS(setAnimatingFalse)();
+        });
+    }, [animationValue]);
 
-    // Subject color (magenta as default like in Figma)
+    // Subject color
     const subjectColor = React.useMemo(
         () => adjust(getSubjectColor(syllabus.caption?.name || syllabus.name), dark ? 0.2 : -0.2),
         [syllabus.caption?.name, syllabus.name, dark]
@@ -60,20 +87,20 @@ const SyllabusItem = React.memo(({ syllabus }: SyllabusItemProps) => {
         if (syllabus.duration && syllabus.duration > 0) {
             return Math.round(syllabus.duration / 3600);
         }
-        // Fallback: sum of activity durations if available (also in seconds)
         const activitiesTotal = syllabus.activities?.reduce((acc, act) => acc + (act.duration || 0), 0) || 0;
         return activitiesTotal > 0 ? Math.round(activitiesTotal / 3600) : 0;
     }, [syllabus.duration, syllabus.activities]);
 
     const examCount = syllabus.exams?.length || 0;
+    const hasCoeff = syllabus.coeff !== undefined && syllabus.coeff > 0;
 
     return (
         <AnimatedPressable
             style={[
                 styles.container,
                 {
-                    backgroundColor: dark ? colors.card : '#f2f2f2',
-                    shadowColor: dark ? '#000' : '#000',
+                    backgroundColor: colors.card,
+                    borderColor: colors.border,
                 },
                 animatedStyle,
             ]}
@@ -87,7 +114,7 @@ const SyllabusItem = React.memo(({ syllabus }: SyllabusItemProps) => {
                 <Typography
                     variant="title"
                     numberOfLines={1}
-                    style={[styles.title, { color: dark ? colors.text : '#1e1e1e' }]}
+                    style={styles.title}
                 >
                     {subjectName}
                 </Typography>
@@ -96,8 +123,8 @@ const SyllabusItem = React.memo(({ syllabus }: SyllabusItemProps) => {
                 <View style={styles.badgesRow}>
                     {/* Exam count badge */}
                     {examCount > 0 && (
-                        <View style={[styles.examBadge, { backgroundColor: subjectColor }]}>
-                            <Text style={styles.examBadgeText}>
+                        <View style={[styles.examBadge, { backgroundColor: subjectColor + '15' }]}>
+                            <Text style={[styles.examBadgeText, { color: subjectColor }]}>
                                 {examCount} {t("Syllabus_Exams", { count: examCount })}
                             </Text>
                         </View>
@@ -106,25 +133,32 @@ const SyllabusItem = React.memo(({ syllabus }: SyllabusItemProps) => {
                     {/* Hours indicator */}
                     {totalHours > 0 && (
                         <View style={styles.hoursContainer}>
-                            <Typography variant="caption" color="secondary" style={styles.hoursText}>
+                            <Text style={[styles.hoursText, { color: colors.text }]}>
                                 {totalHours}h
-                            </Typography>
+                            </Text>
                             <Papicons name="Clock" size={16} color={colors.text + '88'} />
                         </View>
                     )}
                 </View>
             </View>
 
-            {/* Coefficient badge */}
-            {syllabus.coeff !== undefined && syllabus.coeff > 0 && (
-                <View style={[styles.coeffContainer, { backgroundColor: subjectColor }]}>
-                    <Text style={styles.coeffNumber}>{syllabus.coeff}</Text>
-                    <Text style={styles.coeffLabel}>coeff</Text>
-                </View>
+            {/* Gradient tint from bottom-right corner */}
+            {hasCoeff && (
+                <LinearGradient
+                    colors={[subjectColor + '00', subjectColor + '20']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.gradientOverlay}
+                />
             )}
 
-            {/* Chevron if no coefficient */}
-            {(syllabus.coeff === undefined || syllabus.coeff <= 0) && (
+            {/* Coefficient badge */}
+            {hasCoeff ? (
+                <View style={styles.coeffContainer}>
+                    <Text style={[styles.coeffNumber, { color: subjectColor }]}>{syllabus.coeff}</Text>
+                    <Text style={[styles.coeffLabel, { color: subjectColor }]}>coeff</Text>
+                </View>
+            ) : (
                 <View style={styles.chevronContainer}>
                     <Papicons name="ChevronRight" size={18} color={colors.text + '44'} />
                 </View>
@@ -137,13 +171,19 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'stretch',
-        borderRadius: 25,
+        width: '100%',
+        borderRadius: 20,
+        borderCurve: 'continuous',
         overflow: 'hidden',
+        // Border like List component
+        borderWidth: 0.5,
+        // Shadow for iOS (matching List component)
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.15,
-        shadowRadius: 3.3,
-        elevation: 2,
-        marginVertical: 4,
+        shadowOpacity: 0.10,
+        shadowRadius: 1.5,
+        // Shadow for Android
+        elevation: 1,
     },
     content: {
         flex: 1,
@@ -154,8 +194,15 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontWeight: 'bold',
-        letterSpacing: 0.18,
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '700',
+            },
+            android: {
+                fontWeight: 'bold',
+            },
+        }),
     },
     badgesRow: {
         flexDirection: 'row',
@@ -168,11 +215,16 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     examBadgeText: {
-        fontFamily: 'Inter-Bold',
-        fontWeight: 'bold',
-        fontSize: 15,
-        color: '#f2f2f2',
-        letterSpacing: 0.15,
+        fontSize: 14,
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '600',
+            },
+            android: {
+                fontWeight: '600',
+            },
+        }),
     },
     hoursContainer: {
         flexDirection: 'row',
@@ -180,34 +232,51 @@ const styles = StyleSheet.create({
         gap: 5,
     },
     hoursText: {
-        fontSize: 11,
-        letterSpacing: 0.11,
+        fontSize: 13,
     },
     coeffContainer: {
-        width: 47,
-        alignSelf: 'stretch',
+        paddingRight: 16,
+        paddingLeft: 8,
         alignItems: 'center',
         justifyContent: 'center',
-        borderTopRightRadius: 25,
-        borderBottomRightRadius: 25,
+    },
+    coeffNumber: {
+        fontSize: 22,
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '700',
+            },
+            android: {
+                fontWeight: 'bold',
+            },
+        }),
+    },
+    coeffLabel: {
+        fontSize: 8,
+        textTransform: 'uppercase',
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '600',
+            },
+            android: {
+                fontWeight: '600',
+            },
+        }),
     },
     chevronContainer: {
         paddingRight: 16,
         paddingLeft: 8,
+        justifyContent: 'center',
     },
-    coeffNumber: {
-        fontFamily: 'Inter-Bold',
-        fontWeight: 'bold',
-        fontSize: 27,
-        color: 'white',
-        letterSpacing: 0.27,
-    },
-    coeffLabel: {
-        fontFamily: 'Inter-Bold',
-        fontWeight: 'bold',
-        fontSize: 7,
-        color: 'white',
-        letterSpacing: 0.07,
+    gradientOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        borderRadius: 20,
     },
 });
 

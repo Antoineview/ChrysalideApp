@@ -23,6 +23,7 @@ import Typography from '@/ui/components/Typography';
 import { getUeName } from '@/utils/ueParams';
 
 import SyllabusItem from './components/SyllabusItem';
+import UEGroup from './components/UEGroup';
 import { generateFullPdfHtml } from './utils/pdfGenerator';
 
 const SyllabusView: React.FC = () => {
@@ -189,19 +190,16 @@ const SyllabusView: React.FC = () => {
   };
 
   const renderSemesterSection = ({ item }: { item: { semester: number; ueGroups: { name: string; items: Syllabus[] }[] } }) => (
-    <Stack style={{ marginBottom: 16 }}>
-      <Typography variant="h6" color="secondary" style={{ marginBottom: 8, marginLeft: 4 }}>
+    <Stack style={{ marginBottom: 16 }} gap={12}>
+      <Typography variant="h6" color="secondary" style={{ marginLeft: 4 }}>
         Semestre {item.semester}
       </Typography>
       {item.ueGroups.map((group) => (
-        <Stack key={group.name} style={{ marginBottom: 12 }} gap={8}>
-          <Typography variant="body2" color="tertiary" style={{ fontSize: 13, textTransform: 'uppercase', marginLeft: 4 }}>
-            {getUeName(group.name)}
-          </Typography>
+        <UEGroup key={group.name} name={getUeName(group.name)}>
           {group.items.map((syllabus) => (
             <SyllabusItem key={syllabus.id} syllabus={syllabus} />
           ))}
-        </Stack>
+        </UEGroup>
       ))}
     </Stack>
   );
