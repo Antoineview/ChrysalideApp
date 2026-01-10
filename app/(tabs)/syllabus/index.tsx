@@ -16,7 +16,6 @@ import AurigaAPI from '@/services/auriga';
 import { Syllabus } from '@/services/auriga/types';
 import Button from '@/ui/components/Button';
 import ChipButton from '@/ui/components/ChipButton';
-import List from '@/ui/components/List';
 import Stack from '@/ui/components/Stack';
 import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
@@ -195,19 +194,18 @@ const SyllabusView: React.FC = () => {
         Semestre {item.semester}
       </Typography>
       {item.ueGroups.map((group) => (
-        <List key={group.name} style={{ marginBottom: 12 }}>
-          <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}>
-            <Typography variant="body2" color="tertiary" style={{ fontSize: 13, textTransform: 'uppercase' }}>
-              {getUeName(group.name)}
-            </Typography>
-          </View>
+        <Stack key={group.name} style={{ marginBottom: 12 }} gap={8}>
+          <Typography variant="body2" color="tertiary" style={{ fontSize: 13, textTransform: 'uppercase', marginLeft: 4 }}>
+            {getUeName(group.name)}
+          </Typography>
           {group.items.map((syllabus) => (
             <SyllabusItem key={syllabus.id} syllabus={syllabus} />
           ))}
-        </List>
+        </Stack>
       ))}
     </Stack>
   );
+
 
   return (
     <View style={{ flex: 1 }}>
