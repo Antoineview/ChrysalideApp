@@ -61,10 +61,6 @@ export const CompactGrade = ({
         borderColor: colors.border,
         backgroundColor: colors.card,
         borderWidth: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
       }}
     >
       <LinearGradient

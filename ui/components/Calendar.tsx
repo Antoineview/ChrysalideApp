@@ -2,7 +2,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useTheme } from "@react-navigation/native";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import * as Localization from "expo-localization";
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Platform, Pressable } from "react-native";
 import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -49,7 +49,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
   };
 
   if (Platform.OS === "android") {
-    if (!visible) {return null;}
+    if (!visible) { return null; }
     return (
       <DateTimePicker
         value={date}
@@ -103,6 +103,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
             glassOpacity={0.1}
             style={{
               borderRadius: 20,
+              borderCurve: 'continuous',
               width: 340,
               height: 320,
               alignItems: "center",

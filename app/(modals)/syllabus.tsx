@@ -1,17 +1,20 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View } from "react-native";
+import LinearGradient from "react-native-linear-gradient";
 
 import { Syllabus } from "@/services/auriga/types";
-import Item from "@/ui/components/Item";
-import List from "@/ui/components/List";
+import ContainedNumber from "@/ui/components/ContainedNumber";
+import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
+import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectName } from "@/utils/subjects/name";
+import { getUeName } from "@/utils/ueParams";
 
 function cleanHtml(raw?: string | null): string {
   if (!raw) { return ""; }
@@ -27,8 +30,7 @@ function cleanHtml(raw?: string | null): string {
 }
 
 export default function SyllabusModal() {
-  const { i18n } = useTranslation();
-  const insets = useSafeAreaInsets();
+  const { colors, dark } = useTheme();
   const params = useLocalSearchParams<{ syllabusData: string }>();
 
   // Parse syllabus data from params
@@ -48,180 +50,212 @@ export default function SyllabusModal() {
     );
   }
 
-  const subjectColor = adjust(getSubjectColor(syllabus.name), -0.2);
-  const subjectName = getSubjectName(syllabus.name);
+  const rawSubjectColor = getSubjectColor(syllabus.caption?.name || syllabus.name);
+  const subjectColor = adjust(rawSubjectColor, dark ? 0.2 : -0.2);
+  const subjectName = syllabus.caption?.name || getSubjectName(syllabus.name);
 
-  /* Description Section */
+  // Calculate total hours
+  const totalHours = React.useMemo(() => {
+    if (syllabus.duration && syllabus.duration > 0) {
+      return Math.round(syllabus.duration / 3600);
+    }
+    return 0;
+  }, [syllabus.duration]);
+
+  // Description
   const rawDescription = syllabus.caption?.goals?.fr || syllabus.caption?.name;
-  const description = React.useMemo(() => cleanHtml(rawDescription), [
-    rawDescription,
-  ]);
+  const description = React.useMemo(() => cleanHtml(rawDescription), [rawDescription]);
+
+  // Build sections for TableFlatList
+  const sections = [];
+
+  // Exams Section
+  if (syllabus.exams && syllabus.exams.length > 0) {
+    sections.push({
+      title: "Examens",
+      icon: <Papicons name={"Grades"} />,
+      items: syllabus.exams.map((exam) => ({
+        title: exam.typeName || exam.type,
+        description: exam.description?.fr || exam.description?.en,
+        trailing: (
+          <ContainedNumber color={subjectColor} denominator="%">
+            {exam.weighting}
+          </ContainedNumber>
+        ),
+      })),
+    });
+  }
+
+  // Activities Section
+  if (syllabus.activities && syllabus.activities.length > 0) {
+    sections.push({
+      title: "Activités",
+      icon: <Papicons name={"Sparkles"} />,
+      items: syllabus.activities.map((activity, index) => ({
+        title: activity.typeName || activity.type,
+        trailing: activity.duration && activity.duration > 0 ? (
+          <ContainedNumber color={subjectColor} denominator="h">
+            {Math.round(activity.duration / 3600)}
+          </ContainedNumber>
+        ) : undefined,
+      })),
+    });
+  }
+
+  // Responsables Section
+  if (syllabus.responsables && syllabus.responsables.length > 0) {
+    sections.push({
+      title: "Responsables",
+      icon: <Papicons name={"User"} />,
+      items: syllabus.responsables.map((resp, index) => ({
+        title: `${resp.firstName} ${resp.lastName}`,
+      })),
+    });
+  }
+
+  // Description Section
+  if (description) {
+    sections.push({
+      title: "Description",
+      icon: <Papicons name={"Document"} />,
+      items: [{
+        title: description,
+      }],
+    });
+  }
 
   return (
-    <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={{
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: insets.bottom + 32,
-      }}
-    >
-      {/* Header */}
-      <Stack gap={8} style={{ marginBottom: 24 }}>
-        <Stack direction="horizontal" gap={12} hAlign="start">
-          <Stack
-            width={48}
-            height={48}
-            card
-            hAlign="center"
-            vAlign="center"
-            radius={32}
-            backgroundColor={subjectColor + "22"}
+    <>
+      <LinearGradient
+        colors={[rawSubjectColor, colors.background]}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 300,
+          width: "100%",
+          zIndex: -9,
+          opacity: 0.4
+        }}
+      />
+
+      <TableFlatList
+        engine="FlashList"
+        sections={sections}
+        ListHeaderComponent={
+          <View
+            style={{
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+              gap: 16,
+              marginVertical: 20,
+            }}
           >
-            <Text style={{ fontSize: 24 }}>📚</Text>
-          </Stack>
-          <Stack gap={2} style={{ flex: 1 }}>
-            <Typography
-              variant="h5"
-              style={{ lineHeight: 24 }}
-              color={subjectColor}
-              textBreakStrategy="highQuality"
-              android_hyphenationFrequency="full"
-              lineBreakStrategyIOS="standard"
+            <Typography variant="h2" color={subjectColor}>
+              {subjectName}
+            </Typography>
+
+            {/* Info Grid - 2x2 fused */}
+            <Stack
+              card
+              width={"100%"}
+              style={{ marginTop: 8, position: "relative" }}
             >
-              {syllabus.caption?.name || subjectName}
-            </Typography>
-            <Typography variant="body2" color="secondary">
-              {syllabus.code} • Semestre {syllabus.semester}
-            </Typography>
-          </Stack>
-        </Stack>
-      </Stack>
+              {/* Continuous Vertical Divider */}
+              <View style={{
+                position: "absolute",
+                left: "50%",
+                top: 0,
+                bottom: 0,
+                width: 1,
+                backgroundColor: colors.border,
+                zIndex: 1,
+              }} />
 
-      {/* Info Section */}
-      <Stack gap={8} style={{ marginBottom: 24 }}>
-        <Typography variant="h6">Informations</Typography>
-        <List>
-          <Item>
-            <Typography variant="title">{syllabus.UE}</Typography>
-            <Typography variant="body2" color="secondary">
-              UE
-            </Typography>
-          </Item>
-
-          {syllabus.duration > 0 && (
-            <Item>
-              <Typography variant="title">
-                {Math.round(syllabus.duration / 3600)}h
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                Durée
-              </Typography>
-            </Item>
-          )}
-          {syllabus.minScore > 0 && (
-            <Item>
-              <Typography variant="title">{syllabus.minScore}/20</Typography>
-              <Typography variant="body2" color="secondary">
-                Note minimum
-              </Typography>
-            </Item>
-          )}
-          {syllabus.coeff !== undefined && (
-            <Item>
-              <Typography variant="title">{syllabus.coeff}</Typography>
-              <Typography variant="body2" color="secondary">
-                Coefficient
-              </Typography>
-            </Item>
-          )}
-
-        </List>
-      </Stack>
-
-      {/* Exams Section */}
-      {syllabus.exams && syllabus.exams.length > 0 && (
-        <Stack gap={8} style={{ marginBottom: 24 }}>
-          <Typography variant="h6">
-            Examens ({syllabus.exams.length})
-          </Typography>
-          <List>
-            {syllabus.exams.map((exam, index) => (
-              <Item key={exam.id || index}>
-                <Typography variant="title">
-                  {exam.typeName || exam.type}
-                </Typography>
-                <Typography variant="body2" color="secondary">
-                  Coefficient: {exam.weighting}%
-                </Typography>
-                {!!exam.description && (
-                  <Typography
-                    variant="body2"
-                    color="tertiary"
-                    style={{ marginTop: 4 }}
-                  >
-                    {cleanHtml(
-                      typeof exam.description === "string"
-                        ? exam.description
-                        : exam.description[
-                        i18n.language.startsWith("en") ? "en" : "fr"
-                        ] ||
-                        exam.description.fr ||
-                        exam.description.en
-                    )}
+              {/* Row 1: UE & Coefficient */}
+              <Stack direction="horizontal" width={"100%"}>
+                {/* UE */}
+                <Stack
+                  width={"50%"}
+                  vAlign="center"
+                  hAlign="center"
+                  padding={12}
+                >
+                  <Icon papicon opacity={0.5}>
+                    <Papicons name={"Paper"} />
+                  </Icon>
+                  <Typography color="secondary">
+                    UE
                   </Typography>
-                )}
-              </Item>
-            ))}
-          </List>
-        </Stack>
-      )}
-
-      {/* Responsables Section */}
-      {syllabus.responsables && syllabus.responsables.length > 0 && (
-        <Stack gap={8} style={{ marginBottom: 24 }}>
-          <Typography variant="h6">Responsables</Typography>
-          <List>
-            {syllabus.responsables.map((resp, index) => (
-              <Item key={resp.uid || index}>
-                <Typography variant="title">
-                  {resp.firstName} {resp.lastName}
-                </Typography>
-              </Item>
-            ))}
-          </List>
-        </Stack>
-      )}
-
-      {/* Activities Section */}
-      {syllabus.activities && syllabus.activities.length > 0 && (
-        <Stack gap={8} style={{ marginBottom: 24 }}>
-          <Typography variant="h6">Activités</Typography>
-          <List>
-            {syllabus.activities.map((activity, index) => (
-              <Item key={activity.id || index}>
-                <Typography variant="title">
-                  {activity.typeName || activity.type}
-                </Typography>
-                {!!activity.duration && activity.duration > 0 && (
-                  <Typography variant="body2" color="secondary">
-                    {Math.round(activity.duration / 3600)}h
+                  <ContainedNumber color={subjectColor}>
+                    {getUeName(syllabus.UE)}
+                  </ContainedNumber>
+                </Stack>
+                {/* Coefficient */}
+                <Stack
+                  width={"50%"}
+                  vAlign="center"
+                  hAlign="center"
+                  padding={12}
+                >
+                  <Icon papicon opacity={0.5}>
+                    <Papicons name={"Coefficient"} />
+                  </Icon>
+                  <Typography color="secondary">
+                    Coefficient
                   </Typography>
-                )}
-              </Item>
-            ))}
-          </List>
-        </Stack>
-      )}
+                  <ContainedNumber color={subjectColor}>
+                    x{(syllabus.coeff ?? 1).toFixed(2)}
+                  </ContainedNumber>
+                </Stack>
+              </Stack>
 
-      {/* Description Section */}
-      {!!description && (
-        <Stack gap={8} style={{ marginBottom: 24 }}>
-          <Typography variant="h6">Description</Typography>
-          <Typography variant="body1">{description}</Typography>
-        </Stack>
-      )}
+              {/* Horizontal Divider */}
+              <View style={{ height: 1, backgroundColor: colors.border, width: "100%" }} />
 
-    </ScrollView>
+              {/* Row 2: Duration & Min Score */}
+              <Stack direction="horizontal" width={"100%"}>
+                {/* Duration */}
+                <Stack
+                  width={"50%"}
+                  vAlign="center"
+                  hAlign="center"
+                  padding={12}
+                >
+                  <Icon papicon opacity={0.5}>
+                    <Papicons name={"Clock"} />
+                  </Icon>
+                  <Typography color="secondary">
+                    Durée
+                  </Typography>
+                  <ContainedNumber color={subjectColor} denominator="h">
+                    {totalHours}
+                  </ContainedNumber>
+                </Stack>
+                {/* Min Score */}
+                <Stack
+                  width={"50%"}
+                  vAlign="center"
+                  hAlign="center"
+                  padding={12}
+                >
+                  <Icon papicon opacity={0.5}>
+                    <Papicons name={"Lock"} />
+                  </Icon>
+                  <Typography color="secondary">
+                    Note Seuil
+                  </Typography>
+                  <ContainedNumber color={subjectColor} denominator="/20">
+                    {syllabus.minScore > 0 ? syllabus.minScore.toFixed(2) : "—"}
+                  </ContainedNumber>
+                </Stack>
+              </Stack>
+            </Stack>
+          </View>
+        }
+        style={{ backgroundColor: "transparent" }}
+      />
+    </>
   );
 }

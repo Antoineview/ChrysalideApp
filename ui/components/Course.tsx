@@ -340,6 +340,7 @@ const Course = React.memo((props: CourseProps) => {
           style={{
             flex: 1,
             borderRadius: compact ? 18 : 25,
+            borderCurve: 'continuous',
             shadowColor: colors.border,
             shadowOpacity: 0.3,
             shadowRadius: 5,
@@ -348,7 +349,7 @@ const Course = React.memo((props: CourseProps) => {
         >
           <View
             style={[
-              { flex: 1, borderRadius: compact ? 18 : 25, overflow: "hidden" },
+              { flex: 1, borderRadius: compact ? 18 : 25, borderCurve: 'continuous', overflow: "hidden" },
               status?.canceled && { backgroundColor: adjust("#DC1400", dark ? -0.7 : 0.8), borderWidth: 0.2, borderColor: colors.border },
               magicInfo && { borderWidth: 1, borderColor: colors.border, backgroundColor: adjust(color ?? "#FFFFFF", 0.8) },
               skeleton && { backgroundColor: "#00000005" },
