@@ -2,6 +2,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
@@ -30,6 +31,7 @@ function cleanHtml(raw?: string | null): string {
 }
 
 export default function SyllabusModal() {
+  const { t } = useTranslation();
   const { colors, dark } = useTheme();
   const params = useLocalSearchParams<{ syllabusData: string }>();
 
@@ -206,7 +208,7 @@ export default function SyllabusModal() {
                     Coefficient
                   </Typography>
                   <ContainedNumber color={subjectColor}>
-                    x{(syllabus.coeff ?? 1).toFixed(2)}
+                    {syllabus.coeff ? `x${syllabus.coeff.toFixed(2)}` : t('Syllabus_Coeff_None')}
                   </ContainedNumber>
                 </Stack>
               </Stack>
