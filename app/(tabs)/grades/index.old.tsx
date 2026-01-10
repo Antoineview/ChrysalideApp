@@ -189,7 +189,7 @@ export default function TabOneScreen() {
     }
     const grades = newSubjects
       .flatMap(subject => subject.grades)
-      .filter(grade =>
+      .filter((grade): grade is SharedGrade =>
         grade !== undefined &&
         grade !== null &&
         grade.studentScore?.value !== undefined &&

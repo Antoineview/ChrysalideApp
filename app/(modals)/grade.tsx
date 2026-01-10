@@ -43,18 +43,20 @@ export default function GradesModal() {
   const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
 
   return (
-    <>
+    <View style={{ flex: 1, overflow: "hidden", borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
       <LinearGradient
         colors={[subjectInfo.color, colors.background]}
         style={{
           position: "absolute",
           top: 0,
-          left: 0,
-          right: 0,
+          left: "1%",
+          right: "1%",
           height: 300,
-          width: "100%",
+          width: "98%",
           zIndex: -9,
-          opacity: 0.4
+          opacity: 0.4,
+          borderTopLeftRadius: 50,
+          borderTopRightRadius: 50
         }}
       />
 
@@ -162,8 +164,8 @@ export default function GradesModal() {
             </Stack>
           </View>
         }
-        style={{ backgroundColor: "transparent", zIndex: 1 }}
+        style={{ backgroundColor: "transparent", zIndex: 1, borderTopLeftRadius: 50, borderTopRightRadius: 50, overflow: "hidden" }}
       />
-    </>
+    </View>
   )
 }

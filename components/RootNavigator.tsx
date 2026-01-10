@@ -86,9 +86,9 @@ export function RootNavigator() {
           headerTitle: t("Modal_Grades_Title"),
           headerLargeTitle: false,
           presentation: "formSheet",
-          sheetAllowedDetents: [0.55],
+          sheetAllowedDetents: [0.48],
           sheetGrabberVisible: true,
-          sheetCornerRadius: 20,
+          sheetCornerRadius: 50,
         }}
       />
       <Stack.Screen
@@ -179,7 +179,7 @@ export function RootNavigator() {
           presentation: "formSheet",
           sheetAllowedDetents: [0.38],
           sheetGrabberVisible: true,
-          sheetCornerRadius: 20,
+          sheetCornerRadius: 50,
         }}
       />
     </Stack>
