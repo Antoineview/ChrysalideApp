@@ -2,7 +2,7 @@ import { Papicons } from '@getpapillon/papicons'
 import { useFocusEffect, useTheme } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FlatList, Pressable, ScrollView, StyleSheet, View, Linking, Image } from 'react-native'
+import { FlatList, Pressable, ScrollView, StyleSheet, View, Linking } from 'react-native'
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
@@ -401,6 +401,11 @@ function truncateString(str: string, maxLength: number): string {
 // Intracom Event Card
 const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
   const { colors } = useTheme();
+  const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
+  const [participants, setParticipants] = useState<IntracomParticipant[]>([]);
+  const [slotTimes, setSlotTimes] = useState<{ start: string; end: string } | null>(null);
 
   const formatDate = (dateString: string) => {
     try {
@@ -485,79 +490,319 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
     }
   };
 
+  // Extrait le prénom du login (format: prenom.nom)
+  const getFirstName = (login: string) => {
+    const parts = login.split('.');
+    if (parts.length > 0) {
+      const firstName = parts[0];
+      return firstName.charAt(0).toUpperCase() + firstName.slice(1);
+    }
+    return login;
+  };
+
+  // Fetch les détails de l'event quand on expand
+  const fetchEventDetails = async () => {
+    const token = getIntracomToken();
+    if (!token) return;
+
+    setLoading(true);
+    try {
+      // Fetch les deux endpoints en parallèle
+      const [detailsRes, slotsRes] = await Promise.all([
+        fetch(`https://intracom.epita.fr/api/Events/${event.id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+          },
+        }),
+        fetch(`https://intracom.epita.fr/api/Events/${event.id}/SlotInfos`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }),
+      ]);
+
+      if (detailsRes.ok) {
+        const details: IntracomEventDetails = await detailsRes.json();
+        setEventDetails(details);
+      }
+
+      if (slotsRes.ok) {
+        const slots: IntracomSlotInfo[] = await slotsRes.json();
+        // Extraire tous les participants de tous les slots/groupes
+        const allParticipants: IntracomParticipant[] = [];
+        let firstStart: string | null = null;
+        let lastEnd: string | null = null;
+
+        slots.forEach((slotInfo) => {
+          slotInfo.jobs.forEach((job) => {
+            job.slots.forEach((slot) => {
+              // Capturer les heures de début et fin
+              if (!firstStart || slot.startTime < firstStart) {
+                firstStart = slot.startTime;
+              }
+              if (!lastEnd || slot.endTime > lastEnd) {
+                lastEnd = slot.endTime;
+              }
+              slot.groups.forEach((group) => {
+                group.participants.forEach((participant) => {
+                  // Éviter les doublons
+                  if (!allParticipants.find(p => p.id === participant.id)) {
+                    allParticipants.push(participant);
+                  }
+                });
+              });
+            });
+          });
+        });
+
+        setParticipants(allParticipants);
+        if (firstStart && lastEnd) {
+          setSlotTimes({ start: firstStart, end: lastEnd });
+        }
+      }
+    } catch (error) {
+      console.error("[Intracom] Erreur fetch details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePress = () => {
+    if (!expanded) {
+      fetchEventDetails();
+    }
+    setExpanded(!expanded);
+  };
+
+  const openInMaps = () => {
+    if (eventDetails?.latitude && eventDetails?.longitude) {
+      const url = `https://maps.apple.com/?ll=${eventDetails.latitude},${eventDetails.longitude}&q=${encodeURIComponent(eventDetails.address + ', ' + eventDetails.town)}`;
+      Linking.openURL(url);
+    }
+  };
+
+  // Utiliser les heures du slot si disponibles, sinon fallback
+  const displayStartTime = slotTimes ? formatTime(slotTimes.start) : formatTime(event.date);
+  const displayEndTime = slotTimes ? formatTime(slotTimes.end) : getEndTime(event.date);
+
   return (
-    <View
-      style={{
-        backgroundColor: colors.card,
-        borderRadius: 16,
-        padding: 14,
-        width: '100%',
-        borderWidth: 1,
-        borderColor: colors.border,
-        opacity: isOpen ? 1 : 0.6,
-        flexDirection: 'row',
-      }}
-    >
-      {/* Contenu principal à gauche */}
-      <View style={{ flex: 1 }}>
-        <Stack direction="horizontal" gap={6} style={{ marginBottom: 8, alignItems: 'center' }}>
-          <View
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: 50,
-              paddingHorizontal: 12,
-              paddingVertical: 3,
-            }}
-          >
-            <Typography variant="caption" style={{ color: colors.primary, fontSize: 15, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
-              {getTypeLabel(event.type)}
-            </Typography>
-          </View>
-          <Papicons name="Calendar" size={14} color="#FFFFFF" />
-          <Typography variant="caption" style={{ color: "#FFFFFF", fontFamily: "Inter-Variable" }}>
-            {formatDate(event.date)}
-          </Typography>
-        </Stack>
-
-        <Typography variant="h6" numberOfLines={2} style={{ color: colors.text, marginBottom: 4, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
-          {eventTitle}
-        </Typography>
-
-        {eventLocation && (
-          <Stack direction="horizontal" gap={4} style={{ marginBottom: 4, alignItems: 'center' }}>
-            <Papicons name="MapPin" size={14} color="#FFFFFF" />
-            <Typography variant="caption" style={{ color: "#FFFFFF", fontFamily: "Inter-Variable" }}>
-              {eventLocation}
-            </Typography>
-          </Stack>
-        )}
-
-        <Stack direction="horizontal" gap={4} style={{ marginTop: 8, alignItems: 'center' }}>
-          <Papicons name="user" size={14} color={colors.text + "60"} />
-          <Typography variant="caption" color="secondary" style={{ fontFamily: "Inter-Variable" }}>
-            {spotsLeft > 0 ? `${spotsLeft} place${spotsLeft > 1 ? "s" : ""} restante${spotsLeft > 1 ? "s" : ""}` : "Complet"}
-          </Typography>
-        </Stack>
-      </View>
-
-      {/* Barre verticale + horaires à droite */}
+    <Pressable onPress={handlePress}>
       <View
         style={{
-          width: 1,
-          backgroundColor: '#FFFFFF40',
-          marginHorizontal: 12,
+          backgroundColor: colors.card,
+          borderRadius: 16,
+          padding: 14,
+          width: '100%',
+          borderWidth: 1,
+          borderColor: colors.border,
+          opacity: isOpen ? 1 : 0.6,
         }}
-      />
-      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="caption" style={{ color: "#FFFFFF", fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
-          {formatTime(event.date)}
-        </Typography>
-        <Papicons name="ArrowDown" size={20} color="#FFFFFF60" style={{ marginVertical: 4 }} />
-        <Typography variant="caption" style={{ color: "#FFFFFF", fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
-          {getEndTime(event.date)}
-        </Typography>
+      >
+        {/* Partie principale */}
+        <View style={{ flexDirection: 'row' }}>
+          {/* Contenu principal à gauche */}
+          <View style={{ flex: 1 }}>
+            <Stack direction="horizontal" gap={6} style={{ marginBottom: 8, alignItems: 'center' }}>
+              <View
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: 50,
+                  paddingHorizontal: 12,
+                  paddingVertical: 3,
+                }}
+              >
+                <Typography variant="caption" style={{ color: colors.primary, fontSize: 15, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+                  {getTypeLabel(event.type)}
+                </Typography>
+              </View>
+              <Papicons name="Calendar" size={14} color="#FFFFFF" />
+              <Typography variant="caption" style={{ color: "#FFFFFF", fontFamily: "Inter-Variable" }}>
+                {formatDate(event.date)}
+              </Typography>
+            </Stack>
+
+            <Typography variant="h6" numberOfLines={2} style={{ color: colors.text, marginBottom: 4, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+              {eventTitle}
+            </Typography>
+
+            {eventLocation && (
+              <Stack direction="horizontal" gap={4} style={{ marginBottom: 4, alignItems: 'center' }}>
+                <Papicons name="MapPin" size={14} color="#FFFFFF" />
+                <Typography variant="caption" style={{ color: "#FFFFFF", fontFamily: "Inter-Variable" }}>
+                  {eventLocation}
+                </Typography>
+              </Stack>
+            )}
+
+            <Stack direction="horizontal" gap={4} style={{ marginTop: 8, alignItems: 'center' }}>
+              <Papicons name="user" size={14} color={colors.text + "60"} />
+              <Typography variant="caption" color="secondary" style={{ fontFamily: "Inter-Variable" }}>
+                {spotsLeft > 0 ? `${spotsLeft} place${spotsLeft > 1 ? "s" : ""} restante${spotsLeft > 1 ? "s" : ""}` : "Complet"}
+              </Typography>
+            </Stack>
+          </View>
+
+          {/* Barre verticale + horaires à droite */}
+          <View
+            style={{
+              width: 1,
+              backgroundColor: '#FFFFFF40',
+              marginHorizontal: 12,
+            }}
+          />
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <Typography variant="caption" style={{ color: "#FFFFFF", fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
+              {displayStartTime}
+            </Typography>
+            <Papicons name="ArrowDown" size={20} color="#FFFFFF60" style={{ marginVertical: 4 }} />
+            <Typography variant="caption" style={{ color: "#FFFFFF", fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
+              {displayEndTime}
+            </Typography>
+          </View>
+        </View>
+
+        {/* Partie expandée */}
+        {expanded && (
+          <View style={{ marginTop: 14 }}>
+            {loading ? (
+              <Typography variant="caption" style={{ color: "#FFFFFF80", textAlign: 'center' }}>
+                Chargement...
+              </Typography>
+            ) : (
+              <>
+                {/* Section Inscrits */}
+                <View
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: 16,
+                    padding: 14,
+                    marginBottom: 12,
+                  }}
+                >
+                  <Stack direction="horizontal" gap={6} style={{ marginBottom: 12, alignItems: 'center' }}>
+                    <Papicons name="user" size={18} color={colors.primary} />
+                    <Typography variant="body1" style={{ color: colors.primary, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+                      Inscrits
+                    </Typography>
+                  </Stack>
+
+                  {participants.length > 0 ? (
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                      <Stack direction="horizontal" gap={16}>
+                        {participants.map((participant) => (
+                          <View key={participant.id} style={{ alignItems: 'center' }}>
+                            <View
+                              style={{
+                                width: 50,
+                                height: 50,
+                                borderRadius: 25,
+                                backgroundColor: getProfileColorByName(participant.login),
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderWidth: 3,
+                                borderColor: getProfileColorByName(participant.login) + '40',
+                              }}
+                            >
+                              <Papicons name="user" size={24} color="#FFFFFF" />
+                            </View>
+                            <Typography
+                              variant="caption"
+                              style={{
+                                color: getProfileColorByName(participant.login),
+                                fontFamily: "Inter-Variable",
+                                fontWeight: "bold",
+                                marginTop: 4,
+                              }}
+                            >
+                              {getFirstName(participant.login)}
+                            </Typography>
+                          </View>
+                        ))}
+                      </Stack>
+                    </ScrollView>
+                  ) : (
+                    <Typography variant="caption" style={{ color: '#00000060' }}>
+                      Aucun inscrit pour le moment
+                    </Typography>
+                  )}
+                </View>
+
+                {/* Section Map */}
+                {eventDetails?.latitude && eventDetails?.longitude && (
+                  <Pressable 
+                    onPress={openInMaps}
+                    style={{ borderRadius: 16, overflow: 'hidden' }}
+                  >
+                    <View
+                      style={{
+                        width: '100%',
+                        height: 180,
+                        borderRadius: 16,
+                        backgroundColor: '#E8E8E8',
+                        position: 'relative',
+                      }}
+                    >
+                      {/* Image statique de la carte via MapBox Static API */}
+                      <View
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: '#F5F5F5',
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: 30,
+                            backgroundColor: colors.primary + '20',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginBottom: 8,
+                          }}
+                        >
+                          <Papicons name="MapPin" size={28} color={colors.primary} />
+                        </View>
+                        <Typography variant="body2" style={{ color: '#666', fontFamily: "Inter-Variable" }}>
+                          {eventDetails.address}
+                        </Typography>
+                        <Typography variant="caption" style={{ color: '#999', fontFamily: "Inter-Variable" }}>
+                          {eventDetails.town}
+                        </Typography>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 10,
+                        left: '50%',
+                        transform: [{ translateX: -75 }],
+                        backgroundColor: '#FFFFFFEE',
+                        paddingHorizontal: 16,
+                        paddingVertical: 8,
+                        borderRadius: 20,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 6,
+                      }}
+                    >
+                      <Papicons name="Compass" size={16} color={colors.primary} />
+                      <Typography variant="caption" style={{ color: '#000000', fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+                        Ouvrir dans maps
+                      </Typography>
+                    </View>
+                  </Pressable>
+                )}
+              </>
+            )}
+          </View>
+        )}
       </View>
-    </View>
+    </Pressable>
   );
 };
 
