@@ -88,7 +88,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
 
   const handlePressSubject = useCallback(() => {
     // @ts-expect-error navigation types
-    navigation.navigate('modals/SubjectInfo', {
+    navigation.navigate('(modals)/subject-info', {
       subject: subject
     });
   }, [navigation, subject]);

@@ -1,11 +1,14 @@
 import { Papicons } from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { t } from "i18next";
 import React from "react";
 import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
+import { extractSubjectCode, storage } from "@/services/auriga";
+import { Syllabus } from '@/services/auriga/types';
 import { Grade as SharedGrade } from "@/services/shared/grade";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
@@ -30,6 +33,7 @@ interface GradesModalProps {
 }
 
 export default function GradesModal() {
+  const router = useRouter();
   const { params } = useRoute();
   const theme = useTheme();
   const colors = theme.colors;
@@ -56,84 +60,10 @@ export default function GradesModal() {
       />
 
       <TableFlatList
-        engine='FlashList'
-        sections={[
-          {
-            title: t("Grades_Details_Title"),
-            icon: <Papicons name={"Menu"} />,
-            items: [
-              ...(grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? [{
-                icon: <Papicons name={"Star"} />,
-                title: t("Grades_NormalizedGrade_Title"),
-                description: t("Grades_NormalizedGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator="/20"
-                  >
-                    {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
-                  </ContainedNumber>
-                )
-              }] : []),
-              {
-                icon: <Papicons name={"Plus"} />,
-                title: t("Grades_HighestGrade_Title"),
-                description: t("Grades_HighestGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator={"/" + grade.outOf?.value}
-                  >
-                    {grade.maxScore?.value.toFixed(2)}
-                  </ContainedNumber>
-                )
-              },
-              {
-                icon: <Papicons name={"Minus"} />,
-                title: t("Grades_LowestGrade_Title"),
-                description: t("Grades_LowestGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator={"/" + grade.outOf?.value}
-                  >
-                    {grade.minScore?.value.toFixed(2)}
-                  </ContainedNumber>
-                )
-              }
-            ]
-          },
-          {
-            title: t("Grades_Influence_Title"),
-            icon: <Papicons name={"Pie"} />,
-            items: [
-              {
-                icon: <Papicons name={"Grades"} />,
-                title: t("Grades_Avg_All_Title"),
-                trailing: (
-                  <ContainedNumber
-                    color={avgInfluence === 0 ? "#757575" : avgInfluence >= 0 ? "#42C500" : "#C50000"}
-                    denominator="pts"
-                  >
-                    {avgInfluence >= 0 ? `+${avgInfluence.toFixed(2)}` : avgInfluence.toFixed(2)}
-                  </ContainedNumber>
-                )
-              },
-              {
-                icon: <Papicons name={"Apple"} />,
-                title: t("Grades_Avg_Group_Title"),
-                trailing: (
-                  <ContainedNumber
-                    color={avgClass === 0 ? "#757575" : avgClass >= 0 ? "#42C500" : "#C50000"}
-                    denominator="pts"
-                  >
-                    {avgClass >= 0 ? `+${avgClass.toFixed(2)}` : avgClass.toFixed(2)}
-                  </ContainedNumber>
-                )
-              }
-            ]
-          }
-        ]}
+        ignoreHeaderHeight={true}
+        engine='FlatList'
+        scrollEnabled={false}
+        sections={[]}
         ListHeaderComponent={
           <View
             style={{
@@ -141,6 +71,7 @@ export default function GradesModal() {
               justifyContent: "center",
               gap: 16,
               marginVertical: 20,
+              width: "100%",
             }}
           >
             <ModalOverhead
@@ -195,21 +126,45 @@ export default function GradesModal() {
                 vAlign="center"
                 hAlign="center"
                 padding={12}
+                onPress={() => {
+                  const data = storage.getString("auriga_syllabus");
+                  const allSyllabus: Syllabus[] = data ? JSON.parse(data) : [];
+
+                  const subjectCode = extractSubjectCode(subjectInfo.originalName);
+
+                  const foundSyllabus = allSyllabus.find(s => {
+                    const syllabusCode = extractSubjectCode(s.name);
+
+                    if (subjectCode.startsWith(syllabusCode + "_") || subjectCode === syllabusCode) return true;
+
+                    if (s.caption?.name === subjectInfo.originalName || s.caption?.name === subjectInfo.name) return true;
+
+                    if (s.name === subjectInfo.originalName) return true;
+
+                    return false;
+                  });
+
+                  if (foundSyllabus) {
+                    router.push({
+                      pathname: '/(modals)/syllabus',
+                      params: { syllabusData: JSON.stringify(foundSyllabus) },
+                    });
+                  } else {
+                    console.log("No syllabus found for", subjectInfo.originalName);
+                  }
+                }}
               >
                 <Icon papicon opacity={0.5}>
-                  <Papicons name={"Apple"} />
+                  <Papicons name={"ArrowRightUp"} />
                 </Icon>
-                <Typography color="secondary">
-                  {t("Grades_Avg_Group_Short")}
+                <Typography color="secondary" style={{ textAlign: 'center' }}>
+                  {t("Grades_Look_Syllabus")}
                 </Typography>
-                <ContainedNumber color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} denominator={"/" + grade.outOf?.value}>
-                  {grade.averageScore?.value.toFixed(2)}
-                </ContainedNumber>
               </Stack>
             </Stack>
           </View>
         }
-        style={{ backgroundColor: "transparent" }}
+        style={{ backgroundColor: "transparent", zIndex: 1 }}
       />
     </>
   )
