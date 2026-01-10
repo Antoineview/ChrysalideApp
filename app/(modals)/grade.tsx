@@ -43,10 +43,38 @@ export default function GradesModal() {
   const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
 
   return (
+<<<<<<< Updated upstream
     <View style={{ flex: 1, overflow: "hidden", borderRadius: 50, backgroundColor: colors.background, width: "98%", left: "1%", right: "1%", padding: 0, margin: 0 }}>
       <View style={{ flex: 1, overflow: "hidden", borderRadius: 50 }}>
         <LinearGradient
           colors={[subjectInfo.color, colors.background]}
+=======
+    <View style={{ flex: 1, backgroundColor: colors.background, overflow: "hidden", borderRadius: 50 }}>
+      <LinearGradient
+        colors={[subjectInfo.color, colors.background]}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 350,
+          width: "100%",
+          zIndex: -9,
+          opacity: 0.5
+        }}
+      />
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 20,
+        }}
+        style={{
+          backgroundColor: "transparent"
+        }}
+      >
+        <View
+>>>>>>> Stashed changes
           style={{
             position: "absolute",
             top: 0,

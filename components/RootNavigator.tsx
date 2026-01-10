@@ -88,9 +88,13 @@ export function RootNavigator() {
           presentation: "formSheet",
           sheetAllowedDetents: [0.5, 0.65],
           sheetGrabberVisible: true,
+          sheetCornerRadius: 50,
           contentStyle: {
+<<<<<<< Updated upstream
             width: '95%',
             alignSelf: 'center',
+=======
+>>>>>>> Stashed changes
             backgroundColor: 'transparent',
           }
         }}
