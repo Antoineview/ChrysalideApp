@@ -9,7 +9,7 @@ interface ContainedNumberProps {
   color?: string;
 }
 
-const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, children, ...rest }) => {
+const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, children }) => {
   return (
     <View
       style={{
@@ -20,7 +20,7 @@ const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, c
         paddingVertical: 1,
         gap: 2,
         flexDirection: 'row',
-        alignItems: 'flex-end',
+        alignItems: 'baseline',
         borderColor: color + '46',
         borderWidth: 0,
         minWidth: 50,
@@ -28,12 +28,12 @@ const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, c
       }}
     >
       {children && (
-        <Typography variant='h5' color={color}>
+        <Typography variant='title' style={{ fontSize: 18, lineHeight: 32 }} color={color}>
           {children}
         </Typography>
       )}
       {denominator && (
-        <Typography variant='body2' color={color + "a6"} style={{ marginBottom: 3 }}>
+        <Typography variant='body2' color={color + "a6"}>
           {denominator}
         </Typography>
       )}
