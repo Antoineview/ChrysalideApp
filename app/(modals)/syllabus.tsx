@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { StatusBar, View } from "react-native";
+import { ScrollView, StatusBar, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import { Syllabus } from "@/services/auriga/types";
@@ -69,7 +69,15 @@ export default function SyllabusModal() {
   const description = React.useMemo(() => cleanHtml(rawDescription), [rawDescription]);
 
   // Build sections for TableFlatList
-  const sections = [];
+  const sections: Array<{
+    title: string;
+    icon: React.ReactNode;
+    items: Array<{
+      title: string;
+      description?: string;
+      trailing?: React.ReactNode;
+    }>;
+  }> = [];
 
   // Exams Section
   if (syllabus.exams && syllabus.exams.length > 0) {
@@ -127,26 +135,36 @@ export default function SyllabusModal() {
   }
 
   return (
-    <>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
-      <LinearGradient
-        colors={[rawSubjectColor, colors.background]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 300,
-          width: "100%",
-          zIndex: -9,
-          opacity: 0.4
-        }}
-      />
+    <View style={{ flex: 1, overflow: "hidden", borderRadius: 50, backgroundColor: colors.background, width: "98%", left: "1%", right: "1%", padding: 0, margin: 0 }}>
+      <View style={{ flex: 1, overflow: "hidden", borderRadius: 50 }}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+        <LinearGradient
+          colors={[rawSubjectColor, colors.background]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "1%",
+            right: "1%",
+            height: 300,
+            width: "98%",
+            zIndex: -9,
+            opacity: 0.4,
+            borderRadius: 50
+          }}
+        />
 
-      <TableFlatList
-        engine="FlashList"
-        sections={sections}
-        ListHeaderComponent={
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingBottom: 20,
+            paddingHorizontal: 16,
+          }}
+          style={{
+            backgroundColor: "transparent",
+            borderRadius: 50,
+            overflow: "hidden"
+          }}
+        >
           <View
             style={{
               alignItems: "flex-start",
@@ -255,10 +273,51 @@ export default function SyllabusModal() {
                 </Stack>
               </Stack>
             </Stack>
+
+            {/* Render sections manually */}
+            {sections.map((section, sectionIndex) => (
+              <Stack key={sectionIndex} card width={"100%"} padding={16} gap={12}>
+                <Stack direction="horizontal" gap={8} vAlign="center">
+                  <Icon papicon opacity={0.5}>
+                    {section.icon}
+                  </Icon>
+                  <Typography variant="title" weight="semibold">
+                    {section.title}
+                  </Typography>
+                </Stack>
+                {section.items.map((item, itemIndex) => (
+                  <Stack
+                    key={itemIndex}
+                    direction="horizontal"
+                    vAlign="center"
+                    padding={8}
+                    style={{
+                      borderTopWidth: itemIndex > 0 ? 1 : 0,
+                      borderTopColor: colors.border
+                    }}
+                  >
+                    <Stack style={{ flex: 1 }} gap={4}>
+                      <Typography variant="body1" weight="medium">
+                        {item.title}
+                      </Typography>
+                      {item.description && (
+                        <Typography variant="body2" color="secondary">
+                          {item.description}
+                        </Typography>
+                      )}
+                    </Stack>
+                    {item.trailing && (
+                      <View style={{ marginLeft: 12 }}>
+                        {item.trailing}
+                      </View>
+                    )}
+                  </Stack>
+                ))}
+              </Stack>
+            ))}
           </View>
-        }
-        style={{ backgroundColor: "transparent" }}
-      />
-    </>
+        </ScrollView>
+      </View>
+    </View>
   );
 }

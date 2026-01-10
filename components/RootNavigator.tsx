@@ -44,10 +44,16 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           headerTitle: "",
-          presentation: "modal",
-          sheetAllowedDetents: undefined,
+          presentation: "formSheet",
+          sheetAllowedDetents: [0.6, 0.75, 1],
           sheetGrabberVisible: true,
-          sheetCornerRadius: 20,
+          sheetCornerRadius: 50,
+          sheetExpandsWhenScrolledToEdge: true,
+          contentStyle: {
+            width: '95%',
+            alignSelf: 'center',
+            backgroundColor: 'transparent',
+          }
         }}
       />
       <Stack.Screen
@@ -89,6 +95,7 @@ export function RootNavigator() {
           sheetAllowedDetents: "fitToContents",
           sheetGrabberVisible: true,
           sheetCornerRadius: 50,
+          sheetExpandsWhenScrolledToEdge: true,
           contentStyle: {
             backgroundColor: theme.colors.background,
           }
