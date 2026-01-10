@@ -90,11 +90,8 @@ export function RootNavigator() {
           sheetGrabberVisible: true,
           sheetCornerRadius: 50,
           contentStyle: {
-<<<<<<< Updated upstream
             width: '95%',
             alignSelf: 'center',
-=======
->>>>>>> Stashed changes
             backgroundColor: 'transparent',
           }
         }}
