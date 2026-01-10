@@ -1,8 +1,8 @@
 import { Papicons } from '@getpapillon/papicons'
-import { useTheme } from '@react-navigation/native'
+import { useFocusEffect, useTheme } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FlatList, Pressable, StyleSheet, View } from 'react-native'
+import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
@@ -26,9 +26,26 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition'
 import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
+import { isIntracomConnected, getIntracomToken } from '@/app/(modals)/news'
 
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useTranslation } from 'react-i18next';
+import ViewContainer from '@/ui/components/ViewContainer'
+
+// Events Intracom
+interface IntracomEvent {
+  id: number;
+  date: string;
+  type: string;
+  name: string;
+  campusSlug: string;
+  registeredStudents: number;
+  nbNewStudents: number;
+  maxStudents: number;
+  state: "OPEN" | "CLOSED";
+}
+
+const INTRACOM_EVENTS_URL = "https://intracom.epita.fr/api/Students/Events?EventType=[]&Restrict=true&Research=&PageSize=20&PageNumber=1";
 
 const styles = StyleSheet.create({
   headerBtn: {
@@ -68,6 +85,55 @@ const NewsView = () => {
 
   const news = useNews();
 
+  const [intracomEvents, setIntracomEvents] = useState<IntracomEvent[]>([]);
+  const [intracomLoading, setIntracomLoading] = useState(false);
+
+  const fetchIntracomEvents = useCallback(async () => {
+    const token = getIntracomToken();
+    if (!token) return;
+
+    console.log("[Intracom] URL:", INTRACOM_EVENTS_URL);
+    console.log("[Intracom] Token:", token);
+    console.log("[Intracom] Bearer:", `Bearer ${token}`);
+
+    try {
+      setIntracomLoading(true);
+      const response = await fetch(INTRACOM_EVENTS_URL, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setIntracomEvents(data.elemPage || []);
+    } catch (error) {
+      console.error("[Intracom] Erreur lors de la sync:", error);
+    } finally {
+      setIntracomLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isIntracomConnected()) {
+      fetchIntracomEvents();
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isIntracomConnected()) {
+        fetchIntracomEvents();
+      }
+    }, [fetchIntracomEvents])
+  );
+
   const sortedNews = useMemo(() => {
     return news.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }, [news]);
@@ -100,12 +166,12 @@ const NewsView = () => {
   const [searchText, setSearchText] = useState('');
 
   const filteredNews = useMemo(() => {
-    return sortedNews.filter((news) => news.title.toLowerCase().includes(searchText.toLowerCase()));
+    return sortedNews.filter((news) => news.title?.toLowerCase().includes(searchText.toLowerCase()));
   }, [sortedNews, searchText]);
 
   return (
     <>
-      <TabHeader
+      < TabHeader
         onHeightChanged={setHeaderHeight}
         title={
           <TabHeaderTitle
@@ -152,7 +218,7 @@ const NewsView = () => {
           </View>
         }
       />
-
+      if
       <LayoutAnimationConfig skipEntering>
         <FlatList
           contentContainerStyle={{
@@ -166,6 +232,7 @@ const NewsView = () => {
               onRefresh={() => {
                 setIsManuallyLoading(true)
                 fetchNews()
+                fetchIntracomEvents()
               }}
               progressViewOffset={headerHeight}
             />
@@ -173,9 +240,28 @@ const NewsView = () => {
           data={filteredNews}
           keyExtractor={(item: any) => item.id}
           ListFooterComponent={<Reanimated.View style={footerStyle} />}
-          renderItem={({ item }) => <NewsItem item={item} />}
+          renderItem={({ item }) => <NewsItem it em={item} />}
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
-          ListHeaderComponent={<View style={{ height: headerHeight }} />}
+          ListHeaderComponent={
+            <View style={{ paddingTop: headerHeight }}>
+              {isIntracomConnected() && intracomEvents.length > 0 && (
+                <View style={{ marginBottom: 16 }}>
+                  <Typography variant="h5" style={{ marginBottom: 10, color: colors.text }}>
+                    Événements Intracom
+                  </Typography>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ gap: 10 }}
+                  >
+                    {intracomEvents.map((event) => (
+                      <IntracomEventCard key={event.id} event={event} />
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+            </View>
+          }
           ListEmptyComponent={
             <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
               <Stack
@@ -244,7 +330,7 @@ const NewsItem = ({ item }: { item: News }) => {
             </Typography>
 
             <Typography nowrap weight='medium' variant='caption' color='secondary'>
-              {item.createdAt.toLocaleDateString(undefined, {
+              {new Date(item.createdAt).toLocaleDateString(undefined, {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
@@ -275,5 +361,93 @@ function truncateString(str: string, maxLength: number): string {
   }
   return str.slice(0, maxLength) + "...";
 }
+
+// Composant pour afficher un event Intracom
+const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
+  const { colors } = useTheme();
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString(undefined, {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const getTypeLabel = (type: string) => {
+    const types: Record<string, string> = {
+      FORUM_CPGE: "Forum CPGE",
+      FORUM_HIGHSCHOOL: "Forum Lycée",
+      FORUM_BAC: "Forum BAC+",
+      SALON: "Salon",
+      JPO: "JPO",
+    };
+    return types[type] || type;
+  };
+
+  const isOpen = event.state === "OPEN";
+  const spotsLeft = event.maxStudents - event.registeredStudents;
+
+  return (
+    <View
+      style={{
+        backgroundColor: colors.card,
+        borderRadius: 16,
+        padding: 14,
+        width: 220,
+        borderWidth: 1,
+        borderColor: colors.border,
+        opacity: isOpen ? 1 : 0.6,
+      }}
+    >
+      <Stack direction="horizontal" gap={6} style={{ marginBottom: 8 }}>
+        <View
+          style={{
+            backgroundColor: "#2B7ED6" + "20",
+            borderRadius: 8,
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+          }}
+        >
+          <Typography variant="caption" style={{ color: "#2B7ED6" }}>
+            {formatDate(event.date)}
+          </Typography>
+        </View>
+        <View
+          style={{
+            backgroundColor: isOpen ? "#34C75920" : "#FF3B3020",
+            borderRadius: 8,
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+          }}
+        >
+          <Typography variant="caption" style={{ color: isOpen ? "#34C759" : "#FF3B30" }}>
+            {isOpen ? "Ouvert" : "Fermé"}
+          </Typography>
+        </View>
+      </Stack>
+
+      <Typography variant="caption" color="secondary" style={{ marginBottom: 2 }}>
+        {getTypeLabel(event.type)}
+      </Typography>
+
+      <Typography variant="h6" numberOfLines={2} style={{ color: colors.text, marginBottom: 4 }}>
+        {event.name}
+      </Typography>
+
+      <Stack direction="horizontal" gap={4} style={{ marginTop: 8 }}>
+        <Papicons name="Users" size={14} color={colors.text + "60"} />
+        <Typography variant="caption" color="secondary">
+          {spotsLeft > 0 ? `${spotsLeft} place${spotsLeft > 1 ? "s" : ""} restante${spotsLeft > 1 ? "s" : ""}` : "Complet"}
+        </Typography>
+      </Stack>
+    </View>
+  );
+};
 
 export default NewsView
