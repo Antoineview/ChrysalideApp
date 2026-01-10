@@ -49,11 +49,6 @@ const Grade: React.FC<GradeProps> = React.memo(
             backgroundColor: colors.card,
             borderColor: colors.border,
             borderTopWidth: 0,
-            shadowColor: "rgba(0,0,0,0.1)",
-            shadowOffset: { width: 0, height: 1 },
-            shadowRadius: 3,
-            shadowOpacity: 1,
-            elevation: 1,
             borderCurve: "continuous",
           },
           lastItem: {

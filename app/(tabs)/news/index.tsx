@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   headerBtn: {
     width: "100%",
     flexDirection: "row",
-    borderCurve: "circular",
+    borderCurve: "continuous",
     borderRadius: 20,
     padding: 10,
     gap: 8
@@ -594,6 +594,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
         style={{
           backgroundColor: colors.card,
           borderRadius: 16,
+          borderCurve: 'continuous',
           padding: 14,
           width: '100%',
           borderWidth: 1,
@@ -610,6 +611,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                 style={{
                   backgroundColor: colors.primary + "20",
                   borderRadius: 50,
+                  borderCurve: 'continuous',
                   paddingHorizontal: 12,
                   paddingVertical: 3,
                 }}

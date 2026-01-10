@@ -149,17 +149,9 @@ const Stack: React.FC<StackProps> = ({
     if (card) {
       dynamicStyle.borderRadius = radius || 20;
       dynamicStyle.borderCurve = "continuous";
-      if (!noShadow) {
-        dynamicStyle.shadowColor = flat ? "transparent" : "#000000";
-        dynamicStyle.shadowOffset = { width: 0, height: 0 };
-        dynamicStyle.shadowOpacity = flat ? 0 : 0.16;
-        dynamicStyle.shadowRadius = 1.5;
-        dynamicStyle.elevation = 1;
-      }
-      dynamicStyle.overflow = "visible"; // Ensure shadows are visible
       dynamicStyle.borderColor = colors.text + "25";
       dynamicStyle.borderWidth = (bordered !== undefined && bordered == false) ? 0 : (flat ? 1 : 0.5);
-      dynamicStyle.backgroundColor = backgroundColor || colors.card; // Default to theme background
+      dynamicStyle.backgroundColor = backgroundColor || colors.card;
     }
 
     if (bordered) {

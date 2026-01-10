@@ -1,9 +1,8 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Syllabus } from "@/services/auriga/types";
@@ -31,7 +30,6 @@ function cleanHtml(raw?: string | null): string {
 }
 
 export default function SyllabusModal() {
-  const { i18n } = useTranslation();
   const { colors, dark } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -82,7 +80,7 @@ export default function SyllabusModal() {
           style={[styles.closeButton, { backgroundColor: colors.background }]}
           onPress={() => router.back()}
         >
-          <Papicons name="CrossMark" size={16} color={colors.text} />
+          <Papicons name="ChevronDown" size={16} color={colors.text} />
         </Pressable>
         <Typography
           variant="title"
@@ -91,7 +89,8 @@ export default function SyllabusModal() {
         >
           {subjectName}
         </Typography>
-        <View style={styles.closeButton} /> {/* Spacer for alignment */}
+        {/* Spacer for alignment */}
+        <View style={styles.closeButton} />
       </View>
 
       <ScrollView
@@ -108,7 +107,7 @@ export default function SyllabusModal() {
           <View style={styles.infoRow}>
             {/* UE */}
             <View style={[styles.infoCell, { borderRightWidth: 1, borderRightColor: colors.border }]}>
-              <Papicons name="OpenBook" size={20} color={colors.text + "66"} />
+              <Papicons name="Paper" size={20} color={colors.text + "66"} />
               <Typography variant="body2" color="secondary">UE</Typography>
               <Typography variant="title" style={{ color: subjectColor }}>
                 {getUeName(syllabus.UE)}
@@ -150,7 +149,7 @@ export default function SyllabusModal() {
         {syllabus.exams && syllabus.exams.length > 0 && (
           <Stack gap={8} style={{ marginTop: 20 }}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionIcon}>📝</Text>
+              <Papicons name="Grades" size={16} color={colors.text + "88"} />
               <Typography variant="body2" color="secondary">Examens</Typography>
             </View>
             <List>
@@ -174,7 +173,7 @@ export default function SyllabusModal() {
         {syllabus.activities && syllabus.activities.length > 0 && (
           <Stack gap={8} style={{ marginTop: 20 }}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionIcon}>⚡</Text>
+              <Papicons name="Sparkles" size={16} color={colors.text + "88"} />
               <Typography variant="body2" color="secondary">Activités</Typography>
             </View>
             <List>
@@ -200,7 +199,7 @@ export default function SyllabusModal() {
         {syllabus.responsables && syllabus.responsables.length > 0 && (
           <Stack gap={8} style={{ marginTop: 20 }}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionIcon}>👤</Text>
+              <Papicons name="User" size={16} color={colors.text + "88"} />
               <Typography variant="body2" color="secondary">Responsables</Typography>
             </View>
             <List>
@@ -219,7 +218,7 @@ export default function SyllabusModal() {
         {!!description && (
           <Stack gap={8} style={{ marginTop: 20 }}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionIcon}>📄</Text>
+              <Papicons name="Lock" size={16} color={colors.text + "88"} />
               <Typography variant="body2" color="secondary">Description</Typography>
             </View>
             <List>
@@ -302,8 +301,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
     paddingLeft: 4,
-  },
-  sectionIcon: {
-    fontSize: 14,
   },
 });
