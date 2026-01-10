@@ -170,6 +170,16 @@ export function RootNavigator() {
           presentation: "modal"
         }}
       />
+      <Stack.Screen
+        name="(modals)/subject-info"
+        options={{
+          headerShown: false,
+          presentation: "formSheet",
+          sheetAllowedDetents: [0.55],
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 20,
+        }}
+      />
     </Stack>
   );
 }

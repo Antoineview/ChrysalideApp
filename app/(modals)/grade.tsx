@@ -126,12 +126,9 @@ export default function GradesModal() {
                 <Icon papicon opacity={0.5}>
                   <Papicons name={"Apple"} />
                 </Icon>
-                <Typography color="secondary">
-                  {t("Grades_Avg_Group_Short")}
+                <Typography color="secondary" style={{ textAlign: 'center' }}>
+                  {t("Grades_Look_Syllabus")}
                 </Typography>
-                <ContainedNumber color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} denominator={"/" + grade.outOf?.value}>
-                  {grade.averageScore?.value.toFixed(2)}
-                </ContainedNumber>
               </Stack>
             </Stack>
           </View>

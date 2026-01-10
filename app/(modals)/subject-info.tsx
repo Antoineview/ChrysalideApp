@@ -1,6 +1,7 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useRoute, useTheme } from "@react-navigation/native";
 import React from "react";
+import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead, { ModalOverHeadScore } from "@/components/ModalOverhead";
@@ -69,49 +70,39 @@ const SubjectInfo = () => {
       />
 
       <TableFlatList
-        contentInsetAdjustmentBehavior="automatic"
-        engine='FlashList'
+        contentInsetAdjustmentBehavior="never"
+        engine='FlatList'
+        ignoreHeaderHeight={true}
+        scrollEnabled={false}
+        style={{ backgroundColor: "transparent", zIndex: 1 }}
 
         ListHeaderComponent={
-          <ModalOverhead
-            subject={subjectName}
-            color={subjectColor}
-            emoji={subjectEmoji}
-            overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: subject.grades.length })}
-            overhead={
-              <ModalOverHeadScore
-                color={subjectColor}
-                score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(subject.studentAverage.value.toFixed(2))}
-                outOf={outOf}
-              />
-            }
+          <View
             style={{
-              marginBottom: 24
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              marginVertical: 20,
+              width: "100%",
             }}
-          />
+          >
+            <ModalOverhead
+              subject={subjectName}
+              color={subjectColor}
+              emoji={subjectEmoji}
+              overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: subject.grades.length })}
+              overhead={
+                <ModalOverHeadScore
+                  color={subjectColor}
+                  score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(subject.studentAverage.value.toFixed(2))}
+                  outOf={outOf}
+                />
+              }
+            />
+          </View>
         }
 
-        sections={[
-          {
-            title: i18n.t("SubjectInfo_Stats_Header"),
-            icon: <Papicons name="grades" />,
-            items: averagesData.map((average) => ({
-              icon: <Papicons name={average.icon} />,
-              title: average.title,
-              description: average.subtitle,
-              trailing: (
-                <Stack gap={2} direction="horizontal" vAlign="center" hAlign="end">
-                  <Typography variant="header" weight="semibold" inline>
-                    {average.disabled ? average.status : average.value}
-                  </Typography>
-                  <Typography variant="body2" inline color="secondary">
-                    /{outOf}
-                  </Typography>
-                </Stack>
-              )
-            }))
-          }
-        ]}
+        sections={[]}
       />
     </>
   );
