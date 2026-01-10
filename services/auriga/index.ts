@@ -378,14 +378,9 @@ class AurigaAPI {
 
     const data = await response.json();
 
-    // Debug: Print first row to verify indices
-    if (data.content?.lines?.length > 0) {
-      console.log("[Coeffs] First Row:", JSON.stringify(data.content.lines[0]));
-    }
-
     return data.content.lines.map((coeff: any) => ({
-      name: coeff[0], // Code (e.g. "MIA_IGM")
-      value: coeff[3], // Coefficient (e.g. 1.5)
+      name: coeff[2],
+      value: coeff[4],
     }));
   }
 
