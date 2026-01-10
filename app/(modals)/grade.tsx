@@ -13,7 +13,6 @@ import { Grade as SharedGrade } from "@/services/shared/grade";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
 import { colorCheck } from '@/utils/colorCheck';
@@ -43,20 +42,19 @@ export default function GradesModal() {
   const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
 
   return (
-    <View style={{ flex: 1, overflow: "hidden", borderRadius: 50, backgroundColor: colors.background, width: "98%", left: "1%", right: "1%", padding: 0, margin: 0 }}>
-      <View style={{ flex: 1, overflow: "hidden", borderRadius: 50 }}>
+    <View style={{ overflow: "hidden", backgroundColor: colors.background, padding: 0, margin: 0 }}>
+      <View style={{ overflow: "hidden" }}>
         <LinearGradient
           colors={[subjectInfo.color, colors.background]}
           style={{
             position: "absolute",
             top: 0,
-            left: "1%",
-            right: "1%",
+            left: 0,
+            right: 0,
             height: 300,
-            width: "98%",
+            width: "100%",
             zIndex: -9,
             opacity: 0.4,
-            borderRadius: 50
           }}
         />
 
@@ -67,7 +65,6 @@ export default function GradesModal() {
           }}
           style={{
             backgroundColor: "transparent",
-            borderRadius: 50,
             overflow: "hidden"
           }}
         >
@@ -140,11 +137,11 @@ export default function GradesModal() {
                   const foundSyllabus = allSyllabus.find(s => {
                     const syllabusCode = extractSubjectCode(s.name);
 
-                    if (subjectCode.startsWith(syllabusCode + "_") || subjectCode === syllabusCode) return true;
+                    if (subjectCode.startsWith(syllabusCode + "_") || subjectCode === syllabusCode) { return true; }
 
-                    if (s.caption?.name === subjectInfo.originalName || s.caption?.name === subjectInfo.name) return true;
+                    if (s.caption?.name === subjectInfo.originalName || s.caption?.name === subjectInfo.name) { return true; }
 
-                    if (s.name === subjectInfo.originalName) return true;
+                    if (s.name === subjectInfo.originalName) { return true; }
 
                     return false;
                   });
