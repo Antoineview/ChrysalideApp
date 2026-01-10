@@ -400,7 +400,8 @@ function truncateString(str: string, maxLength: number): string {
 }
 // Intracom Event Card
 const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const colors = theme.colors as any;
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
@@ -607,7 +608,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
             <Stack direction="horizontal" gap={6} style={{ marginBottom: 8, alignItems: 'center' }}>
               <View
                 style={{
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: colors.primary + "20",
                   borderRadius: 50,
                   paddingHorizontal: 12,
                   paddingVertical: 3,
@@ -617,8 +618,8 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                   {getTypeLabel(event.type)}
                 </Typography>
               </View>
-              <Papicons name="Calendar" size={14} color="#FFFFFF" />
-              <Typography variant="caption" style={{ color: "#FFFFFF", fontFamily: "Inter-Variable" }}>
+              <Papicons name="Calendar" size={14} color={colors.text} />
+              <Typography variant="caption" style={{ color: colors.text, fontFamily: "Inter-Variable" }}>
                 {formatDate(event.date)}
               </Typography>
             </Stack>
@@ -629,8 +630,8 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
 
             {eventLocation && (
               <Stack direction="horizontal" gap={4} style={{ marginBottom: 4, alignItems: 'center' }}>
-                <Papicons name="MapPin" size={14} color="#FFFFFF" />
-                <Typography variant="caption" style={{ color: "#FFFFFF", fontFamily: "Inter-Variable" }}>
+                <Papicons name="MapPin" size={14} color={colors.text} />
+                <Typography variant="caption" style={{ color: colors.text, fontFamily: "Inter-Variable" }}>
                   {eventLocation}
                 </Typography>
               </Stack>
@@ -648,16 +649,16 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
           <View
             style={{
               width: 1,
-              backgroundColor: '#FFFFFF40',
+              backgroundColor: colors.border,
               marginHorizontal: 12,
             }}
           />
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="caption" style={{ color: "#FFFFFF", fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
+            <Typography variant="caption" style={{ color: colors.text, fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
               {displayStartTime}
             </Typography>
-            <Papicons name="ArrowDown" size={20} color="#FFFFFF60" style={{ marginVertical: 4 }} />
-            <Typography variant="caption" style={{ color: "#FFFFFF", fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
+            <Papicons name="ArrowDown" size={20} color={colors.text + "60"} style={{ marginVertical: 4 }} />
+            <Typography variant="caption" style={{ color: colors.text, fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
               {displayEndTime}
             </Typography>
           </View>
@@ -667,7 +668,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
         {expanded && (
           <View style={{ marginTop: 14 }}>
             {loading ? (
-              <Typography variant="caption" style={{ color: "#FFFFFF80", textAlign: 'center' }}>
+              <Typography variant="caption" style={{ color: colors.text + "80", textAlign: 'center' }}>
                 Chargement...
               </Typography>
             ) : (
@@ -675,7 +676,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                 {/* Section Inscrits */}
                 <View
                   style={{
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: colors.overground,
                     borderRadius: 16,
                     padding: 14,
                     marginBottom: 12,
@@ -723,7 +724,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                       </Stack>
                     </ScrollView>
                   ) : (
-                    <Typography variant="caption" style={{ color: '#00000060' }}>
+                    <Typography variant="caption" style={{ color: colors.text + "60" }}>
                       Aucun inscrit pour le moment
                     </Typography>
                   )}
@@ -740,7 +741,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                         width: '100%',
                         height: 180,
                         borderRadius: 16,
-                        backgroundColor: '#E8E8E8',
+                        backgroundColor: colors.border,
                         position: 'relative',
                       }}
                     >
@@ -751,7 +752,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                           height: '100%',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          backgroundColor: '#F5F5F5',
+                          backgroundColor: colors.overground,
                         }}
                       >
                         <View
@@ -767,10 +768,10 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                         >
                           <Papicons name="MapPin" size={28} color={colors.primary} />
                         </View>
-                        <Typography variant="body2" style={{ color: '#666', fontFamily: "Inter-Variable" }}>
+                        <Typography variant="body2" style={{ color: colors.text, opacity: 0.7, fontFamily: "Inter-Variable" }}>
                           {eventDetails.address}
                         </Typography>
-                        <Typography variant="caption" style={{ color: '#999', fontFamily: "Inter-Variable" }}>
+                        <Typography variant="caption" style={{ color: colors.text, opacity: 0.5, fontFamily: "Inter-Variable" }}>
                           {eventDetails.town}
                         </Typography>
                       </View>
@@ -781,17 +782,22 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                         bottom: 10,
                         left: '50%',
                         transform: [{ translateX: -75 }],
-                        backgroundColor: '#FFFFFFEE',
+                        backgroundColor: colors.card,
                         paddingHorizontal: 16,
                         paddingVertical: 8,
                         borderRadius: 20,
                         flexDirection: 'row',
                         alignItems: 'center',
                         gap: 6,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                        elevation: 5,
                       }}
                     >
                       <Papicons name="Compass" size={16} color={colors.primary} />
-                      <Typography variant="caption" style={{ color: '#000000', fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+                      <Typography variant="caption" style={{ color: colors.text, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
                         Ouvrir dans maps
                       </Typography>
                     </View>
