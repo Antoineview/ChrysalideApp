@@ -34,23 +34,43 @@ export default function AttendanceLoginScreen() {
     React.useEffect(() => {
         if (isRefresh) {
             setShowWebView(true);
-            setHasInjected(false);
         }
     }, [isRefresh]);
 
-    const [hasInjected, setHasInjected] = useState(false);
+
 
     const FETCH_TOKEN_SCRIPT = `
       (function() {
+        // Track if we already found a valid token to avoid duplicate syncs
+        if (window._tokenInterceptorInstalled) return;
+        window._tokenInterceptorInstalled = true;
+
+        function extractToken(value) {
+            if (!value || typeof value !== 'string') return null;
+            var token = value.replace('Bearer ', '').trim();
+            // JWT tokens are typically much longer than 20 chars
+            if (token && token.length > 20 && token !== 'undefined' && token !== 'null') {
+                return token;
+            }
+            return null;
+        }
+
         function checkAndPost(data, source) {
-            if (data && data.access_token) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'TOKEN',
-                    payload: {
-                        access_token: data.access_token,
-                        source: source
-                    }
-                }));
+            var token = data && data.access_token;
+            if (typeof token === 'string') {
+                token = token.trim();
+            }
+            // Validate token is a proper JWT-like string
+            if (token && typeof token === 'string' && token.length > 20 && token !== 'undefined' && token !== 'null') {
+                if (window.ReactNativeWebView) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({
+                        type: 'TOKEN',
+                        payload: {
+                            access_token: token,
+                            source: source
+                        }
+                    }));
+                }
             }
         }
 
@@ -60,7 +80,10 @@ export default function AttendanceLoginScreen() {
             if (options && options.headers && options.headers.Authorization) {
                 var val = options.headers.Authorization;
                 if (!url.toString().includes('microsoft') && !url.toString().includes('live.com')) {
-                     checkAndPost({ access_token: val.replace('Bearer ', '') }, 'fetch-header');
+                    var token = extractToken(val);
+                    if (token) {
+                        checkAndPost({ access_token: token }, 'fetch-header');
+                    }
                 }
             }
             return originalFetch.apply(this, arguments).then(function(response) {
@@ -87,7 +110,10 @@ export default function AttendanceLoginScreen() {
 
         XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
             if (header.toLowerCase() === 'authorization') {
-                 checkAndPost({ access_token: value.replace('Bearer ', '') }, 'xhr-header');
+                var token = extractToken(value);
+                if (token) {
+                    checkAndPost({ access_token: token }, 'xhr-header');
+                }
             }
             return originalSetRequestHeader.apply(this, arguments);
         };
@@ -160,6 +186,8 @@ export default function AttendanceLoginScreen() {
         try {
             AbsencesAPI.setToken(accessToken);
 
+            console.log("Token set: ", accessToken);
+
             setSyncStatus("Synchronisation des absences...");
             await AbsencesAPI.sync();
 
@@ -188,13 +216,14 @@ export default function AttendanceLoginScreen() {
     const handleNavigationStateChange = async (navState: WebViewNavigation) => {
         const { url } = navState;
         console.log("WebView Nav:", url);
+    };
 
-        if (!isSyncing && !hasInjected && !url.includes("login.microsoftonline.com")) {
-            setHasInjected(true);
-            if (webViewRef.current) {
-                console.log("Injecting Token Interceptor...");
-                webViewRef.current.injectJavaScript(FETCH_TOKEN_SCRIPT);
-            }
+    const handleLoadEnd = () => {
+        // Re-inject on every page load to ensure it works on iOS
+        // iOS WKWebView can lose injected scripts on navigation
+        if (!isSyncing && webViewRef.current) {
+            console.log("Injecting Token Interceptor on load end...");
+            webViewRef.current.injectJavaScript(FETCH_TOKEN_SCRIPT);
         }
     };
 
@@ -217,7 +246,6 @@ export default function AttendanceLoginScreen() {
 
     const handleLogin = () => {
         setShowWebView(true);
-        setHasInjected(false);
     };
 
     if (isSyncing) {
@@ -246,8 +274,11 @@ export default function AttendanceLoginScreen() {
                     webviewProps={{
                         source: { uri: ABSENCES_AUTH_URL },
                         onNavigationStateChange: handleNavigationStateChange,
+                        onLoadEnd: handleLoadEnd,
                         onMessage: handleMessage,
-                        injectedJavaScriptBeforeContentLoaded: FETCH_TOKEN_SCRIPT,
+                        // Use injectedJavaScript instead of injectedJavaScriptBeforeContentLoaded
+                        // as iOS WKWebView doesn't reliably run the latter before page JS
+                        injectedJavaScript: FETCH_TOKEN_SCRIPT,
                         sharedCookiesEnabled: true,
                         javaScriptEnabled: true,
                         domStorageEnabled: true,

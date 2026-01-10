@@ -55,7 +55,6 @@ const HomeHeader = () => {
                 {HomeHeaderButtons.slice(i * 2, i * 2 + 2).map((item) => (
                   <HomeHeaderButton key={item.title} item={item} />
                 ))}
-                {HomeHeaderButtons.slice(i * 2, i * 2 + 2).length === 1 && <View style={{ flex: 1 }} />}
               </View>
             ))}
           </View>

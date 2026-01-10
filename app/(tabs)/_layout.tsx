@@ -30,7 +30,7 @@ const ICONS = {
     : require('@/assets/icons/home.svg'),
   calendar: IS_IOS_WITH_PADDING ? require('@/assets/icons/calendar_padding.svg') : require('@/assets/icons/calendar.svg'),
   grades: IS_IOS_WITH_PADDING ? require('@/assets/icons/results_padding.svg') : require('@/assets/icons/results.svg'),
-  syllabus: IS_IOS_WITH_PADDING ? require('@/assets/icons/news_padding.svg') : require('@/assets/icons/news.svg'), // Reuse news icon for now
+  syllabus: IS_IOS_WITH_PADDING ? require('@/assets/icons/syllabus_padding.svg') : require('@/assets/icons/syllabus.svg'),
   news: IS_IOS_WITH_PADDING ? require('@/assets/icons/news_padding.svg') : require('@/assets/icons/news.svg'),
 } as const;
 

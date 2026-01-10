@@ -19,14 +19,14 @@ export const Teams = [
     title: "Antoine RC",
     description: "Développeur",
     login: "Antoine",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Vince Linise")} imageUrl="https://media.discordapp.net/attachments/1457379222078357546/1458833709930123509/611336794_18089322398057388_9199737324387566678_n3x.jpg?ex=69611444&is=695fc2c4&hm=4a4010939e5bd4bac02514c0aeffa5bee28e62482f695bcb513efb658f624181&=&format=webp&width=252&height=270" />,
+    leading: <Avatar size={40} shape="square" initials={getInitials("Vince Linise")} imageUrl="https://media.licdn.com/dms/image/v2/D4E03AQF_QQpb5OX-Wg/profile-displayphoto-crop_800_800/B4EZkJXV6.GYAI-/0/1756798739042?e=1769644800&v=beta&t=U-qVlFwiqRKVjl6vndlU5uVryLEpsM9IIIg7rCN5lM8" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/antoine-rc/")
   },
   {
     title: "Gaël B",
     description: "Développeur",
     login: "YouLLox",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Lucas Lavajo")} imageUrl="https://media.discordapp.net/attachments/679589369593462787/1458836222343512124/IMG_4260-3.jpeg?ex=6961169b&is=695fc51b&hm=293011b8d6481a8e4ae47a49031c48d3f911bbb08ca705c3d2855cdf52e6f7ac&=&format=webp&width=1118&height=1491" />,
+    leading: <Avatar size={40} shape="square" initials={getInitials("Lucas Lavajo")} imageUrl="https://media.licdn.com/dms/image/v2/D4D03AQG1qDz75eC30w/profile-displayphoto-crop_800_800/B4DZkJgagsG8AY-/0/1756801116767?e=1769644800&v=beta&t=jhTQIOEY9vh-nFjaO9AqnUi0___OPm-om5HqDGBYZlU" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/ga%C3%ABl-benmahieddine/")
   },
   {

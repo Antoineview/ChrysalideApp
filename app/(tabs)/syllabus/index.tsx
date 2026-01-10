@@ -1,19 +1,21 @@
 import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
+// Legacy import for SDK 54 compatibility
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, RefreshControl, View } from 'react-native';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAurigaRefresh } from '@/components/AurigaRefreshProvider';
 import AurigaAPI from '@/services/auriga';
 import { Syllabus } from '@/services/auriga/types';
+import Button from '@/ui/components/Button';
 import ChipButton from '@/ui/components/ChipButton';
-import List from '@/ui/components/List';
 import Stack from '@/ui/components/Stack';
 import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
@@ -153,11 +155,30 @@ const SyllabusView: React.FC = () => {
         height: 842, // A4 height in points (72 dpi)
         margins: { left: 0, right: 0, top: 0, bottom: 0 } // Critical: Remove default OS margins
       });
+
+      const currentYear = new Date().getFullYear();
+      const startYear = new Date().getMonth() < 8 ? currentYear - 1 : currentYear;
+      const yearStr = `${startYear}-${startYear + 1}`;
+
+      const semesters = groupedSyllabus.map(s => s.semester).sort((a, b) => a - b);
+      const semStr = semesters.length > 0
+        ? (semesters.length > 1 ? `S${semesters[0]}-S${semesters[semesters.length - 1]}` : `S${semesters[0]}`)
+        : "Syllabus";
+
+      const fileName = `Syllabus ${yearStr} - ${semStr} - généré par Chrysalide.pdf`;
+      // Cast FileSystem to any to avoid type errors with cacheDirectory
+      const newPath = `${(FileSystem as any).cacheDirectory}${fileName}`;
+
+      await FileSystem.moveAsync({
+        from: uri,
+        to: newPath
+      });
+
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, {
+        await Sharing.shareAsync(newPath, {
           UTI: 'com.adobe.pdf',
           mimeType: 'application/pdf',
-          dialogTitle: 'Syllabus complet'
+          dialogTitle: fileName
         });
       }
     } catch {
@@ -173,19 +194,18 @@ const SyllabusView: React.FC = () => {
         Semestre {item.semester}
       </Typography>
       {item.ueGroups.map((group) => (
-        <List key={group.name} style={{ marginBottom: 12 }}>
-          <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}>
-            <Typography variant="body2" color="tertiary" style={{ fontSize: 13, textTransform: 'uppercase' }}>
-              {getUeName(group.name)}
-            </Typography>
-          </View>
+        <Stack key={group.name} style={{ marginBottom: 12 }} gap={8}>
+          <Typography variant="body2" color="tertiary" style={{ fontSize: 13, textTransform: 'uppercase', marginLeft: 4 }}>
+            {getUeName(group.name)}
+          </Typography>
           {group.items.map((syllabus) => (
             <SyllabusItem key={syllabus.id} syllabus={syllabus} />
           ))}
-        </List>
+        </Stack>
       ))}
     </Stack>
   );
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -255,37 +275,14 @@ const SyllabusView: React.FC = () => {
         }
         ListFooterComponent={
           !loading && syllabusList.length > 0 ? (
-            <View style={{ paddingBottom: bottomTabBarHeight + insets.bottom + 16, paddingTop: 16 }}>
-              <TouchableOpacity
+            <View style={{ paddingTop: 16 }}>
+              <Button
                 onPress={handleDownloadPdf}
                 disabled={isGeneratingPdf}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: colors.primary,
-                  marginHorizontal: 16,
-                  padding: 16,
-                  borderRadius: 12,
-                  opacity: isGeneratingPdf ? 0.7 : 1,
-                  shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}
-              >
-                {isGeneratingPdf ?
-                  <ActivityIndicator color="white" style={{ marginRight: 8 }} /> :
-                  <Papicons name="Download" size={20} color="white" style={{ marginRight: 8 }} />
-                }
-                <Text style={{ color: 'white', fontWeight: '600', fontSize: 16 }}>
-                  {isGeneratingPdf ? 'Génération...' : 'Télécharger le syllabus complet (PDF)'}
-                </Text>
-              </TouchableOpacity>
+                loading={isGeneratingPdf}
+                icon={<Papicons name="Paper" size={20} />}
+                title={isGeneratingPdf ? 'Génération...' : 'Télécharger le syllabus complet (PDF)'}
+              />
             </View>
           ) : null
         }
