@@ -142,12 +142,12 @@ const SyllabusItem = React.memo(({ syllabus }: SyllabusItemProps) => {
                 </View>
             </View>
 
-            {/* Gradient tint on right side for coefficient */}
+            {/* Gradient tint from bottom-right corner */}
             {hasCoeff && (
                 <LinearGradient
-                    colors={[subjectColor + '00', subjectColor + '25']}
+                    colors={[subjectColor + '00', subjectColor + '20']}
                     start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
+                    end={{ x: 1, y: 1 }}
                     style={styles.gradientOverlay}
                 />
             )}
@@ -241,11 +241,10 @@ const styles = StyleSheet.create({
     gradientOverlay: {
         position: 'absolute',
         top: 0,
+        left: 0,
         right: 0,
         bottom: 0,
-        width: '50%',
-        borderTopRightRadius: 20,
-        borderBottomRightRadius: 20,
+        borderRadius: 20,
     },
 });
 
