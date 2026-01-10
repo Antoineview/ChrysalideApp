@@ -44,8 +44,8 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           headerTitle: "",
-          presentation: Platform.OS === 'ios' ? "modal" : "formSheet",
-          sheetAllowedDetents: Platform.OS === 'ios' ? undefined : [0.95],
+          presentation: "modal",
+          sheetAllowedDetents: undefined,
           sheetGrabberVisible: true,
           sheetCornerRadius: 20,
         }}

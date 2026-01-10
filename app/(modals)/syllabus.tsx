@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { StatusBar, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import { Syllabus } from "@/services/auriga/types";
@@ -128,6 +128,7 @@ export default function SyllabusModal() {
 
   return (
     <>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
       <LinearGradient
         colors={[rawSubjectColor, colors.background]}
         style={{
