@@ -2,7 +2,7 @@ import { Papicons } from '@getpapillon/papicons'
 import { useFocusEffect, useTheme } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { FlatList, Pressable, ScrollView, StyleSheet, View, Linking, Image } from 'react-native'
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
@@ -43,6 +43,53 @@ interface IntracomEvent {
   nbNewStudents: number;
   maxStudents: number;
   state: "OPEN" | "CLOSED";
+}
+
+// Event details (full info)
+interface IntracomEventDetails {
+  id: number;
+  title: string;
+  campus: string;
+  type: string;
+  eventDate: string;
+  state: string;
+  address: string;
+  zipcode: string;
+  town: string;
+  latitude: number;
+  longitude: number;
+}
+
+// Slot infos (participants)
+interface IntracomParticipant {
+  id: number;
+  login: string;
+  isNew: boolean;
+}
+
+interface IntracomSlotGroup {
+  id: number;
+  nbStudent: number;
+  groupSlug: string;
+  participants: IntracomParticipant[];
+}
+
+interface IntracomSlot {
+  id: number;
+  startTime: string;
+  endTime: string;
+  groups: IntracomSlotGroup[];
+}
+
+interface IntracomJob {
+  id: number;
+  name: string;
+  slots: IntracomSlot[];
+}
+
+interface IntracomSlotInfo {
+  date: string;
+  jobs: IntracomJob[];
 }
 
 const INTRACOM_EVENTS_URL = "https://intracom.epita.fr/api/Students/Events?EventType=[]&Restrict=true&Research=&PageSize=20&PageNumber=1";
@@ -181,44 +228,33 @@ const NewsView = () => {
             loading={isLoading}
           />
         }
+        trailing={
+          <AnimatedPressable onPressIn={onPress}>
+            <Stack
+              card
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 30,
+                marginRight: 16,
+              }}
+              hAlign='center'
+              vAlign='center'
+              noShadow
+              backgroundColor='#FFFFFF50'
+            >
+              <Icon size={26} fill='white'>
+                <Papicons name="newspaper" />
+              </Icon>
+            </Stack>
+          </AnimatedPressable>
+        }
         bottom={
           <View style={{ gap: 10, width: '100%', paddingHorizontal: 16 }}>
-            <LiquidGlassView
-              glassOpacity={0.7}
-              glassTintColor={colors.card}
-              glassType='regular'
-              isInteractive={true}
-              style={{
-                borderRadius: 22
-              }}
-            >
-              <Pressable
-                style={styles.headerBtn}
-                onPress={onPress}
-              >
-                <View
-                  style={{
-                    backgroundColor: "#2B7ED6" + "30",
-                    borderRadius: 50,
-                    padding: 7
-                  }}
-                >
-                  <Papicons name="newspaper" color="#2B7ED6" size={25} />
-                </View>
-                <View style={{
-                  flex: 1,
-                  overflow: 'hidden'
-                }}>
-                  <Typography nowrap variant="h6" color={colors.text + "95"} style={{ lineHeight: 0 }}>{t("Tab_News")}</Typography>
-                  <Typography nowrap variant="title" color={colors.text + "60"} style={{ lineHeight: 0 }}>{t("Intracom")}</Typography>
-                </View>
-              </Pressable>
-            </LiquidGlassView>
             <Search placeholder={t('News_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />
           </View>
         }
       />
-      if
       <LayoutAnimationConfig skipEntering>
         <FlatList
           contentContainerStyle={{
@@ -240,7 +276,7 @@ const NewsView = () => {
           data={filteredNews}
           keyExtractor={(item: any) => item.id}
           ListFooterComponent={<Reanimated.View style={footerStyle} />}
-          renderItem={({ item }) => <NewsItem it em={item} />}
+          renderItem={({ item }) => <NewsItem item={item} />}
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
           ListHeaderComponent={
             <View style={{ paddingTop: headerHeight }}>
@@ -250,11 +286,10 @@ const NewsView = () => {
                     Événements Intracom
                   </Typography>
                   <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ gap: 10 }}
                   >
-                    {intracomEvents.map((event) => (
+                    {intracomEvents.filter((event) => event.state === "OPEN").map((event) => (
                       <IntracomEventCard key={event.id} event={event} />
                     ))}
                   </ScrollView>
@@ -263,24 +298,26 @@ const NewsView = () => {
             </View>
           }
           ListEmptyComponent={
-            <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <Stack
-                hAlign="center"
-                vAlign="center"
-                flex
-                style={{ width: "100%", marginTop: 16 }}
-              >
-                <Icon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-                  <Papicons name={searchText ? "Search" : "Newspaper"} />
-                </Icon>
-                <Typography variant="h4" color="text" align="center">
-                  {searchText ? t('News_Search_NoResults') : t('News_Empty_Title')}
-                </Typography>
-                <Typography variant="body2" color="secondary" align="center">
-                  {searchText ? t('News_Search_NoResults_Description') : t('News_Empty_Description')}
-                </Typography>
-              </Stack>
-            </Dynamic>
+            !isIntracomConnected() || intracomEvents.length === 0 ? (
+              <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
+                <Stack
+                  hAlign="center"
+                  vAlign="center"
+                  flex
+                  style={{ width: "100%", marginTop: 16 }}
+                >
+                  <Icon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+                    <Papicons name={searchText ? "Search" : "Newspaper"} />
+                  </Icon>
+                  <Typography variant="h4" color="text" align="center">
+                    {searchText ? t('News_Search_NoResults') : t('News_Empty_Title')}
+                  </Typography>
+                  <Typography variant="body2" color="secondary" align="center">
+                    {searchText ? t('News_Search_NoResults_Description') : t('News_Empty_Description')}
+                  </Typography>
+                </Stack>
+              </Dynamic>
+            ) : null
           }
         />
       </LayoutAnimationConfig>
@@ -361,19 +398,17 @@ function truncateString(str: string, maxLength: number): string {
   }
   return str.slice(0, maxLength) + "...";
 }
-
-// Composant pour afficher un event Intracom
+// Intracom Event Card
 const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
   const { colors } = useTheme();
 
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString(undefined, {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-      });
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear().toString().slice(-2);
+      return `${day}/${month}/${year}`;
     } catch {
       return dateString;
     }
@@ -383,15 +418,72 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
     const types: Record<string, string> = {
       FORUM_CPGE: "Forum CPGE",
       FORUM_HIGHSCHOOL: "Forum Lycée",
-      FORUM_BAC: "Forum BAC+",
+      FORUM_BAC: "Forum BAC",
       SALON: "Salon",
       JPO: "JPO",
     };
     return types[type] || type;
   };
 
+  // Parse le nom pour extraire le titre et le lieu
+  const parseEventName = (name: string) => {
+    // Enlève "Présentiel" et les types de forum du nom
+    let cleanName = name
+      .replace(/\s*-?\s*Présentiel\s*-?\s*/gi, ' ')
+      .replace(/\s*-?\s*Forum CPGE\s*-?\s*/gi, ' ')
+      .replace(/\s*-?\s*Forum Lycée\s*-?\s*/gi, ' ')
+      .replace(/\s*-?\s*Forum BAC\+?\s*-?\s*/gi, ' ')
+      .trim();
+    cleanName = cleanName.replace(/\s+/g, ' '); // Nettoie les espaces multiples
+
+    // Essaie de séparer par " - " d'abord
+    if (cleanName.includes(" - ")) {
+      const parts = cleanName.split(" - ").filter(p => p.trim() !== '');
+      return {
+        title: parts[0].trim(),
+        location: parts.slice(1).join(" - ").trim() || null,
+      };
+    }
+    // Sinon essaie avec les parenthèses
+    const match = cleanName.match(/^(.+?)\s*\((.+)\)$/);
+    if (match) {
+      return {
+        title: match[1].trim(),
+        location: match[2].trim(),
+      };
+    }
+    // Sinon retourne juste le nom sans lieu
+    return {
+      title: cleanName,
+      location: null,
+    };
+  };
+
+  const { title: eventTitle, location: eventLocation } = parseEventName(event.name);
+
   const isOpen = event.state === "OPEN";
   const spotsLeft = event.maxStudents - event.registeredStudents;
+
+  // Extrait l'heure de début depuis la date
+  const formatTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: false });
+    } catch {
+      return '--:--';
+    }
+  };
+
+  // Heure de fin estimée (2h après le début par défaut)
+  const getEndTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      date.setHours(date.getHours() + 2);
+      return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: false });
+    } catch {
+      return '--:--';
+    }
+  };
 
   return (
     <View
@@ -399,53 +491,72 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
         backgroundColor: colors.card,
         borderRadius: 16,
         padding: 14,
-        width: 220,
+        width: '100%',
         borderWidth: 1,
         borderColor: colors.border,
         opacity: isOpen ? 1 : 0.6,
+        flexDirection: 'row',
       }}
     >
-      <Stack direction="horizontal" gap={6} style={{ marginBottom: 8 }}>
-        <View
-          style={{
-            backgroundColor: "#2B7ED6" + "20",
-            borderRadius: 8,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-          }}
-        >
-          <Typography variant="caption" style={{ color: "#2B7ED6" }}>
+      {/* Contenu principal à gauche */}
+      <View style={{ flex: 1 }}>
+        <Stack direction="horizontal" gap={6} style={{ marginBottom: 8, alignItems: 'center' }}>
+          <View
+            style={{
+              backgroundColor: "#FFFFFF",
+              borderRadius: 50,
+              paddingHorizontal: 12,
+              paddingVertical: 3,
+            }}
+          >
+            <Typography variant="caption" style={{ color: colors.primary, fontSize: 15, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+              {getTypeLabel(event.type)}
+            </Typography>
+          </View>
+          <Papicons name="Calendar" size={14} color="#FFFFFF" />
+          <Typography variant="caption" style={{ color: "#FFFFFF", fontFamily: "Inter-Variable" }}>
             {formatDate(event.date)}
           </Typography>
-        </View>
-        <View
-          style={{
-            backgroundColor: isOpen ? "#34C75920" : "#FF3B3020",
-            borderRadius: 8,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-          }}
-        >
-          <Typography variant="caption" style={{ color: isOpen ? "#34C759" : "#FF3B30" }}>
-            {isOpen ? "Ouvert" : "Fermé"}
-          </Typography>
-        </View>
-      </Stack>
+        </Stack>
 
-      <Typography variant="caption" color="secondary" style={{ marginBottom: 2 }}>
-        {getTypeLabel(event.type)}
-      </Typography>
-
-      <Typography variant="h6" numberOfLines={2} style={{ color: colors.text, marginBottom: 4 }}>
-        {event.name}
-      </Typography>
-
-      <Stack direction="horizontal" gap={4} style={{ marginTop: 8 }}>
-        <Papicons name="Users" size={14} color={colors.text + "60"} />
-        <Typography variant="caption" color="secondary">
-          {spotsLeft > 0 ? `${spotsLeft} place${spotsLeft > 1 ? "s" : ""} restante${spotsLeft > 1 ? "s" : ""}` : "Complet"}
+        <Typography variant="h6" numberOfLines={2} style={{ color: colors.text, marginBottom: 4, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+          {eventTitle}
         </Typography>
-      </Stack>
+
+        {eventLocation && (
+          <Stack direction="horizontal" gap={4} style={{ marginBottom: 4, alignItems: 'center' }}>
+            <Papicons name="MapPin" size={14} color="#FFFFFF" />
+            <Typography variant="caption" style={{ color: "#FFFFFF", fontFamily: "Inter-Variable" }}>
+              {eventLocation}
+            </Typography>
+          </Stack>
+        )}
+
+        <Stack direction="horizontal" gap={4} style={{ marginTop: 8, alignItems: 'center' }}>
+          <Papicons name="user" size={14} color={colors.text + "60"} />
+          <Typography variant="caption" color="secondary" style={{ fontFamily: "Inter-Variable" }}>
+            {spotsLeft > 0 ? `${spotsLeft} place${spotsLeft > 1 ? "s" : ""} restante${spotsLeft > 1 ? "s" : ""}` : "Complet"}
+          </Typography>
+        </Stack>
+      </View>
+
+      {/* Barre verticale + horaires à droite */}
+      <View
+        style={{
+          width: 1,
+          backgroundColor: '#FFFFFF40',
+          marginHorizontal: 12,
+        }}
+      />
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="caption" style={{ color: "#FFFFFF", fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
+          {formatTime(event.date)}
+        </Typography>
+        <Papicons name="ArrowDown" size={20} color="#FFFFFF60" style={{ marginVertical: 4 }} />
+        <Typography variant="caption" style={{ color: "#FFFFFF", fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
+          {getEndTime(event.date)}
+        </Typography>
+      </View>
     </View>
   );
 };
