@@ -3,7 +3,7 @@ import { useRoute, useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
 import React from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
@@ -58,14 +58,11 @@ export default function GradesModal() {
           }}
         />
 
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingBottom: 20,
-          }}
+        <View
           style={{
             backgroundColor: "transparent",
-            overflow: "hidden"
+            overflow: "hidden",
+            paddingBottom: 0,
           }}
         >
           <View
@@ -73,7 +70,8 @@ export default function GradesModal() {
               alignItems: "center",
               justifyContent: "center",
               gap: 16,
-              marginVertical: 16,
+              marginTop: 16,
+              marginBottom: 0,
               width: "100%",
             }}
           >
@@ -165,7 +163,7 @@ export default function GradesModal() {
               </Stack>
             </Stack>
           </View>
-        </ScrollView>
+        </View>
       </View>
     </View>
   )
