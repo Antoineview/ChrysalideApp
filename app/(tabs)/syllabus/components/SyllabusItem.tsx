@@ -1,5 +1,6 @@
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -141,11 +142,21 @@ const SyllabusItem = React.memo(({ syllabus }: SyllabusItemProps) => {
                 </View>
             </View>
 
-            {/* Coefficient badge - full height on right */}
+            {/* Gradient tint on right side for coefficient */}
+            {hasCoeff && (
+                <LinearGradient
+                    colors={[subjectColor + '00', subjectColor + '25']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.gradientOverlay}
+                />
+            )}
+
+            {/* Coefficient badge */}
             {hasCoeff ? (
-                <View style={[styles.coeffContainer, { backgroundColor: subjectColor }]}>
-                    <Text style={styles.coeffNumber}>{syllabus.coeff}</Text>
-                    <Text style={styles.coeffLabel}>coeff</Text>
+                <View style={styles.coeffContainer}>
+                    <Text style={[styles.coeffNumber, { color: subjectColor }]}>{syllabus.coeff}</Text>
+                    <Text style={[styles.coeffLabel, { color: subjectColor }]}>coeff</Text>
                 </View>
             ) : (
                 <View style={styles.chevronContainer}>
@@ -208,24 +219,33 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     coeffContainer: {
-        width: 47,
+        paddingRight: 16,
+        paddingLeft: 8,
         alignItems: 'center',
         justifyContent: 'center',
     },
     coeffNumber: {
         fontWeight: 'bold',
-        fontSize: 27,
-        color: 'white',
+        fontSize: 22,
     },
     coeffLabel: {
-        fontWeight: 'bold',
-        fontSize: 7,
-        color: 'white',
+        fontWeight: '600',
+        fontSize: 8,
+        textTransform: 'uppercase',
     },
     chevronContainer: {
         paddingRight: 16,
         paddingLeft: 8,
         justifyContent: 'center',
+    },
+    gradientOverlay: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: '50%',
+        borderTopRightRadius: 20,
+        borderBottomRightRadius: 20,
     },
 });
 
