@@ -24,6 +24,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
       glassOpacity={0}
       style={{
         borderRadius: 300,
+        borderCurve: 'continuous',
         zIndex: 999999,
       }}
     >
