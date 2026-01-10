@@ -122,8 +122,8 @@ const SyllabusItem = React.memo(({ syllabus }: SyllabusItemProps) => {
                 <View style={styles.badgesRow}>
                     {/* Exam count badge */}
                     {examCount > 0 && (
-                        <View style={[styles.examBadge, { backgroundColor: subjectColor }]}>
-                            <Text style={styles.examBadgeText}>
+                        <View style={[styles.examBadge, { backgroundColor: subjectColor + '15' }]}>
+                            <Text style={[styles.examBadgeText, { color: subjectColor }]}>
                                 {examCount} {t("Syllabus_Exams", { count: examCount })}
                             </Text>
                         </View>
@@ -196,9 +196,8 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     examBadgeText: {
-        fontWeight: 'bold',
-        fontSize: 15,
-        color: '#f2f2f2',
+        fontWeight: '600',
+        fontSize: 14,
     },
     hoursContainer: {
         flexDirection: 'row',
