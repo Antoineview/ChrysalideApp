@@ -70,7 +70,6 @@ const Task = () => {
       <TableFlatList
         ListHeaderComponent={
           <ModalOverhead
-            emoji={subjectInfo.emoji}
             subject={subjectInfo.name}
             subjectVariant="header"
             color={subjectInfo.color}

@@ -12,7 +12,6 @@ const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.c
 
 export interface SubjectProps {
   color: string;
-  emoji: string;
   name: string;
   average: number;
   disabled?: boolean;
@@ -23,7 +22,6 @@ export interface SubjectProps {
 
 const Subject: React.FC<SubjectProps> = ({
   color,
-  emoji,
   name,
   average,
   disabled = false,
@@ -39,15 +37,6 @@ const Subject: React.FC<SubjectProps> = ({
       style={[styles.container, { backgroundColor: skeleton ? colors.text + "10" : color + 33 }]}
     >
       <Stack direction="horizontal" hAlign="center" gap={12}>
-        {skeleton ? (
-          <SkeletonView style={styles.emojiContainer} />
-        ):(
-          <View style={[styles.emojiContainer, { backgroundColor: color + 50 }]}>
-            <Text style={styles.emoji}>
-              {emoji}
-            </Text>
-          </View>
-        )}
         <Typography nowrap variant="title" color={color} style={styles.flex1} skeleton={skeleton} skeletonWidth={120}>
           {name}
         </Typography>
@@ -102,9 +91,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-  },
-  emoji: {
-    fontSize: 20,
   },
   flex1: {
     flex: 1,

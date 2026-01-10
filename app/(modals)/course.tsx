@@ -117,7 +117,6 @@ export default function CourseModal() {
           <ModalOverhead
             subject={getSubjectName(item.subject)}
             color={subjectInfo.color}
-            emoji={subjectInfo.emoji}
             subjectVariant="h3"
             date={new Date(startTime * 1000)}
             dateFormat={{

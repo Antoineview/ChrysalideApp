@@ -30,7 +30,6 @@ import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import i18n from '@/utils/i18n';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 import Averages from './atoms/Averages';
@@ -117,7 +116,7 @@ const GradesView: React.FC = () => {
     });
 
     setPeriods(sortedResult);
-    setCurrentPeriod(currentPeriodFound);
+    setCurrentPeriod(currentPeriodFound ?? undefined)
     setPeriodsLoading(false);
   };
 
@@ -277,7 +276,6 @@ const GradesView: React.FC = () => {
   const renderItem = useCallback(({ item }: { item: Subject }) => {
     const subject = item;
     return (
-      // @ts-expect-error navigation types
       <MemoizedSubjectItem subject={subject} grades={grades} getAvgInfluence={getAvgInfluence} getAvgClassInfluence={getAvgClassInfluence} />
     )
   }, [grades]);
@@ -362,7 +360,6 @@ const GradesView: React.FC = () => {
             renderItem={({ item: grade }) =>
               <CompactGrade
                 key={grade.id + "_compactGrade_header"}
-                emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
                 title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
                 description={grade.description}
                 score={grade.studentScore?.value || 0}
@@ -379,7 +376,6 @@ const GradesView: React.FC = () => {
                     subjectInfo: {
                       name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
                       color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
-                      emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
                       originalName: getSubjectById(grade.subjectId)?.name || ""
                     },
                     avgInfluence: getAvgInfluence(grade),
