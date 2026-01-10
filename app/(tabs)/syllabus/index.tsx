@@ -44,7 +44,7 @@ const SyllabusView: React.FC = () => {
   // Semesters
   const availableSemesters = useMemo(() => {
     const semesters = new Set(syllabusList.map((s) => s.semester));
-    return Array.from(semesters).sort((a, b) => b - a);
+    return Array.from(semesters).sort((a, b) => a - b);
   }, [syllabusList]);
 
   const [selectedSemester, setSelectedSemester] = useState<number | null>(null);

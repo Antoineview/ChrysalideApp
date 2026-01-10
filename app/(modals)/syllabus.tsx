@@ -93,7 +93,7 @@ export default function SyllabusModal() {
     sections.push({
       title: "Activités",
       icon: <Papicons name={"Sparkles"} />,
-      items: syllabus.activities.map((activity, index) => ({
+      items: syllabus.activities.map((activity) => ({
         title: activity.typeName || activity.type,
         trailing: activity.duration && activity.duration > 0 ? (
           <ContainedNumber color={subjectColor} denominator="h">
@@ -109,7 +109,7 @@ export default function SyllabusModal() {
     sections.push({
       title: "Responsables",
       icon: <Papicons name={"User"} />,
-      items: syllabus.responsables.map((resp, index) => ({
+      items: syllabus.responsables.map((resp) => ({
         title: `${resp.firstName} ${resp.lastName}`,
       })),
     });
@@ -119,7 +119,7 @@ export default function SyllabusModal() {
   if (description) {
     sections.push({
       title: "Description",
-      icon: <Papicons name={"Document"} />,
+      icon: <Papicons name={"Paper"} />,
       items: [{
         title: description,
       }],

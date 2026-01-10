@@ -27,7 +27,7 @@ const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, c
         justifyContent: "center"
       }}
     >
-      {children && (
+      {(children !== undefined && children !== null) && (
         <Typography variant='title' style={{ fontSize: 18, lineHeight: 32 }} color={color}>
           {children}
         </Typography>
