@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'stretch',
+        width: '100%',
         borderRadius: 20,
         borderCurve: 'continuous',
         overflow: 'hidden',
