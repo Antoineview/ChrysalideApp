@@ -21,7 +21,6 @@ import { colorCheck } from '@/utils/colorCheck';
 interface SubjectInfo {
   name: string;
   originalName: string;
-  emoji: string;
   color: string;
 }
 
@@ -76,10 +75,9 @@ export default function GradesModal() {
           >
             <ModalOverhead
               color={subjectInfo.color}
-              emoji={subjectInfo.emoji}
               subject={subjectInfo.name}
               title={grade.description}
-              date={new Date(grade.givenAt)}
+              date={grade.givenAt ? new Date(grade.givenAt) : undefined}
               overhead={
                 <ModalOverHeadScore
                   color={subjectInfo.color}

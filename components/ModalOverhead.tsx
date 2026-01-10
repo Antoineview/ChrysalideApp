@@ -6,7 +6,7 @@ import Stack from "@/ui/components/Stack";
 import Typography, { Variant } from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 
-const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji?: string, subject: string, subjectVariant?: Variant, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
+const ModalOverhead = ({ style, overhead, overtitle, color, subject, subjectVariant = "title", title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, subject: string, subjectVariant?: Variant, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
   const theme = useTheme();
 
   return (

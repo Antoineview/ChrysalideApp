@@ -68,7 +68,6 @@ const SubjectInfo = () => {
             <ModalOverhead
               subject={subjectName}
               color={subjectColor}
-              emoji={subjectEmoji}
               overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: subject.grades.length })}
               overhead={
                 <ModalOverHeadScore
