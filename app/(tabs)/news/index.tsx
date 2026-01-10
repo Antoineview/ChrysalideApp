@@ -512,7 +512,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
         fetch(`https://intracom.epita.fr/api/Events/${event.id}`, {
           headers: {
             "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
+            "Content-Type": "application/json",
           },
         }),
         fetch(`https://intracom.epita.fr/api/Events/${event.id}/SlotInfos`, {
@@ -731,7 +731,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
 
                 {/* Section Map */}
                 {eventDetails?.latitude && eventDetails?.longitude && (
-                  <Pressable 
+                  <Pressable
                     onPress={openInMaps}
                     style={{ borderRadius: 16, overflow: 'hidden' }}
                   >
