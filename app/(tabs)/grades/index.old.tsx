@@ -249,8 +249,8 @@ export default function TabOneScreen() {
         const bAvg = b.studentAverage?.value ?? 0;
         return bAvg - aAvg;
       } else if (sorting === "date") {
-        const aGrades = a.grades.filter(g => g.givenAt);
-        const bGrades = b.grades.filter(g => g.givenAt);
+        const aGrades = (a.grades ?? []).filter(g => g.givenAt);
+        const bGrades = (b.grades ?? []).filter(g => g.givenAt);
         const aMostRecentDate = aGrades.length > 0 ? Math.max(...aGrades.map(g => g.givenAt.getTime())) : 0;
         const bMostRecentDate = bGrades.length > 0 ? Math.max(...bGrades.map(g => g.givenAt.getTime())) : 0;
         return bMostRecentDate - aMostRecentDate;

@@ -63,7 +63,7 @@ export default function GradesModal() {
       <TableFlatList
         ignoreHeaderHeight={true}
         engine='FlatList'
-        scrollEnabled={false}
+        scrollEnabled={true}
         sections={[]}
         ListHeaderComponent={
           <View
@@ -71,7 +71,7 @@ export default function GradesModal() {
               alignItems: "center",
               justifyContent: "center",
               gap: 16,
-              marginVertical: 20,
+              marginVertical: 16,
               width: "100%",
             }}
           >
