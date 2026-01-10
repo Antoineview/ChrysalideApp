@@ -3,12 +3,12 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import { FlatList, FlatListProps, PressableProps, StyleProp, ViewStyle } from 'react-native';
-import Reanimated from 'react-native-reanimated';
+import { FlatList, FlatListProps, PressableProps, StyleProp, View, ViewStyle } from 'react-native';
 
 import { runsIOS26 } from '../utils/IsLiquidGlass';
 import Icon from './Icon';
 import Item, { Leading, Trailing } from './Item';
+import List from './List';
 import Stack from './Stack';
 import Typography from './Typography';
 
@@ -20,17 +20,17 @@ interface SectionItem {
   type?: string;
   content?: React.ReactNode;
   title?: string;
-  titleProps?: any;
+  titleProps?: Record<string, unknown>;
   tags?: Array<string>;
   description?: string;
-  descriptionProps?: any;
+  descriptionProps?: Record<string, unknown>;
   onPress?: () => void;
   hideTitle?: boolean;
   itemProps?: PressableProps;
   ui?: {
     first?: boolean;
     last?: boolean;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -38,19 +38,17 @@ interface Section {
   title?: string;
   icon?: React.ReactNode;
   papicon?: React.ReactNode;
-  hideTitle?: boolean; // Optional property to hide the title
+  hideTitle?: boolean;
   items: Array<SectionItem>;
 }
 
-interface TableFlatListProps extends FlatListProps<SectionItem> {
+interface TableFlatListProps extends Omit<FlatListProps<Section>, 'data' | 'renderItem'> {
   sections: Array<Section | null>;
   engine?: 'FlatList' | 'LegendList' | 'FlashList';
   contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never';
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
-  listProps?: any;
-  renderItem?: (item: SectionItem) => React.ReactNode;
-  data?: Array<SectionItem>;
+  listProps?: Record<string, unknown>;
   ignoreHeaderHeight?: boolean;
 }
 
@@ -67,124 +65,83 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
   const { colors } = theme;
   const headerHeight = ignoreHeaderHeight ? 0 : useHeaderHeight();
 
-  // render section title and items in same level array
-  const data = sections.reduce((acc, section) => {
-    if (!section) {return acc;}
-    if (section.title) {
-      acc.push({ type: 'title', title: section.title, icon: section.icon, papicon: section.papicon, hideTitle: section.hideTitle });
-    }
-    section.items.forEach((item, idx) => {
-      const first = idx === 0;
-      const last = idx === section.items.length - 1;
-      acc.push({
-        ...item,
-        type: 'item',
-        ui: {
-          ...(item.ui || {}),
-          first,
-          last,
-        },
-      });
-    });
-    return acc;
-  }, [] as Array<SectionItem & { type: 'title' | 'item'; ui?: { first?: boolean; last?: boolean } }>);
+  // Filter out null sections
+  const validSections = sections.filter((section): section is Section => section !== null);
 
   const ListComponent = engine === 'LegendList' ? LegendList : engine === 'FlashList' ? FlashList : FlatList;
 
-  const renderItemComponent = ({ item, index }: any) => (
-    item.type === 'item' ? (
-      <Reanimated.View
-        key={index}
-        style={[
-          {
-            backgroundColor: colors.card,
-            borderColor: colors.border,
-            borderLeftWidth: 1,
-            borderRightWidth: 1,
-            borderBottomWidth: 1,
-            borderCurve: "continuous",
-            shadowColor: "#000000",
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.16,
-            shadowRadius: 1.5,
-            elevation: 1,
-          },
-          item.ui?.first && {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            borderTopWidth: 1,
-          },
-          item.ui?.last && {
-            borderBottomLeftRadius: 20,
-            borderBottomRightRadius: 20,
-            marginBottom: 14,
-          }
-        ]}
-      >
-        <Item
-          onPress={item.onPress}
-          isLast={true}
-          {...item.itemProps}
-        >
-          {item.leading && (
-            <Leading>
-              {item.leading}
-            </Leading>
-          )}
-          {item.icon || item.papicon ? (
-            <Icon papicon={!!item.papicon} opacity={0.5}>
-              {item.papicon ? item.papicon : item.icon}
+  const renderSectionComponent = ({ item: section, index }: { item: Section; index: number }) => (
+    <View key={index} style={{ marginBottom: 14 }}>
+      {/* Section Title */}
+      {section.title && !section.hideTitle && (
+        <Stack direction="horizontal" gap={8} vAlign="start" hAlign="center" style={{
+          paddingHorizontal: 4,
+          paddingVertical: 0,
+          marginBottom: 14,
+          marginTop: 1,
+          opacity: 0.5,
+        }}>
+          {section.icon || section.papicon ? (
+            <Icon size={20} papicon={!!section.papicon}>
+              {section.papicon ? section.papicon : section.icon}
             </Icon>
           ) : null}
-          {item.title && (
-            <Typography variant='title' {...item.titleProps}>
-              {item.title}
-            </Typography>
-          )}
-          {item.description && !item.tags && (
-            <Typography variant="body2" weight='medium' color="secondary" {...item.descriptionProps}>
-              {item.description}
-            </Typography>
-          )}
-          {item.tags && (
-            <Stack direction={"horizontal"} gap={6}>
-              {item.tags.map((tag: string, tagIndex: number) => (
-                <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat key={tag}>
-                  <Typography variant={"body1"} color="secondary">
-                    {tag}
-                  </Typography>
-                </Stack>
-              ))}
-            </Stack>
-          )}
-          {item.content && (
-            item.content
-          )}
-          {item.trailing && (
-            <Trailing>
-              {item.trailing}
-            </Trailing>
-          )}
-        </Item>
-      </Reanimated.View>
-    ) : item.type === 'title' && !item.hideTitle ? (
-      <Stack direction="horizontal" gap={8} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 4,
-        paddingVertical: 0,
-        marginBottom: 14,
-        marginTop: 1,
-        opacity: 0.5,
-      }}>
-        {item.icon || item.papicon ? (
-          <Icon size={20} papicon={!!item.papicon}>
-            {item.papicon ? item.papicon : item.icon}
-          </Icon>
-        ) : null}
-        <Typography>
-          {item.title}
-        </Typography>
-      </Stack>
-    ) : null
+          <Typography>
+            {section.title}
+          </Typography>
+        </Stack>
+      )}
+
+      {/* Section Items - Using the List component */}
+      <List>
+        {section.items.map((item, itemIndex) => (
+          <Item
+            key={itemIndex}
+            onPress={item.onPress}
+            isLast={itemIndex === section.items.length - 1}
+            {...item.itemProps}
+          >
+            {item.leading && (
+              <Leading>
+                {item.leading}
+              </Leading>
+            )}
+            {(item.icon || item.papicon) && (
+              <Icon papicon={!!item.papicon} opacity={0.5}>
+                {item.papicon ? item.papicon : item.icon}
+              </Icon>
+            )}
+            {item.title && (
+              <Typography variant='title' {...item.titleProps}>
+                {item.title}
+              </Typography>
+            )}
+            {item.description && !item.tags && (
+              <Typography variant="body2" weight='medium' color="secondary" {...item.descriptionProps}>
+                {item.description}
+              </Typography>
+            )}
+            {item.tags && (
+              <Stack direction={"horizontal"} gap={6}>
+                {item.tags.map((tag: string) => (
+                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat key={tag}>
+                    <Typography variant={"body1"} color="secondary">
+                      {tag}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Stack>
+            )}
+            {item.content && item.content}
+            {item.trailing && (
+              <Trailing>
+                {item.trailing}
+              </Trailing>
+            )}
+          </Item>
+        ))}
+      </List>
+    </View>
   );
 
   return (
@@ -195,10 +152,10 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
         backgroundColor: colors.background,
         paddingTop: runsIOS26 && contentInsetAdjustmentBehavior !== 'automatic' ? headerHeight : 0
       }, style]}
-      data={data}
+      data={validSections}
       contentContainerStyle={[{ padding: 16 }, contentContainerStyle]}
-      keyExtractor={(item, index) => `${item.type}-${index}`}
-      renderItem={renderItemComponent}
+      keyExtractor={(_item: Section, index: number) => `section-${index}`}
+      renderItem={renderSectionComponent}
       {...rest}
     />
   )
