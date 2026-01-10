@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Reanimated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Syllabus } from '@/services/auriga/types';
@@ -194,7 +194,15 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontWeight: 'bold',
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '700',
+            },
+            android: {
+                fontWeight: 'bold',
+            },
+        }),
     },
     badgesRow: {
         flexDirection: 'row',
@@ -207,8 +215,16 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     examBadgeText: {
-        fontWeight: '600',
         fontSize: 14,
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '600',
+            },
+            android: {
+                fontWeight: '600',
+            },
+        }),
     },
     hoursContainer: {
         flexDirection: 'row',
@@ -225,13 +241,29 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     coeffNumber: {
-        fontWeight: 'bold',
         fontSize: 22,
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '700',
+            },
+            android: {
+                fontWeight: 'bold',
+            },
+        }),
     },
     coeffLabel: {
-        fontWeight: '600',
         fontSize: 8,
         textTransform: 'uppercase',
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '600',
+            },
+            android: {
+                fontWeight: '600',
+            },
+        }),
     },
     chevronContainer: {
         paddingRight: 16,

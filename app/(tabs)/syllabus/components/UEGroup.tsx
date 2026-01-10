@@ -1,6 +1,6 @@
 import { useTheme } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import Typography from '@/ui/components/Typography';
 
@@ -55,8 +55,17 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
     },
     headerText: {
-        fontWeight: '900',
-        fontStyle: 'italic',
+        ...Platform.select({
+            ios: {
+                fontFamily: 'System',
+                fontWeight: '900',
+                fontStyle: 'italic',
+            },
+            android: {
+                fontWeight: '900',
+                fontStyle: 'italic',
+            },
+        }),
         fontSize: 15,
         letterSpacing: 0.15,
     },

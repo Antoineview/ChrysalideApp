@@ -1,48 +1,66 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { DimensionValue, StyleProp, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
+import { DimensionValue, Platform, StyleProp, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
 
 import SkeletonView from "@/ui/components/SkeletonView";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 
-const FONT_FAMILIES = {
-  regular: "regular",
-  medium: "medium",
-  semibold: "semibold",
-  bold: "bold",
-  header: "header",
-} as const;
+// On iOS, use SF Pro (System font) for native feel
+// Keep RobotoFlex for headers (variable font with width axis)
+// On Android, use custom fonts
+const FONT_FAMILIES = Platform.select({
+  ios: {
+    regular: "System",
+    medium: "System",
+    semibold: "System",
+    bold: "System",
+    header: "header",  // Keep RobotoFlex for expanded headers
+  },
+  default: {
+    regular: "regular",
+    medium: "medium",
+    semibold: "semibold",
+    bold: "bold",
+    header: "header",
+  },
+})!;
 
 export const VARIANTS = StyleSheet.create({
   body1: {
     fontSize: 16,
     fontFamily: FONT_FAMILIES.medium,
+    fontWeight: Platform.OS === 'ios' ? '500' : undefined,
     lineHeight: 20,
   },
   body2: {
     fontSize: 15,
     fontFamily: FONT_FAMILIES.semibold,
+    fontWeight: Platform.OS === 'ios' ? '600' : undefined,
     lineHeight: 19,
   },
   caption: {
     fontSize: 14,
     fontFamily: FONT_FAMILIES.regular,
+    fontWeight: Platform.OS === 'ios' ? '400' : undefined,
     lineHeight: 19,
     letterSpacing: 0.1,
   },
   button: {
     fontSize: 16,
     fontFamily: FONT_FAMILIES.bold,
+    fontWeight: Platform.OS === 'ios' ? '700' : undefined,
     lineHeight: 24,
   },
   title: {
     fontSize: 17,
     fontFamily: FONT_FAMILIES.semibold,
+    fontWeight: Platform.OS === 'ios' ? '600' : undefined,
     lineHeight: 22,
   },
   navigation: {
     fontSize: screenOptions.headerTitleStyle.fontSize || 18,
     fontFamily: FONT_FAMILIES.semibold,
+    fontWeight: Platform.OS === 'ios' ? '600' : undefined,
     lineHeight: 24,
   },
   header: {
@@ -54,6 +72,7 @@ export const VARIANTS = StyleSheet.create({
   h0: {
     fontSize: 44,
     fontFamily: FONT_FAMILIES.bold,
+    fontWeight: Platform.OS === 'ios' ? '700' : undefined,
     lineHeight: 56,
   },
   h1: {
@@ -96,10 +115,22 @@ const ALIGNMENT_STYLES = StyleSheet.create({
 });
 
 const WEIGHT_STYLES = StyleSheet.create({
-  regular: { fontFamily: FONT_FAMILIES.regular },
-  medium: { fontFamily: FONT_FAMILIES.medium },
-  semibold: { fontFamily: FONT_FAMILIES.semibold },
-  bold: { fontFamily: FONT_FAMILIES.bold },
+  regular: {
+    fontFamily: FONT_FAMILIES.regular,
+    fontWeight: Platform.OS === 'ios' ? '400' : undefined,
+  },
+  medium: {
+    fontFamily: FONT_FAMILIES.medium,
+    fontWeight: Platform.OS === 'ios' ? '500' : undefined,
+  },
+  semibold: {
+    fontFamily: FONT_FAMILIES.semibold,
+    fontWeight: Platform.OS === 'ios' ? '600' : undefined,
+  },
+  bold: {
+    fontFamily: FONT_FAMILIES.bold,
+    fontWeight: Platform.OS === 'ios' ? '700' : undefined,
+  },
 });
 
 const STATIC_COLORS = {
