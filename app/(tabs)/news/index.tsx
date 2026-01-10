@@ -286,8 +286,7 @@ const NewsView = () => {
                     Intracom
                   </Typography>
                   <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ gap: 10 }}
                   >
                     {intracomEvents.filter((event) => event.state === "OPEN").map((event) => (
