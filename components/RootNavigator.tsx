@@ -84,7 +84,7 @@ export function RootNavigator() {
           headerTitle: t("Modal_Grades_Title"),
           headerLargeTitle: false,
           presentation: "formSheet",
-          sheetAllowedDetents: [0.50, 0.90],
+          sheetAllowedDetents: [0.55],
           sheetGrabberVisible: true,
           sheetCornerRadius: 20,
         }}

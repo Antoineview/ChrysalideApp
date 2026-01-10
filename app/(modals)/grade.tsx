@@ -56,84 +56,10 @@ export default function GradesModal() {
       />
 
       <TableFlatList
+        ignoreHeaderHeight={true}
         engine='FlatList'
-        sections={[
-          {
-            title: t("Grades_Details_Title"),
-            icon: <Papicons name={"Menu"} />,
-            items: [
-              ...(grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? [{
-                icon: <Papicons name={"Star"} />,
-                title: t("Grades_NormalizedGrade_Title"),
-                description: t("Grades_NormalizedGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator="/20"
-                  >
-                    {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
-                  </ContainedNumber>
-                )
-              }] : []),
-              {
-                icon: <Papicons name={"Plus"} />,
-                title: t("Grades_HighestGrade_Title"),
-                description: t("Grades_HighestGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator={"/" + grade.outOf?.value}
-                  >
-                    {grade.maxScore?.value.toFixed(2)}
-                  </ContainedNumber>
-                )
-              },
-              {
-                icon: <Papicons name={"Minus"} />,
-                title: t("Grades_LowestGrade_Title"),
-                description: t("Grades_LowestGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator={"/" + grade.outOf?.value}
-                  >
-                    {grade.minScore?.value.toFixed(2)}
-                  </ContainedNumber>
-                )
-              }
-            ]
-          },
-          {
-            title: t("Grades_Influence_Title"),
-            icon: <Papicons name={"Pie"} />,
-            items: [
-              {
-                icon: <Papicons name={"Grades"} />,
-                title: t("Grades_Avg_All_Title"),
-                trailing: (
-                  <ContainedNumber
-                    color={avgInfluence === 0 ? "#757575" : avgInfluence >= 0 ? "#42C500" : "#C50000"}
-                    denominator="pts"
-                  >
-                    {avgInfluence >= 0 ? `+${avgInfluence.toFixed(2)}` : avgInfluence.toFixed(2)}
-                  </ContainedNumber>
-                )
-              },
-              {
-                icon: <Papicons name={"Apple"} />,
-                title: t("Grades_Avg_Group_Title"),
-                trailing: (
-                  <ContainedNumber
-                    color={avgClass === 0 ? "#757575" : avgClass >= 0 ? "#42C500" : "#C50000"}
-                    denominator="pts"
-                  >
-                    {avgClass >= 0 ? `+${avgClass.toFixed(2)}` : avgClass.toFixed(2)}
-                  </ContainedNumber>
-                )
-              }
-            ]
-          }
-        ]}
+        scrollEnabled={false}
+        sections={[]}
         ListHeaderComponent={
           <View
             style={{
@@ -141,6 +67,7 @@ export default function GradesModal() {
               justifyContent: "center",
               gap: 16,
               marginVertical: 20,
+              width: "100%",
             }}
           >
             <ModalOverhead
@@ -209,7 +136,7 @@ export default function GradesModal() {
             </Stack>
           </View>
         }
-        style={{ backgroundColor: "transparent" }}
+        style={{ backgroundColor: "transparent", zIndex: 1 }}
       />
     </>
   )
