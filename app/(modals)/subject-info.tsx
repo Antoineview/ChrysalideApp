@@ -44,7 +44,9 @@ const SubjectInfo = () => {
           height: 300,
           width: "100%",
           zIndex: -9,
-          opacity: 0.4
+          opacity: 0.4,
+          borderTopLeftRadius: 50,
+          borderTopRightRadius: 50
         }}
       />
 
