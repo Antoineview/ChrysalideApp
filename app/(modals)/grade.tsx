@@ -126,6 +126,7 @@ export default function GradesModal() {
                 vAlign="center"
                 hAlign="center"
                 padding={12}
+                style={{ alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => {
                   const data = storage.getString("auriga_syllabus");
                   const allSyllabus: Syllabus[] = data ? JSON.parse(data) : [];
