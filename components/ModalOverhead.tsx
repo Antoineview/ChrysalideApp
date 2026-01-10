@@ -6,7 +6,7 @@ import Stack from "@/ui/components/Stack";
 import Typography, { Variant } from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 
-const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
+const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji?: string, subject: string, subjectVariant?: Variant, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
   const theme = useTheme();
 
   return (
@@ -17,26 +17,28 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
       padding={[20, 0]}
       style={style}
     >
-      <View
-        style={{
-          backgroundColor: color + "22",
-          width: 48,
-          height: 48,
-          borderRadius: 120,
-          alignItems: "center",
-          justifyContent: "center",
-          borderColor: color + "22",
-          borderWidth: 1,
-        }}
-      >
-        <Text
+      {emoji && (
+        <View
           style={{
-            fontSize: 28
+            backgroundColor: color + "22",
+            width: 48,
+            height: 48,
+            borderRadius: 120,
+            alignItems: "center",
+            justifyContent: "center",
+            borderColor: color + "22",
+            borderWidth: 1,
           }}
         >
-          {emoji}
-        </Text>
-      </View>
+          <Text
+            style={{
+              fontSize: 28
+            }}
+          >
+            {emoji}
+          </Text>
+        </View>
+      )}
 
       {overhead}
 

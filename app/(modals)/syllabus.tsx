@@ -5,7 +5,6 @@ import React from "react";
 import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-import ModalOverhead from "@/components/ModalOverhead";
 import { Syllabus } from "@/services/auriga/types";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
@@ -14,7 +13,6 @@ import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { getUeName } from "@/utils/ueParams";
 
@@ -52,9 +50,9 @@ export default function SyllabusModal() {
     );
   }
 
-  const subjectColor = adjust(getSubjectColor(syllabus.name), dark ? 0.2 : -0.2);
+  const rawSubjectColor = getSubjectColor(syllabus.caption?.name || syllabus.name);
+  const subjectColor = adjust(rawSubjectColor, dark ? 0.2 : -0.2);
   const subjectName = syllabus.caption?.name || getSubjectName(syllabus.name);
-  const subjectEmoji = getSubjectEmoji(syllabus.name);
 
   // Calculate total hours
   const totalHours = React.useMemo(() => {
@@ -129,7 +127,7 @@ export default function SyllabusModal() {
   return (
     <>
       <LinearGradient
-        colors={[subjectColor, colors.background]}
+        colors={[rawSubjectColor, colors.background]}
         style={{
           position: "absolute",
           top: 0,
@@ -148,16 +146,15 @@ export default function SyllabusModal() {
         ListHeaderComponent={
           <View
             style={{
-              alignItems: "center",
-              justifyContent: "center",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
               gap: 16,
               marginVertical: 20,
             }}
           >
-            <ModalOverhead
-              color={subjectColor}
-              subject={subjectName}
-            />
+            <Typography variant="h2" color={subjectColor}>
+              {subjectName}
+            </Typography>
 
             {/* Info Grid - 2x2 fused */}
             <Stack

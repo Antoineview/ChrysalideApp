@@ -16,6 +16,7 @@ import AurigaAPI from '@/services/auriga';
 import { Syllabus } from '@/services/auriga/types';
 import Button from '@/ui/components/Button';
 import ChipButton from '@/ui/components/ChipButton';
+import Search from '@/ui/components/Search';
 import Stack from '@/ui/components/Stack';
 import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
@@ -37,6 +38,7 @@ const SyllabusView: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [parcours, setParcours] = useState<'all' | 'PC' | 'PA'>('all');
+  const [searchText, setSearchText] = useState<string>('');
 
   // Parcours options
   const parcoursOptions = [
@@ -83,26 +85,27 @@ const SyllabusView: React.FC = () => {
     setIsRefreshing(false);
   };
 
-  // Filter by parcours and group by semester
+  // Filter by parcours and search text, then group by semester/UE
   const groupedSyllabus = useMemo(() => {
-    // First filter by parcours
-    // Parcours codes (PC/PA) appear as standalone segments with underscores: _PC_ or _PA_
     const filtered = syllabusList.filter((s) => {
-      if (parcours === 'all') { return true; }
-
-      // Check for parcours pattern with underscores to avoid false matches
-      // e.g., "_PA_" should match but "AFP" (containing PA) should not
+      // Check for parcours pattern
       const hasPC = s.name.includes('_PC_') || s.name.endsWith('_PC');
       const hasPA = s.name.includes('_PA_') || s.name.endsWith('_PA');
 
-      if (parcours === 'PC') {
-        // Show items with PC or items without any parcours (for S05+ which have no PC/PA)
-        return hasPC || (!hasPC && !hasPA);
+      // Parcours filter
+      if (parcours === 'PC' && !(hasPC || (!hasPC && !hasPA))) {
+        return false;
+      }
+      if (parcours === 'PA' && !(hasPA || (!hasPC && !hasPA))) {
+        return false;
       }
 
-      if (parcours === 'PA') {
-        // Show items with PA or items without any parcours (for S05+ which have no PC/PA)
-        return hasPA || (!hasPC && !hasPA);
+      // Search filter
+      if (searchText.trim() !== '') {
+        const lowerSearch = searchText.toLowerCase();
+        const subjectName = (s.caption?.name || s.name).toLowerCase();
+        const ueName = (s.UE || '').toLowerCase();
+        return subjectName.includes(lowerSearch) || ueName.includes(lowerSearch);
       }
 
       return true;
@@ -142,7 +145,7 @@ const SyllabusView: React.FC = () => {
           ueGroups: sortedUeGroups,
         };
       });
-  }, [syllabusList, parcours]);
+  }, [syllabusList, parcours, searchText]);
 
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
@@ -243,6 +246,13 @@ const SyllabusView: React.FC = () => {
               {parcoursOptions.find(p => p.value === parcours)?.label || 'Tous'}
             </ChipButton>
           ) : undefined
+        }
+        bottom={
+          <Search
+            placeholder={t('Syllabus_Search_Placeholder')}
+            color={colors.primary}
+            onTextChange={(text) => setSearchText(text)}
+          />
         }
       />
 
