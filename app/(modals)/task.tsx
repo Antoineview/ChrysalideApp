@@ -6,9 +6,9 @@ import { t } from "i18next";
 import React, { useState } from "react";
 
 import ModalOverhead from "@/components/ModalOverhead";
-import Homework from "@/database/models/Homework";
 import { updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
@@ -44,7 +44,7 @@ const Task = () => {
       task.subject +
       task.content +
       task.createdByAccount +
-      new Date(task.dueDate).toDateString()
+      task.dueDate.toDateString()
     );
 
     updateHomeworkIsDone(id, done);
@@ -73,7 +73,7 @@ const Task = () => {
             subject={subjectInfo.name}
             subjectVariant="header"
             color={subjectInfo.color}
-            date={new Date(task.dueDate)}
+            date={task.dueDate}
             style={{
               marginVertical: 24
             }}
@@ -132,7 +132,7 @@ const Task = () => {
               },
               leading: <Icon><Papicons name={getAttachmentIcon(attachment)} /></Icon>,
               onPress: () => WebBrowser.openBrowserAsync(attachment.url, {
-                presentationStyle: "formSheet"
+                presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET
               })
             }))
           } : null

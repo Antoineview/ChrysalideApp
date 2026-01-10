@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
 import { useAccountStore } from "@/stores/account";
+import { AvailablePatterns } from "@/ui/components/Pattern/Pattern";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Grade from "@/ui/components/Grade";
@@ -251,16 +252,16 @@ export default function TabOneScreen() {
       } else if (sorting === "date") {
         const aGrades = (a.grades ?? []).filter(g => g.givenAt);
         const bGrades = (b.grades ?? []).filter(g => g.givenAt);
-        const aMostRecentDate = aGrades.length > 0 ? Math.max(...aGrades.map(g => g.givenAt.getTime())) : 0;
-        const bMostRecentDate = bGrades.length > 0 ? Math.max(...bGrades.map(g => g.givenAt.getTime())) : 0;
+        const aMostRecentDate = aGrades.length > 0 ? Math.max(...aGrades.map(g => g.givenAt?.getTime() ?? 0)) : 0;
+        const bMostRecentDate = bGrades.length > 0 ? Math.max(...bGrades.map(g => g.givenAt?.getTime() ?? 0)) : 0;
         return bMostRecentDate - aMostRecentDate;
       }
       return 0;
     });
 
     const result = sortedSubjects.flatMap((subject) => {
-      const grades = subject.grades
-        .slice() // Create a shallow copy to avoid mutating the original array
+      const grades = (subject.grades ?? [])
+        .slice()
         .sort((a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0));
 
       return [
@@ -336,7 +337,11 @@ export default function TabOneScreen() {
   const navigation = useNavigation<any>();
 
   const recentGrades = useMemo(() => {
-    return newSubjects.flatMap(subject => subject.grades).filter(g => g && !!g.givenAt).sort((a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0)).slice(0, 6);
+    return newSubjects
+      .flatMap(subject => subject.grades)
+      .filter((g): g is SharedGrade => g !== undefined && g !== null && !!g.givenAt)
+      .sort((a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0))
+      .slice(0, 6);
   }, [newSubjects]);
 
   const LatestGradeItem = useCallback(({ item }: { item: SharedGrade }) => {
@@ -432,7 +437,7 @@ export default function TabOneScreen() {
         engine="FlatList"
         backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
         foregroundColor="#29947A"
-        pattern={"cross"}
+        pattern={AvailablePatterns.CROSS}
         initialNumToRender={2}
         removeClippedSubviews={true}
         onFullyScrolled={handleFullyScrolled}
