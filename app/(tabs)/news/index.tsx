@@ -26,7 +26,7 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition'
 import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
-import { isIntracomConnected, getIntracomToken } from '@/app/(modals)/news'
+import { isIntracomConnected, getIntracomToken } from '@/app/(modals)/login-intracom'
 
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useTranslation } from 'react-i18next';
@@ -241,9 +241,9 @@ const NewsView = () => {
               hAlign='center'
               vAlign='center'
               noShadow
-              backgroundColor='#FFFFFF50'
+              backgroundColor={colors.primary + "20"}
             >
-              <Icon size={26} fill='white'>
+              <Icon size={26} fill={colors.text}>
                 <Papicons name="newspaper" />
               </Icon>
             </Stack>
@@ -283,10 +283,11 @@ const NewsView = () => {
               {isIntracomConnected() && intracomEvents.length > 0 && (
                 <View style={{ marginBottom: 16 }}>
                   <Typography variant="h5" style={{ marginBottom: 10, color: colors.text }}>
-                    Événements Intracom
+                    Intracom
                   </Typography>
                   <ScrollView
-                    showsVerticalScrollIndicator={false}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{ gap: 10 }}
                   >
                     {intracomEvents.filter((event) => event.state === "OPEN").map((event) => (
