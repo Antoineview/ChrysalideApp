@@ -27,10 +27,7 @@ import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 import { isIntracomConnected, getIntracomToken } from '@/app/(modals)/login-intracom'
-
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useTranslation } from 'react-i18next';
-import ViewContainer from '@/ui/components/ViewContainer'
 
 // Events Intracom
 interface IntracomEvent {
@@ -134,6 +131,7 @@ const NewsView = () => {
 
   const [intracomEvents, setIntracomEvents] = useState<IntracomEvent[]>([]);
   const [intracomLoading, setIntracomLoading] = useState(false);
+  const [expandedEventId, setExpandedEventId] = useState<number | null>(null);
 
   const fetchIntracomEvents = useCallback(async () => {
     const token = getIntracomToken();
@@ -241,9 +239,9 @@ const NewsView = () => {
               hAlign='center'
               vAlign='center'
               noShadow
-              backgroundColor={colors.primary + "20"}
+              backgroundColor='#FFFFFF50'
             >
-              <Icon size={26} fill={colors.text}>
+              <Icon size={26} fill='white'>
                 <Papicons name="newspaper" />
               </Icon>
             </Stack>
@@ -283,14 +281,19 @@ const NewsView = () => {
               {isIntracomConnected() && intracomEvents.length > 0 && (
                 <View style={{ marginBottom: 16 }}>
                   <Typography variant="h5" style={{ marginBottom: 10, color: colors.text }}>
-                    Intracom
+                    Événements Intracom
                   </Typography>
                   <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ gap: 10 }}
                   >
                     {intracomEvents.filter((event) => event.state === "OPEN").map((event) => (
-                      <IntracomEventCard key={event.id} event={event} />
+                      <IntracomEventCard
+                        key={event.id}
+                        event={event}
+                        isExpanded={expandedEventId === event.id}
+                        onToggleExpand={() => setExpandedEventId(expandedEventId === event.id ? null : event.id)}
+                      />
                     ))}
                   </ScrollView>
                 </View>
@@ -334,7 +337,7 @@ const NewsItem = ({ item }: { item: News }) => {
   return (
     <AnimatedPressable
       onPress={() => router.push({
-        pathname: "/(modals)/login-intracom",
+        pathname: "/(modals)/news",
         params: { news: JSON.stringify(item) },
       })}
     >
@@ -399,10 +402,9 @@ function truncateString(str: string, maxLength: number): string {
   return str.slice(0, maxLength) + "...";
 }
 // Intracom Event Card
-const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
+const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: IntracomEvent; isExpanded: boolean; onToggleExpand: () => void }) => {
   const theme = useTheme();
   const colors = theme.colors as any;
-  const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
   const [participants, setParticipants] = useState<IntracomParticipant[]>([]);
@@ -571,10 +573,10 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
   };
 
   const handlePress = () => {
-    if (!expanded) {
+    if (!isExpanded) {
       fetchEventDetails();
     }
-    setExpanded(!expanded);
+    onToggleExpand();
   };
 
   const openInMaps = () => {
@@ -665,7 +667,7 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
         </View>
 
         {/* Partie expandée */}
-        {expanded && (
+        {isExpanded && (
           <View style={{ marginTop: 14 }}>
             {loading ? (
               <Typography variant="caption" style={{ color: colors.text + "80", textAlign: 'center' }}>
@@ -745,36 +747,57 @@ const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
                         position: 'relative',
                       }}
                     >
-                      {/* Image statique de la carte via MapBox Static API */}
-                      <View
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor: colors.overground,
-                        }}
-                      >
-                        <View
-                          style={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: 30,
-                            backgroundColor: colors.primary + '20',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginBottom: 8,
-                          }}
+                      {/* Section Map */}
+                      {eventDetails?.latitude && eventDetails?.longitude && (
+                        <Pressable
+                          onPress={openInMaps}
+                          style={{ borderRadius: 16, overflow: 'hidden' }}
                         >
-                          <Papicons name="MapPin" size={28} color={colors.primary} />
-                        </View>
-                        <Typography variant="body2" style={{ color: colors.text, opacity: 0.7, fontFamily: "Inter-Variable" }}>
-                          {eventDetails.address}
-                        </Typography>
-                        <Typography variant="caption" style={{ color: colors.text, opacity: 0.5, fontFamily: "Inter-Variable" }}>
-                          {eventDetails.town}
-                        </Typography>
-                      </View>
+                          <View // Ce View sert juste de conteneur de taille
+                            style={{
+                              width: '100%',
+                              height: 180,
+                              borderRadius: 16,
+                              backgroundColor: colors.border,
+                              position: 'relative',
+                            }}
+                          >
+                            <MapView
+                              style={{ ...StyleSheet.absoluteFillObject }} // Remplir le conteneur
+                              initialRegion={{
+                                latitude: eventDetails.latitude,
+                                longitude: eventDetails.longitude,
+                                latitudeDelta: 0.005, // Zoom très proche
+                                longitudeDelta: 0.005,
+                              }}
+                              // Rendre la carte statique (non scrollable/zoomable) pour un aperçu
+                              scrollEnabled={false}
+                              zoomEnabled={false}
+                              rotateEnabled={false}
+                              pitchEnabled={false}
+                              // Type de carte (standard, satellite, etc.)
+                              mapType="standard"
+                            >
+                              {/* Marqueur sur le lieu de l'événement */}
+                              <Marker
+                                coordinate={{
+                                  latitude: eventDetails.latitude,
+                                  longitude: eventDetails.longitude,
+                                }}
+                              />
+                            </MapView>
+                          </View>
+                          {/* ... Le bouton "Ouvrir dans maps" reste le même */}
+                          <View
+                          // ... style du bouton
+                          >
+                            <Papicons name="Compass" size={16} color={colors.primary} />
+                            <Typography variant="caption" style={{ color: colors.text, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+                              Ouvrir dans maps
+                            </Typography>
+                          </View>
+                        </Pressable>
+                      )}
                     </View>
                     <View
                       style={{
