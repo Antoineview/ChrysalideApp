@@ -102,7 +102,7 @@ export default function GradesModal() {
               card
               direction="horizontal"
               width={"90%"}
-              style={{ marginTop: 8 }}
+              style={{ marginTop: 8, alignItems: 'stretch' }}
             >
               <Stack
                 width={"50%"}
