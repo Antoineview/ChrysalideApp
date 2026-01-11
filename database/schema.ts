@@ -1,8 +1,21 @@
 import { appSchema, tableSchema } from "@nozbe/watermelondb";
 
 export const mySchema = appSchema({
-  version: 38,
+  version: 39,
   tables: [
+    tableSchema({
+      name: "intracomevents",
+      columns: [
+        { name: "date", type: "string" },
+        { name: "type", type: "string" },
+        { name: "name", type: "string" },
+        { name: "campusSlug", type: "string" },
+        { name: "registeredStudents", type: "number" },
+        { name: "nbNewStudents", type: "number" },
+        { name: "maxStudents", type: "number" },
+        { name: "position", type: "string", isOptional: true },
+      ],
+    }),
     tableSchema({
       name: "events",
       columns: [
