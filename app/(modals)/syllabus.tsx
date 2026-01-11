@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { StatusBar, View } from "react-native";
+import { ActivityIndicator, StatusBar, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import { Syllabus } from "@/services/auriga/types";
@@ -35,7 +35,8 @@ export default function SyllabusModal() {
   const { colors, dark } = useTheme();
   const params = useLocalSearchParams<{ syllabusData: string }>();
 
-  // Parse syllabus data from params
+  const [isLoading, setIsLoading] = React.useState(true);
+
   const syllabus: Syllabus | null = React.useMemo(() => {
     try {
       return params.syllabusData ? JSON.parse(params.syllabusData) : null;
@@ -44,34 +45,50 @@ export default function SyllabusModal() {
     }
   }, [params.syllabusData]);
 
-  if (!syllabus) {
+  const rawSubjectColor = React.useMemo(() =>
+    getSubjectColor(syllabus?.caption?.name || syllabus?.name || ""),
+    [syllabus]
+  );
+
+  const subjectColor = React.useMemo(() =>
+    adjust(rawSubjectColor, dark ? 0.2 : -0.2),
+    [rawSubjectColor, dark]
+  );
+
+  const subjectName = React.useMemo(() =>
+    syllabus?.caption?.name || getSubjectName(syllabus?.name || ""),
+    [syllabus]
+  );
+
+  const totalHours = React.useMemo(() => {
+    if (syllabus?.duration && syllabus.duration > 0) {
+      return Math.round(syllabus.duration / 3600);
+    }
+    return 0;
+  }, [syllabus?.duration]);
+
+  const rawDescription = syllabus?.caption?.goals?.fr || syllabus?.caption?.name;
+  const description = React.useMemo(() => cleanHtml(rawDescription), [rawDescription]);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading || !syllabus) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Typography variant="body1">Aucune donnée</Typography>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={rawSubjectColor || colors.primary} />
+        <Typography variant="body1" style={{ marginTop: 16 }}>Chargement...</Typography>
       </View>
     );
   }
 
-  const rawSubjectColor = getSubjectColor(syllabus.caption?.name || syllabus.name);
-  const subjectColor = adjust(rawSubjectColor, dark ? 0.2 : -0.2);
-  const subjectName = syllabus.caption?.name || getSubjectName(syllabus.name);
-
-  // Calculate total hours
-  const totalHours = React.useMemo(() => {
-    if (syllabus.duration && syllabus.duration > 0) {
-      return Math.round(syllabus.duration / 3600);
-    }
-    return 0;
-  }, [syllabus.duration]);
-
-  // Description
-  const rawDescription = syllabus.caption?.goals?.fr || syllabus.caption?.name;
-  const description = React.useMemo(() => cleanHtml(rawDescription), [rawDescription]);
-
-  // Build sections for TableFlatList
   const sections = [];
 
-  // Exams Section
   if (syllabus.exams && syllabus.exams.length > 0) {
     sections.push({
       title: "Examens",
