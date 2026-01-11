@@ -30,6 +30,7 @@ import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 
 import IntracomCard from './components/IntracomCard'
+import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
 
 // Events Intracom
 interface IntracomEvent {
@@ -173,7 +174,7 @@ const NewsView = () => {
 
   return (
     <>
-      < TabHeader
+      <TabHeader
         onHeightChanged={setHeaderHeight}
         title={
           <TabHeaderTitle
@@ -184,25 +185,27 @@ const NewsView = () => {
           />
         }
         trailing={
-          <AnimatedPressable onPressIn={onPress}>
-            <Stack
-              card
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 30,
-                marginRight: 16,
-              }}
-              hAlign='center'
-              vAlign='center'
-              noShadow
-              backgroundColor='#FFFFFF50'
-            >
-              <Icon size={26} fill='white'>
-                <Papicons name="newspaper" />
-              </Icon>
-            </Stack>
-          </AnimatedPressable>
+          <LiquidGlassContainer>
+            <AnimatedPressable onPressIn={onPress}>
+              <Stack
+                card
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 30,
+                  marginRight: 16,
+                }}
+                hAlign='center'
+                vAlign='center'
+                noShadow
+              >
+                <Icon size={26} fill={colors.text}>
+                  <Papicons name="newspaper" />
+                </Icon>
+              </Stack>
+            </AnimatedPressable>
+          </LiquidGlassContainer>
+
         }
         bottom={
           <View style={{ gap: 10, width: '100%', paddingHorizontal: 16 }}>
