@@ -204,3 +204,25 @@ export interface LoginMethod {
   ]
 }
 */
+
+export interface NewsService {
+  name: string;
+  title: string;
+  type: "main" | "other" | "separator";
+  image: { uri: string };
+  onPress: () => void;
+}
+
+export function GetNewsServices(redirect: (path: { pathname: string, options?: UnknownInputParams }) => void): NewsService[] {
+  return [
+    {
+      name: "intracom",
+      title: "Intracom",
+      type: "main",
+      image: { uri: 'https://intracom.epita.fr/assets/img/logo-epita.png' },
+      onPress: () => {
+        redirect({ pathname: '/(modals)/login-intracom' });
+      },
+    },
+  ];
+}
