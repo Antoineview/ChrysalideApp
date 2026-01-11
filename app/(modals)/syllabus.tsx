@@ -5,8 +5,13 @@ import { useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
 import React from "react";
 import { useTranslation } from "react-i18next";
+<<<<<<< Updated upstream
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+=======
+import { ActivityIndicator, StatusBar, View } from "react-native";
+import LinearGradient from "react-native-linear-gradient";
+>>>>>>> Stashed changes
 
 import { Syllabus } from "@/services/auriga/types";
 import Item from "@/ui/components/Item";
@@ -36,7 +41,12 @@ export default function SyllabusModal() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ syllabusData: string }>();
 
+<<<<<<< Updated upstream
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
+=======
+  // All hooks must be called before any conditional returns
+  const [isLoading, setIsLoading] = React.useState(true);
+>>>>>>> Stashed changes
 
   // Parse syllabus data from params
   const syllabus: Syllabus | null = React.useMemo(() => {
@@ -47,14 +57,12 @@ export default function SyllabusModal() {
     }
   }, [params.syllabusData]);
 
-  if (!syllabus) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Typography variant="body1">Aucune donnée</Typography>
-      </View>
-    );
-  }
+  const rawSubjectColor = React.useMemo(() =>
+    getSubjectColor(syllabus?.caption?.name || syllabus?.name || ""),
+    [syllabus]
+  );
 
+<<<<<<< Updated upstream
   const subjectColor = adjust(getSubjectColor(syllabus.name), -0.2);
   const subjectName = getSubjectName(syllabus.name);
 
@@ -71,6 +79,66 @@ export default function SyllabusModal() {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+=======
+  const subjectColor = React.useMemo(() =>
+    adjust(rawSubjectColor, dark ? 0.2 : -0.2),
+    [rawSubjectColor, dark]
+  );
+
+  const subjectName = React.useMemo(() =>
+    syllabus?.caption?.name || getSubjectName(syllabus?.name || ""),
+    [syllabus]
+  );
+
+  // Calculate total hours
+  const totalHours = React.useMemo(() => {
+    if (syllabus?.duration && syllabus.duration > 0) {
+      return Math.round(syllabus.duration / 3600);
+    }
+    return 0;
+  }, [syllabus?.duration]);
+
+  // Description
+  const rawDescription = syllabus?.caption?.goals?.fr || syllabus?.caption?.name;
+  const description = React.useMemo(() => cleanHtml(rawDescription), [rawDescription]);
+
+  // Add a small delay to ensure data is properly loaded on Android
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100); // Small delay to ensure params are loaded
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show loading indicator while data is being loaded
+  if (isLoading || !syllabus) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={rawSubjectColor || colors.primary} />
+        <Typography variant="body1" style={{ marginTop: 16 }}>Chargement...</Typography>
+      </View>
+    );
+  }
+
+  // Build sections for TableFlatList
+  const sections = [];
+
+  // Exams Section
+  if (syllabus.exams && syllabus.exams.length > 0) {
+    sections.push({
+      title: "Examens",
+      icon: <Papicons name={"Grades"} />,
+      items: syllabus.exams.map((exam) => ({
+        title: exam.typeName || exam.type,
+        description: exam.description?.fr || exam.description?.en,
+        trailing: (
+          <ContainedNumber color={subjectColor} denominator="%">
+            {exam.weighting}
+          </ContainedNumber>
+        ),
+      })),
+>>>>>>> Stashed changes
     });
 
     // Build exams section if available
