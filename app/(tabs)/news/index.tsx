@@ -30,6 +30,7 @@ import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 
 import IntracomCard from './components/IntracomCard'
+import { syncIntracomEvents } from '@/database/useIntracomEvents';
 import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
 
 // Events Intracom
@@ -112,7 +113,15 @@ const NewsView = () => {
       }
 
       const data = await response.json();
-      setIntracomEvents(data.elemPage || []);
+      const events = data.elemPage || [];
+      setIntracomEvents(events);
+      // Ne synchronise que les événements ouverts
+      const openEvents = events.filter((event: IntracomEvent) => event.state === 'OPEN');
+      try {
+        await syncIntracomEvents(openEvents);
+      } catch (err) {
+        console.warn('[Intracom] Sync DB error:', err);
+      }
     } catch (error) {
       console.error("[Intracom] Erreur lors de la sync:", error);
     } finally {
