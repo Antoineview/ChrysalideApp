@@ -1,3 +1,4 @@
+import IntracomEvent from './models/IntracomEvent';
 import { Database } from '@nozbe/watermelondb';
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 
@@ -24,6 +25,7 @@ const adapter = new SQLiteAdapter({
 export const database = new Database({
   adapter,
   modelClasses: [
+    IntracomEvent,
     Event,
     Ical,
     Subject,
