@@ -1,10 +1,9 @@
 import { Stack, useRouter } from "expo-router";
 import { useTheme } from "@react-navigation/native";
 import React, { useRef, useCallback, useState } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewNavigation } from 'react-native-webview';
-import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
 
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
@@ -15,18 +14,20 @@ import Button from "@/ui/components/Button";
 
 const INTRACOM_URL = "https://intracom.epita.fr/";
 
-const CALLBACK_PATTERN = /callback|code=|access_token=|token=/i;
-
-let ACCESS_TOKEN: string | null = null;
+let INTRACOM_TOKEN: string | null = null;
 
 // Fonction pour récupérer le token (null si non connecté)
 export function getIntracomToken(): string | null {
-    return ACCESS_TOKEN;
+    return INTRACOM_TOKEN;
 }
 
 // Fonction pour vérifier si l'utilisateur est connecté
 export function isIntracomConnected(): boolean {
-    return ACCESS_TOKEN !== null;
+    return INTRACOM_TOKEN !== null;
+}
+
+export const resetIntracomToken = () => {
+    INTRACOM_TOKEN = null;
 }
 
 export default function AttendanceLoginScreen() {
@@ -38,33 +39,7 @@ export default function AttendanceLoginScreen() {
     const theme = useTheme();
     const { colors } = theme;
 
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const extractTokenFromUrl = useCallback((url: string) => {
-        try {
-            const urlObj = new URL(url);
-            const params: Record<string, string> = {};
-            urlObj.searchParams.forEach((value, key) => {
-                params[key] = value;
-            });
 
-            if (urlObj.hash) {
-                const hashParams = new URLSearchParams(urlObj.hash.slice(1));
-                hashParams.forEach((value, key) => {
-                    params[key] = value;
-                });
-            }
-
-            return {
-                url: url,
-                params: params,
-                // Utilise access_token en priorité (le token opaque OAuth)
-                token: params.access_token || params.id_token || params.token || params.code || null,
-            };
-        } catch (e) {
-            console.error("Erreur parsing URL:", e);
-            return null;
-        }
-    }, []);
 
     const handleNavigationStateChange = useCallback((navState: WebViewNavigation) => {
         console.log("[WebView] État navigation:", navState.url, "loading:", navState.loading);
@@ -107,9 +82,9 @@ export default function AttendanceLoginScreen() {
             if (data.type === 'TOKEN_FOUND') {
                 if (data.token) {
                     console.log("[Intracom] Token Intracom récupéré!");
-                    ACCESS_TOKEN = data.token;
-                    setAccessToken(data.token);
+                    INTRACOM_TOKEN = data.token;
                     setShowWebView(false);
+                    router.back();
                     router.back();
                 } else {
                     console.log("[Intracom] Pas de token trouvé, clés disponibles:", data.allKeys);
@@ -125,37 +100,40 @@ export default function AttendanceLoginScreen() {
     };
 
     if (isIntracomConnected()) {
-        <ViewContainer>
-            <Stack.Screen options={{ headerShown: false }} />
-            <View style={{ flex: 1, backgroundColor: colors.background }}>
-                <StackLayout
-                    padding={32}
-                    backgroundColor="#0078D4"
-                    gap={20}
-                    style={{
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        borderBottomLeftRadius: 42,
-                        borderBottomRightRadius: 42,
-                        borderCurve: "continuous",
-                        paddingTop: insets.top + 20,
-                        paddingBottom: 40,
-                        minHeight: 250,
-                    }}
-                >
-                    <StackLayout vAlign="start" hAlign="start" width="100%" gap={6}>
-                        <Typography variant="h1" style={{ color: "white", fontSize: 32, lineHeight: 34 }}>
-                            Intracom
-                        </Typography>
-                        <Typography variant="h5" style={{ color: "#FFFFFF", lineHeight: 22, fontSize: 18 }}>
-                            Vous êtes connecté.
-                        </Typography>
+        return (
+            <ViewContainer>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View style={{ flex: 1, backgroundColor: colors.background }}>
+                    <StackLayout
+                        padding={32}
+                        backgroundColor="#0078D4"
+                        gap={20}
+                        style={{
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            borderBottomLeftRadius: 42,
+                            borderBottomRightRadius: 42,
+                            borderCurve: "continuous",
+                            paddingTop: insets.top + 20,
+                            paddingBottom: 40,
+                            minHeight: 250,
+                        }}
+                    >
+                        <StackLayout vAlign="start" hAlign="start" width="100%" gap={6}>
+                            <Typography variant="h1" style={{ color: "white", fontSize: 32, lineHeight: 34 }}>
+                                Intracom
+                            </Typography>
+                            <Typography variant="h5" style={{ color: "#FFFFFF", lineHeight: 22, fontSize: 18 }}>
+                                Vous êtes connecté.
+                            </Typography>
+                        </StackLayout>
                     </StackLayout>
-                </StackLayout>
-            </View>
+                </View>
 
-            <OnboardingBackButton />
-        </ViewContainer>
+                <OnboardingBackButton />
+            </ViewContainer>
+        )
+
     }
 
     if (showWebView) {
