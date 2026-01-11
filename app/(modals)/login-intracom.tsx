@@ -66,38 +66,6 @@ export default function AttendanceLoginScreen() {
         }
     }, []);
 
-    const handleShouldStartLoad = useCallback((request: ShouldStartLoadRequest): boolean => {
-        const { url } = request;
-
-        console.log("[Intracom Auth] Navigation URL:", url);
-
-        if (CALLBACK_PATTERN.test(url) && !hasIntercepted.current) {
-            hasIntercepted.current = true;
-
-            const tokenData = extractTokenFromUrl(url);
-            console.log("[Intracom Auth] Token data extracted:", JSON.stringify(tokenData, null, 2));
-
-            if (tokenData) {
-                if (tokenData.token) {
-                    console.log("[Intracom Auth] Token type récupéré:",
-                        tokenData.params.id_token ? "id_token (JWT)" :
-                            tokenData.params.access_token ? "access_token" :
-                                tokenData.params.token ? "token" :
-                                    tokenData.params.code ? "code (OAuth)" : "unknown"
-                    );
-                    ACCESS_TOKEN = tokenData.token;
-                    setAccessToken(tokenData.token);
-                    setShowWebView(false);
-                    router.back();
-                }
-
-                return false;
-            }
-        }
-
-        return true;
-    }, [extractTokenFromUrl, router]);
-
     const handleNavigationStateChange = useCallback((navState: WebViewNavigation) => {
         console.log("[WebView] État navigation:", navState.url, "loading:", navState.loading);
 
@@ -155,6 +123,40 @@ export default function AttendanceLoginScreen() {
     const handleLogin = () => {
         setShowWebView(true);
     };
+
+    if (isIntracomConnected()) {
+        <ViewContainer>
+            <Stack.Screen options={{ headerShown: false }} />
+            <View style={{ flex: 1, backgroundColor: colors.background }}>
+                <StackLayout
+                    padding={32}
+                    backgroundColor="#0078D4"
+                    gap={20}
+                    style={{
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        borderBottomLeftRadius: 42,
+                        borderBottomRightRadius: 42,
+                        borderCurve: "continuous",
+                        paddingTop: insets.top + 20,
+                        paddingBottom: 40,
+                        minHeight: 250,
+                    }}
+                >
+                    <StackLayout vAlign="start" hAlign="start" width="100%" gap={6}>
+                        <Typography variant="h1" style={{ color: "white", fontSize: 32, lineHeight: 34 }}>
+                            Intracom
+                        </Typography>
+                        <Typography variant="h5" style={{ color: "#FFFFFF", lineHeight: 22, fontSize: 18 }}>
+                            Vous êtes connecté.
+                        </Typography>
+                    </StackLayout>
+                </StackLayout>
+            </View>
+
+            <OnboardingBackButton />
+        </ViewContainer>
+    }
 
     if (showWebView) {
         return (
