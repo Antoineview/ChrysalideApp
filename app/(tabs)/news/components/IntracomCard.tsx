@@ -1,6 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
-import { BlurView } from 'expo-blur';
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -13,6 +12,7 @@ import Reanimated, {
 } from 'react-native-reanimated';
 
 import { getIntracomToken } from '@/app/(modals)/login-intracom';
+import DashedSeparator from '@/ui/components/DashedSeparator';
 import Typography from '@/ui/components/Typography';
 import { getProfileColorByName } from '@/utils/chats/colors';
 
@@ -80,8 +80,19 @@ interface IntracomCardProps {
 
 const AnimatedView = Reanimated.createAnimatedComponent(View);
 
+// Colors from Figma
+const COLORS = {
+    primaryDark: '#004462',
+    primaryBlue: '#0095d6',
+    primaryBlueDark: '#0194d5',
+    badgeBg: 'rgba(1, 148, 213, 0.15)',
+    registerBg: 'rgba(4, 255, 0, 0.15)',
+    gradientEnd: '#8dcfec',
+    white: '#FFFFFF',
+    dashedBorder: 'rgba(0, 68, 98, 0.5)',
+};
+
 const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
-    const { colors } = useTheme();
     const [expanded, setExpanded] = useState(false);
     const [loading, setLoading] = useState(false);
     const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
@@ -272,10 +283,10 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
     return (
         <Pressable onPress={handlePress}>
-            <AnimatedView style={[styles.cardContainer, animatedStyle]}>
+            <AnimatedView style={[styles.cardContainer, animatedStyle, expanded && { minHeight: 400 }]}>
                 {/* Map Background (only when expanded) */}
                 {expanded && eventDetails?.latitude && eventDetails?.longitude && (
-                    <View style={[StyleSheet.absoluteFill, { minHeight: 350 }]}>
+                    <View style={[StyleSheet.absoluteFill, styles.mapContainer]}>
                         <MapView
                             style={StyleSheet.absoluteFill}
                             initialRegion={{
@@ -289,35 +300,29 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                             pitchEnabled={false}
                             rotateEnabled={false}
                         />
-                        <LinearGradient
-                            colors={[colors.primary, 'rgba(255, 255, 255, 0.01)']}
-                            locations={[0.27, 0.6]}
-                            style={StyleSheet.absoluteFill}
-                        />
                     </View>
                 )}
 
-                {/* Solid background when closed or no map */}
-                {(!expanded || !eventDetails?.latitude || !eventDetails?.longitude) && (
-                    <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.primary, borderRadius: 25 }]} />
-                )}
-
-                {/* Main Content */}
-                <View style={[styles.content, expanded && eventDetails?.latitude ? { minHeight: 350 } : undefined]}>
-                    {/* Header Row */}
+                {/* Content Wrapper with Shared Gradient */}
+                <LinearGradient
+                    colors={[COLORS.white, COLORS.gradientEnd]}
+                    locations={[0.18, 1]}
+                    style={styles.gradientWrapper}
+                >
+                    {/* Header Row - Always visible */}
                     <View style={styles.headerRow}>
                         {/* Left: Event Info */}
                         <View style={styles.eventInfo}>
                             {/* Type Badge + Date */}
                             <View style={styles.badgeRow}>
                                 <View style={styles.typeBadge}>
-                                    <Typography variant="caption" style={[styles.badgeText, { color: colors.primary }]}>
+                                    <Typography variant="caption" style={styles.badgeText}>
                                         {getTypeLabel(event.type)}
                                     </Typography>
                                 </View>
                                 <View style={styles.dateRow}>
-                                    <Papicons name="Calendar" size={18} color="#FFFFFF" />
-                                    <Typography variant="caption" style={styles.whiteText}>
+                                    <Papicons name="Calendar" size={18} color={COLORS.primaryBlueDark} />
+                                    <Typography variant="caption" style={styles.dateText}>
                                         {formatDate(event.date)}
                                     </Typography>
                                 </View>
@@ -331,90 +336,115 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                             {/* Location */}
                             {eventLocation && (
                                 <View style={styles.locationRow}>
-                                    <Papicons name="MapPin" size={18} color="#FFFFFF" />
-                                    <Typography variant="caption" style={styles.whiteText}>
+                                    <Papicons name="MapPin" size={18} color={COLORS.primaryBlueDark} />
+                                    <Typography variant="caption" style={styles.dateText}>
                                         {eventLocation}
                                     </Typography>
                                 </View>
                             )}
                         </View>
 
-                        {/* Separator */}
-                        <View style={styles.separator} />
-
                         {/* Right: Time Range */}
                         <View style={styles.timeSection}>
-                            <Typography variant="h6" style={styles.timeText}>
-                                {displayStartTime}
-                            </Typography>
-                            <Papicons name="ArrowDown" size={24} color="rgba(255, 255, 255, 0.6)" />
-                            <Typography variant="h6" style={styles.timeText}>
-                                {displayEndTime}
-                            </Typography>
+                            <View style={styles.timeWrapper}>
+                                <Typography variant="h6" style={styles.timeText}>
+                                    {displayStartTime}
+                                </Typography>
+                            </View>
+                            <Papicons name="ArrowDown" size={24} color={COLORS.primaryDark} />
+                            <View style={styles.timeWrapper}>
+                                <Typography variant="h6" style={styles.timeText}>
+                                    {displayEndTime}
+                                </Typography>
+                            </View>
                         </View>
                     </View>
 
-                    {/* Expanded Content with Collapsible */}
+                    {/* Expanded Content */}
                     <Collapsible collapsed={!expanded} duration={280} easing="easeOutCubic">
-                        <View style={styles.expandedContent}>
+                        {/* Dashed Separator */}
+                        <DashedSeparator color={COLORS.dashedBorder} style={{ marginVertical: 7 }} />
+
+                        {/* Participants Section */}
+                        <View style={styles.participantsSection}>
+                            <View style={styles.participantsHeader}>
+                                <Papicons name="user" size={18} color={COLORS.primaryDark} />
+                                <Typography variant="body1" style={styles.participantsTitle}>
+                                    Inscrits
+                                </Typography>
+                            </View>
+
                             {loading ? (
                                 <Typography variant="caption" style={styles.loadingText}>
                                     Chargement...
                                 </Typography>
-                            ) : (
-                                <>
-                                    {/* Participants Section */}
-                                    <View style={styles.participantsCard}>
-                                        <View style={styles.participantsHeader}>
-                                            <Papicons name="user" size={18} color={colors.primary} />
-                                            <Typography variant="body1" style={[styles.participantsTitle, { color: colors.primary }]}>
-                                                Inscrits
+                            ) : participants.length > 0 ? (
+                                <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    nestedScrollEnabled
+                                    contentContainerStyle={styles.participantsScroll}
+                                >
+                                    {participants.map((participant) => (
+                                        <View key={participant.id} style={styles.participantItem}>
+                                            <View style={[styles.participantAvatar, { backgroundColor: getProfileColorByName(participant.login) }]}>
+                                                <Papicons name="user" size={20} color={COLORS.white} />
+                                            </View>
+                                            <Typography variant="caption" style={[styles.participantName, { color: getProfileColorByName(participant.login) }]}>
+                                                {getFirstName(participant.login)}
                                             </Typography>
                                         </View>
-
-                                        {participants.length > 0 ? (
-                                            <ScrollView
-                                                horizontal
-                                                showsHorizontalScrollIndicator={false}
-                                                nestedScrollEnabled
-                                                contentContainerStyle={{ flexGrow: 1 }}
-                                            >
-                                                <View style={{ flexDirection: 'row', gap: 10, paddingLeft: 4 }}>
-                                                    {participants.map((participant) => (
-                                                        <View key={participant.id} style={styles.participantItem}>
-                                                            <View style={[styles.participantAvatar, { backgroundColor: getProfileColorByName(participant.login) }]}>
-                                                                <Papicons name="user" size={20} color="#FFFFFF" />
-                                                            </View>
-                                                            <Typography variant="caption" style={[styles.participantName, { color: getProfileColorByName(participant.login) }]}>
-                                                                {getFirstName(participant.login)}
-                                                            </Typography>
-                                                        </View>
-                                                    ))}
-                                                </View>
-                                            </ScrollView>
-                                        ) : (
-                                            <Typography variant="caption" style={styles.noParticipants}>
-                                                Aucun inscrit pour le moment
-                                            </Typography>
-                                        )}
-                                    </View>
-
-                                    {/* Open in Maps Button (Liquid Glass) */}
-                                    {eventDetails?.latitude && eventDetails?.longitude && (
-                                        <Pressable onPress={openInMaps} style={styles.mapsButtonContainer}>
-                                            <BlurView intensity={80} tint="light" style={styles.mapsButton}>
-                                                <Papicons name="link" size={15} color="#FFFFFF" />
-                                                <Typography variant="caption" style={styles.mapsButtonText}>
-                                                    Ouvrir dans maps
-                                                </Typography>
-                                            </BlurView>
-                                        </Pressable>
-                                    )}
-                                </>
+                                    ))}
+                                </ScrollView>
+                            ) : (
+                                <Typography variant="caption" style={styles.noParticipants}>
+                                    Aucun inscrit pour le moment
+                                </Typography>
                             )}
                         </View>
                     </Collapsible>
-                </View>
+                </LinearGradient>
+
+                {/* Action Buttons (only when expanded, outside gradient for map overlay) */}
+                <Collapsible collapsed={!expanded} duration={280} easing="easeOutCubic">
+                    <View style={styles.actionButtons}>
+                        {/* Open in Maps Button (Liquid Glass) */}
+                        {eventDetails?.latitude && eventDetails?.longitude && (
+                            <Pressable onPress={openInMaps} style={styles.mapsButtonContainer}>
+                                <LiquidGlassView
+                                    glassType="regular"
+                                    isInteractive={true}
+                                    glassTintColor="transparent"
+                                    glassOpacity={0}
+                                    style={styles.mapsButton}
+                                >
+                                    <Papicons name="link" size={15} color={COLORS.white} />
+                                    <Typography variant="caption" style={styles.mapsButtonText}>
+                                        Ouvrir dans maps
+                                    </Typography>
+                                </LiquidGlassView>
+                            </Pressable>
+                        )}
+                    </View>
+                </Collapsible>
+
+                {/* Register Button (Liquid Glass, anchored to bottom) */}
+                {expanded && (
+                    <View style={styles.registerButtonContainer}>
+                        <LiquidGlassView
+                            glassType="regular"
+                            isInteractive={true}
+                            glassTintColor="transparent"
+                            glassOpacity={0}
+                            style={styles.registerButton}
+                        >
+                            <Papicons name="check" size={24} color={COLORS.white} />
+                            <Typography variant="body1" style={styles.registerText}>
+                                M&apos;inscrire !
+                            </Typography>
+                        </LiquidGlassView>
+                    </View>
+                )}
             </AnimatedView>
         </Pressable>
     );
@@ -431,18 +461,27 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.15,
         shadowRadius: 3.3,
         elevation: 3,
+        backgroundColor: COLORS.white,
     },
-    content: {
-        padding: 13,
-        gap: 12,
+    mapContainer: {
+        minHeight: 550,
+        top: 139,
+        zIndex: 0,
+    },
+    gradientWrapper: {
+        borderRadius: 25,
+        zIndex: 1,
     },
     headerRow: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignSelf: 'stretch',
+        padding: 13,
     },
     eventInfo: {
         flex: 1,
         gap: 7,
+        justifyContent: 'space-between',
+        alignSelf: 'stretch',
     },
     badgeRow: {
         flexDirection: 'row',
@@ -450,13 +489,13 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     typeBadge: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: COLORS.badgeBg,
         borderRadius: 15,
         paddingHorizontal: 10,
         paddingVertical: 5,
     },
     badgeText: {
-        fontFamily: 'Inter-Variable',
+        color: COLORS.primaryBlue,
         fontWeight: '700',
         fontSize: 15,
         lineHeight: 15,
@@ -467,19 +506,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 5,
     },
-    whiteText: {
-        color: '#FFFFFF',
-        fontFamily: 'Inter-Variable',
-        fontWeight: '500',
+    dateText: {
+        color: COLORS.primaryBlueDark,
+        fontWeight: '700',
         fontSize: 15,
         lineHeight: 15,
     },
     title: {
-        color: '#FFFFFF',
-        fontFamily: 'Inter-Variable',
-        fontWeight: '700',
+        color: COLORS.primaryDark,
+        fontWeight: '600',
         fontSize: 18,
-        lineHeight: 18,
+        lineHeight: 22,
         letterSpacing: 0.2,
     },
     locationRow: {
@@ -487,53 +524,50 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 5,
     },
-    separator: {
-        width: 2,
-        alignSelf: 'stretch',
-        backgroundColor: 'rgba(255, 255, 255, 0.5)',
-        borderRadius: 267,
-        marginHorizontal: 14,
-    },
     timeSection: {
-        width: 65,
+        borderWidth: 2,
+        borderColor: COLORS.primaryDark,
+        borderRadius: 15,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
         alignItems: 'center',
         justifyContent: 'center',
+        alignSelf: 'stretch',
         gap: 7,
     },
+    timeWrapper: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     timeText: {
-        color: '#FFFFFF',
-        fontFamily: 'Inter-Variable',
+        color: COLORS.primaryDark,
         fontWeight: '700',
         fontSize: 18,
         lineHeight: 18,
-        textAlign: 'center',
         letterSpacing: 0.2,
     },
-    expandedContent: {
-        gap: 12,
-        paddingTop: 12,
-    },
-    loadingText: {
-        color: 'rgba(255, 255, 255, 0.8)',
-        textAlign: 'center',
-    },
-    participantsCard: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 15,
+    participantsSection: {
         padding: 10,
         gap: 13,
     },
     participantsHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
+        justifyContent: 'center',
+        gap: 2,
     },
     participantsTitle: {
-        fontFamily: 'Inter-Variable',
+        color: COLORS.primaryDark,
         fontWeight: '700',
         fontSize: 18,
         lineHeight: 18,
         letterSpacing: 0.2,
+        flex: 1,
+    },
+    participantsScroll: {
+        flexGrow: 1,
+        paddingLeft: 4,
+        gap: 7,
     },
     participantItem: {
         alignItems: 'center',
@@ -547,16 +581,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     participantName: {
-        fontFamily: 'Inter-Variable',
         fontWeight: '500',
         fontSize: 12,
         lineHeight: 12,
     },
+    loadingText: {
+        color: COLORS.primaryDark,
+        textAlign: 'center',
+        opacity: 0.6,
+    },
     noParticipants: {
-        color: 'rgba(0, 0, 0, 0.5)',
+        color: COLORS.primaryDark,
+        opacity: 0.5,
+    },
+    actionButtons: {
+        padding: 13,
+        gap: 10,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flex: 1,
     },
     mapsButtonContainer: {
-        alignSelf: 'center',
+        alignSelf: 'flex-start',
     },
     mapsButton: {
         flexDirection: 'row',
@@ -568,11 +614,34 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     mapsButtonText: {
-        color: '#FFFFFF',
-        fontFamily: 'Inter-Variable',
+        color: COLORS.white,
         fontWeight: '500',
         fontSize: 12,
         lineHeight: 12,
+    },
+    registerButtonContainer: {
+        position: 'absolute',
+        bottom: 13,
+        left: 13,
+        right: 13,
+        zIndex: 10,
+    },
+    registerButton: {
+        borderRadius: 25,
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 11,
+        alignSelf: 'stretch',
+        overflow: 'hidden',
+    },
+    registerText: {
+        color: COLORS.white,
+        fontWeight: '500',
+        fontSize: 19,
+        lineHeight: 19,
     },
 });
 
