@@ -1,26 +1,32 @@
+import { isIntracomConnected, resetIntracomToken } from "./login-intracom";
 import { Stack, useRouter } from "expo-router";
 import { useTheme } from "@react-navigation/native";
-import React, { useRef, useCallback, useState } from "react";
-import { Alert, View } from "react-native";
+import React, { useState } from "react";
+import { GetNewsServices, NewsService } from "../(onboarding)/utils/constants";
+import { View, Image, Button, Pressable } from "react-native";
+import Reanimated, { FadeInDown } from 'react-native-reanimated';
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { WebView, WebViewNavigation } from 'react-native-webview';
-import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
 
-import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import ViewContainer from "@/ui/components/ViewContainer";
 import StackLayout from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import Button from "@/ui/components/Button";
+import { Papicons } from "@getpapillon/papicons";
 
 export default function NewsModal() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const theme = useTheme();
     const { colors } = theme;
+    const [updateKey, setUpdateKey] = useState(0);
+    const newsServices = GetNewsServices((path: { pathname: string, options?: any }) => {
+        router.push({ pathname: path.pathname as any, params: path.options ?? {}, });
+    });
 
     return (
-        <ViewContainer>
+        <><ViewContainer>
             <Stack.Screen options={{ headerShown: false }} />
             <View style={{ flex: 1, backgroundColor: colors.background }}>
                 <StackLayout
@@ -40,36 +46,80 @@ export default function NewsModal() {
                 >
                     <StackLayout vAlign="start" hAlign="start" width="100%" gap={6}>
                         <Typography variant="h1" style={{ color: "white", fontSize: 32, lineHeight: 34 }}>
-                            Intracom
+                            Actualités
                         </Typography>
                         <Typography variant="h5" style={{ color: "#FFFFFF", lineHeight: 22, fontSize: 18 }}>
-                            Connecte-toi pour synchroniser les évènements.
+                            Sélectionne ta source d'actualités
                         </Typography>
                     </StackLayout>
                 </StackLayout>
 
-                <StackLayout
-                    style={{ flex: 1, padding: 20, paddingBottom: insets.bottom + 20, justifyContent: 'space-between' }}
-                    gap={16}
-                >
-                    <StackLayout gap={16}>
-                        <Typography variant="body1" style={{ color: colors.text, opacity: 0.7, textAlign: 'center' }}>
-                            Cela nous permettra d'afficher les forums et salons disponibles près de ton campus.
-                        </Typography>
-                    </StackLayout>
-
-                    <StackLayout gap={10}>
-                        <Button
-                            title="Se connecter"
-                            onPress={() => router.push("/(modals)/login-intracom")}
-                            style={{ backgroundColor: "#0078D4" }}
-                            size="large"
-                        />
-                    </StackLayout>
-                </StackLayout>
-            </View>
-
-            <OnboardingBackButton />
-        </ViewContainer>
+                <View style={{ flex: 1, padding: 20, paddingBottom: insets.bottom + 20 }}>
+                    {newsServices.map((item: NewsService, index: number) => (
+                        <Reanimated.View
+                            key={item.name}
+                            entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
+                            style={{ marginBottom: 16 }}
+                        >
+                            <AnimatedPressable
+                                onPress={() => {
+                                    if (item.name === 'intracom' && isIntracomConnected()) {
+                                        resetIntracomToken();
+                                        setUpdateKey(k => k + 1);
+                                        router.back();
+                                    } else {
+                                        requestAnimationFrame(() => {
+                                            item.onPress();
+                                        });
+                                    }
+                                }}
+                            >
+                                <View
+                                    style={{
+                                        paddingHorizontal: 18,
+                                        paddingVertical: 14,
+                                        backgroundColor: '#0078D4',
+                                        borderColor: '#0078D4',
+                                        borderWidth: 1.5,
+                                        borderRadius: 80,
+                                        borderCurve: "continuous",
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        display: 'flex',
+                                        gap: 16,
+                                    }}
+                                >
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                                        <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+                                            <Image
+                                                source={{ uri: item.image.uri }}
+                                                style={{ width: 32, height: 32, borderRadius: 20, backgroundColor: '#0078D4' }}
+                                                resizeMode="cover"
+                                                onError={e => console.warn("Erreur chargement image", e.nativeEvent)} />
+                                        </View>
+                                        <Typography style={{ flex: 1, color: 'white', marginLeft: 12 }} nowrap variant='title'>
+                                            {item.title}
+                                        </Typography>
+                                        {item.name === 'intracom' && isIntracomConnected() && (
+                                            <View
+                                                style={{
+                                                    marginLeft: 8,
+                                                    padding: 6,
+                                                    borderRadius: 16,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}
+                                            >
+                                                <Papicons name="logout" size={24} color="white" />
+                                            </View>
+                                        )}
+                                    </View>
+                                </View>
+                            </AnimatedPressable>
+                            ))
+                        </Reanimated.View>))}
+                </View>
+            </View><OnboardingBackButton />
+        </ViewContainer></>
     );
 }
