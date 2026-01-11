@@ -1,17 +1,20 @@
 import { Papicons } from '@getpapillon/papicons';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useState } from 'react';
-import { InteractionManager, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import Collapsible from 'react-native-collapsible';
+import { LayoutChangeEvent, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import MapView from 'react-native-maps';
 import Reanimated, {
+    Easing,
+    runOnJS,
     useAnimatedStyle,
     useSharedValue,
     withSpring,
+    withTiming,
 } from 'react-native-reanimated';
 
 import { getIntracomToken } from '@/app/(modals)/login-intracom';
+import Button from '@/ui/components/Button';
 import DashedSeparator from '@/ui/components/DashedSeparator';
 import Typography from '@/ui/components/Typography';
 import { getProfileColorByName } from '@/utils/chats/colors';
@@ -98,12 +101,29 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
     const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
     const [participants, setParticipants] = useState<IntracomParticipant[]>([]);
     const [slotTimes, setSlotTimes] = useState<{ start: string; end: string } | null>(null);
+    const [showMap, setShowMap] = useState(false);
 
     // Animation values
     const scale = useSharedValue(1);
 
+    // Split heights
+    const participantsHeight = useSharedValue(0);
+    const buttonsHeight = useSharedValue(0);
+
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
+    }));
+
+    // Height animation style for Participants (Gradient)
+    const animatedParticipantsStyle = useAnimatedStyle(() => ({
+        height: participantsHeight.value,
+        opacity: participantsHeight.value === 0 ? 0 : 1,
+    }));
+
+    // Height animation style for Buttons (Map Overlay)
+    const animatedButtonsStyle = useAnimatedStyle(() => ({
+        height: buttonsHeight.value,
+        opacity: buttonsHeight.value === 0 ? 0 : 1,
     }));
 
     // Format date as DD/MM/YY
@@ -192,6 +212,11 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
     // Fetch event details when expanded
     const fetchEventDetails = useCallback(async () => {
+        // Optimization: Use cached data if available
+        if (eventDetails) {
+            return;
+        }
+
         const token = getIntracomToken();
         if (!token) {
             return;
@@ -255,21 +280,72 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
         } finally {
             setLoading(false);
         }
-    }, [event.id]);
+    }, [event.id, eventDetails]);
+
+    const onCollapseComplete = useCallback(() => {
+        setShowMap(false);
+    }, []);
+
+    // Split Measurement Refs/State
+    const [measuredParticipantsH, setMeasuredParticipantsH] = useState(0);
+    const [measuredButtonsH, setMeasuredButtonsH] = useState(0);
 
     const handlePress = () => {
-        if (!expanded) {
-            // Defer fetch until animation completes for smoother open
-            InteractionManager.runAfterInteractions(() => {
-                fetchEventDetails();
-            });
-        }
-        setExpanded(!expanded);
+        const targetExpanded = !expanded;
+        setExpanded(targetExpanded);
+
         scale.value = withSpring(0.97, { duration: 50 });
         setTimeout(() => {
             scale.value = withSpring(1, { duration: 200 });
         }, 50);
+
+        if (targetExpanded) {
+            // Expand
+            // Optimization: Parallel Load - Start fetching and mounting map immediately
+            setShowMap(true);
+            fetchEventDetails();
+
+            // Synchronize both animations
+            const config = { duration: 300, easing: Easing.out(Easing.poly(3)) };
+
+            participantsHeight.value = withTiming(measuredParticipantsH, config);
+
+            buttonsHeight.value = withTiming(measuredButtonsH, config); // Removed callback, handled by immediate call above
+
+        } else {
+            // Collapse
+            const config = { duration: 300, easing: Easing.out(Easing.poly(3)) };
+
+            participantsHeight.value = withTiming(0, config);
+
+            buttonsHeight.value = withTiming(0, config, (finished) => {
+                if (finished) { runOnJS(onCollapseComplete)(); }
+            });
+        }
     };
+
+    const onParticipantsLayout = useCallback((event: LayoutChangeEvent) => {
+        const height = event.nativeEvent.layout.height;
+        if (height > 0 && Math.abs(measuredParticipantsH - height) > 1) {
+            setMeasuredParticipantsH(height);
+            // If already expanded, update height
+            if (expanded) {
+                participantsHeight.value = withTiming(height, { duration: 200 });
+            }
+        }
+    }, [expanded, measuredParticipantsH, participantsHeight]);
+
+    const onButtonsLayout = useCallback((event: LayoutChangeEvent) => {
+        const height = event.nativeEvent.layout.height;
+        if (height > 0 && Math.abs(measuredButtonsH - height) > 1) {
+            setMeasuredButtonsH(height);
+            // If already expanded, update height
+            if (expanded) {
+                buttonsHeight.value = withTiming(height, { duration: 200 });
+            }
+        }
+    }, [expanded, measuredButtonsH, buttonsHeight]);
+
 
     const openInMaps = () => {
         if (eventDetails?.latitude && eventDetails?.longitude) {
@@ -284,8 +360,8 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
     return (
         <Pressable onPress={handlePress}>
             <AnimatedView style={[styles.cardContainer, animatedStyle, expanded && { minHeight: 400 }]}>
-                {/* Map Background (only when expanded) */}
-                {expanded && eventDetails?.latitude && eventDetails?.longitude && (
+                {/* Map Background (only when expanded AND after animation) */}
+                {showMap && expanded && eventDetails?.latitude && eventDetails?.longitude && (
                     <View style={[StyleSheet.absoluteFill, styles.mapContainer]}>
                         <MapView
                             style={StyleSheet.absoluteFill}
@@ -303,7 +379,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                     </View>
                 )}
 
-                {/* Content Wrapper with Shared Gradient */}
+                {/* 1. Gradient Section (Header + Participants) */}
                 <LinearGradient
                     colors={[COLORS.white, COLORS.gradientEnd]}
                     locations={[0.18, 1]}
@@ -360,91 +436,101 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                         </View>
                     </View>
 
-                    {/* Expanded Content */}
-                    <Collapsible collapsed={!expanded} duration={280} easing="easeOutCubic">
-                        {/* Dashed Separator */}
-                        <DashedSeparator color={COLORS.dashedBorder} style={{ marginVertical: 7 }} />
+                    {/* Participants SECTION (Inside Gradient) */}
+                    <Reanimated.View style={[styles.expandWrapper, animatedParticipantsStyle]}>
+                        {/* Measurement Container */}
+                        <View style={styles.measureContainer} onLayout={onParticipantsLayout}>
+                            {/* Dashed Separator */}
+                            <DashedSeparator color={COLORS.dashedBorder} style={{ marginVertical: 7 }} />
 
-                        {/* Participants Section */}
-                        <View style={styles.participantsSection}>
-                            <View style={styles.participantsHeader}>
-                                <Papicons name="user" size={18} color={COLORS.primaryDark} />
-                                <Typography variant="body1" style={styles.participantsTitle}>
-                                    Inscrits
-                                </Typography>
-                            </View>
+                            {/* Participants List */}
+                            <View style={styles.participantsSection}>
+                                <View style={styles.participantsHeader}>
+                                    <Papicons name="user" size={18} color={COLORS.primaryDark} />
+                                    <Typography variant="body1" style={styles.participantsTitle}>
+                                        Inscrits
+                                    </Typography>
+                                </View>
 
-                            {loading ? (
-                                <Typography variant="caption" style={styles.loadingText}>
-                                    Chargement...
-                                </Typography>
-                            ) : participants.length > 0 ? (
-                                <ScrollView
-                                    horizontal
-                                    showsHorizontalScrollIndicator={false}
-                                    nestedScrollEnabled
-                                    contentContainerStyle={styles.participantsScroll}
-                                >
-                                    {participants.map((participant) => (
-                                        <View key={participant.id} style={styles.participantItem}>
-                                            <View style={[styles.participantAvatar, { backgroundColor: getProfileColorByName(participant.login) }]}>
-                                                <Papicons name="user" size={20} color={COLORS.white} />
+                                {loading ? (
+                                    <Typography variant="caption" style={styles.loadingText}>
+                                        Chargement...
+                                    </Typography>
+                                ) : participants.length > 0 ? (
+                                    <ScrollView
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        nestedScrollEnabled
+                                        contentContainerStyle={styles.participantsScroll}
+                                    >
+                                        {participants.map((participant) => (
+                                            <View key={participant.id} style={styles.participantItem}>
+                                                <View style={[styles.participantAvatar, { backgroundColor: getProfileColorByName(participant.login) }]}>
+                                                    <Papicons name="user" size={20} color={COLORS.white} />
+                                                </View>
+                                                <Typography variant="caption" style={[styles.participantName, { color: getProfileColorByName(participant.login) }]}>
+                                                    {getFirstName(participant.login)}
+                                                </Typography>
                                             </View>
-                                            <Typography variant="caption" style={[styles.participantName, { color: getProfileColorByName(participant.login) }]}>
-                                                {getFirstName(participant.login)}
-                                            </Typography>
-                                        </View>
-                                    ))}
-                                </ScrollView>
-                            ) : (
-                                <Typography variant="caption" style={styles.noParticipants}>
-                                    Aucun inscrit pour le moment
-                                </Typography>
-                            )}
+                                        ))}
+                                    </ScrollView>
+                                ) : (
+                                    <Typography variant="caption" style={styles.noParticipants}>
+                                        Aucun inscrit pour le moment
+                                    </Typography>
+                                )}
+                            </View>
+                            <View style={{ height: 10 }} />
                         </View>
-                    </Collapsible>
+                    </Reanimated.View>
                 </LinearGradient>
 
-                {/* Action Buttons (only when expanded, outside gradient for map overlay) */}
-                <Collapsible collapsed={!expanded} duration={280} easing="easeOutCubic">
-                    <View style={styles.actionButtons}>
-                        {/* Open in Maps Button (Liquid Glass) */}
-                        {eventDetails?.latitude && eventDetails?.longitude && (
-                            <Pressable onPress={openInMaps} style={styles.mapsButtonContainer}>
-                                <LiquidGlassView
-                                    glassType="regular"
-                                    isInteractive={true}
-                                    glassTintColor="transparent"
-                                    glassOpacity={0}
-                                    style={styles.mapsButton}
-                                >
-                                    <Papicons name="link" size={15} color={COLORS.white} />
-                                    <Typography variant="caption" style={styles.mapsButtonText}>
-                                        Ouvrir dans maps
-                                    </Typography>
-                                </LiquidGlassView>
-                            </Pressable>
-                        )}
-                    </View>
-                </Collapsible>
+                {/* 2. Buttons SECTION (Outside Gradient, On Map) */}
+                <Reanimated.View style={[styles.expandWrapper, animatedButtonsStyle]}>
+                    <View style={styles.measureContainer} onLayout={onButtonsLayout}>
+                        {/* Action Buttons */}
+                        <View style={styles.actionButtons}>
+                            {/* Open in Maps Button */}
+                            {eventDetails?.latitude && eventDetails?.longitude && (
+                                <View style={styles.mapsButtonContainer}>
+                                    <BlurView
+                                        intensity={80}
+                                        tint="light"
+                                        style={styles.mapsButtonWrapper}
+                                    >
+                                        <Button
+                                            variant="primary" // Keeping primary for text color logic
+                                            size="small"
+                                            title="Ouvrir dans maps"
+                                            icon={<Papicons name="link" size={15} color={COLORS.white} />}
+                                            onPress={openInMaps}
+                                            style={[styles.mapsButton, { backgroundColor: 'rgba(0, 68, 98, 0.4)' }]}
+                                        />
+                                    </BlurView>
+                                </View>
+                            )}
+                        </View>
 
-                {/* Register Button (Liquid Glass, anchored to bottom) */}
-                {expanded && (
-                    <View style={styles.registerButtonContainer}>
-                        <LiquidGlassView
-                            glassType="regular"
-                            isInteractive={true}
-                            glassTintColor="transparent"
-                            glassOpacity={0}
-                            style={styles.registerButton}
-                        >
-                            <Papicons name="check" size={24} color={COLORS.white} />
-                            <Typography variant="body1" style={styles.registerText}>
-                                M&apos;inscrire !
-                            </Typography>
-                        </LiquidGlassView>
+                        {/* Register Button */}
+                        <View style={styles.registerButtonContainer}>
+                            <BlurView
+                                intensity={80}
+                                tint="light"
+                                style={styles.registerButtonWrapper}
+                            >
+                                <Button
+                                    variant="primary"
+                                    title="M'inscrire !"
+                                    icon={<Papicons name="check" size={24} color={COLORS.white} />}
+                                    style={[styles.registerButton, { backgroundColor: 'rgba(0, 149, 214, 0.4)' }]}
+                                />
+                            </BlurView>
+                        </View>
+
+                        <View style={{ height: 16 }} />
                     </View>
-                )}
+                </Reanimated.View>
+
             </AnimatedView>
         </Pressable>
     );
@@ -470,6 +556,7 @@ const styles = StyleSheet.create({
     },
     gradientWrapper: {
         borderRadius: 25,
+        borderCurve: 'continuous',
         zIndex: 1,
     },
     headerRow: {
@@ -546,6 +633,18 @@ const styles = StyleSheet.create({
         lineHeight: 18,
         letterSpacing: 0.2,
     },
+
+    // NEW / MODIFIED STYLES FOR ANIMATION
+    expandWrapper: {
+        overflow: 'hidden',
+    },
+    measureContainer: {
+        width: '100%',
+        position: 'absolute', // Taking it out of flow allows the wrapper to start at 0 height
+        top: 0,
+        left: 0,
+    },
+
     participantsSection: {
         padding: 10,
         gap: 13,
@@ -596,52 +695,40 @@ const styles = StyleSheet.create({
     },
     actionButtons: {
         padding: 13,
+        paddingBottom: 0,
         gap: 10,
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        alignItems: 'flex-start', // Changed to align left
+        justifyContent: 'flex-start',
         flex: 1,
+        zIndex: 2,
     },
     mapsButtonContainer: {
         alignSelf: 'flex-start',
     },
-    mapsButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 15,
+    mapsButtonWrapper: {
+        borderRadius: 15, // Smooth corners for wrapper too? If Expo BlurView supports it.
         overflow: 'hidden',
     },
-    mapsButtonText: {
-        color: COLORS.white,
-        fontWeight: '500',
-        fontSize: 12,
-        lineHeight: 12,
+    mapsButton: {
+        backgroundColor: 'rgba(0, 68, 98, 0.4)',
+        borderColor: 'transparent',
     },
     registerButtonContainer: {
-        position: 'absolute',
-        bottom: 13,
-        left: 13,
-        right: 13,
-        zIndex: 10,
+        width: '100%',
+        paddingHorizontal: 13,
+        paddingBottom: 13,
+        paddingTop: 10,
+    },
+    registerButtonWrapper: {
+        borderRadius: 25,
+        overflow: 'hidden',
+        width: '100%',
     },
     registerButton: {
+        width: '100%',
+        backgroundColor: 'rgba(0, 149, 214, 0.4)',
+        height: 56, // Slightly taller for "M'inscrire"
         borderRadius: 25,
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 11,
-        alignSelf: 'stretch',
-        overflow: 'hidden',
-    },
-    registerText: {
-        color: COLORS.white,
-        fontWeight: '500',
-        fontSize: 19,
-        lineHeight: 19,
     },
 });
 
