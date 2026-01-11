@@ -3,18 +3,16 @@ import { useTheme } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useState } from 'react';
-import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { InteractionManager, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import Collapsible from 'react-native-collapsible';
 import MapView from 'react-native-maps';
 import Reanimated, {
-    Easing,
     useAnimatedStyle,
     useSharedValue,
     withSpring,
-    withTiming,
 } from 'react-native-reanimated';
 
 import { getIntracomToken } from '@/app/(modals)/login-intracom';
-import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { getProfileColorByName } from '@/utils/chats/colors';
 
@@ -80,15 +78,11 @@ interface IntracomCardProps {
     event: IntracomEvent;
 }
 
-const ANIMATION_DURATION = 280;
-const BEZIER_EASING = Easing.bezier(0.4, 0, 0.2, 1);
-
 const AnimatedView = Reanimated.createAnimatedComponent(View);
 
 const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
     const { colors } = useTheme();
     const [expanded, setExpanded] = useState(false);
-    const [showMap, setShowMap] = useState(false);
     const [loading, setLoading] = useState(false);
     const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
     const [participants, setParticipants] = useState<IntracomParticipant[]>([]);
@@ -96,22 +90,9 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
     // Animation values
     const scale = useSharedValue(1);
-    const expandProgress = useSharedValue(0);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
-    }));
-
-    // Animated height for the expanded content container
-    const expandedContainerStyle = useAnimatedStyle(() => ({
-        height: expandProgress.value * 220,
-        opacity: expandProgress.value,
-        overflow: 'hidden' as const,
-    }));
-
-    // Animated min-height for the card when map is present
-    const cardHeightStyle = useAnimatedStyle(() => ({
-        minHeight: eventDetails?.latitude ? expandProgress.value * 350 : undefined,
     }));
 
     // Format date as DD/MM/YY
@@ -267,16 +248,12 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
     const handlePress = () => {
         if (!expanded) {
-            setExpanded(true);
-            expandProgress.value = withTiming(1, { duration: ANIMATION_DURATION, easing: BEZIER_EASING });
-            // Defer fetch and map to not block animation
-            setTimeout(() => fetchEventDetails(), 50);
-            setTimeout(() => setShowMap(true), ANIMATION_DURATION);
-        } else {
-            setExpanded(false);
-            setShowMap(false);
-            expandProgress.value = withTiming(0, { duration: ANIMATION_DURATION, easing: BEZIER_EASING });
+            // Defer fetch until animation completes for smoother open
+            InteractionManager.runAfterInteractions(() => {
+                fetchEventDetails();
+            });
         }
+        setExpanded(!expanded);
         scale.value = withSpring(0.97, { duration: 50 });
         setTimeout(() => {
             scale.value = withSpring(1, { duration: 200 });
@@ -295,10 +272,10 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
     return (
         <Pressable onPress={handlePress}>
-            <AnimatedView style={[styles.cardContainer, animatedStyle, cardHeightStyle]}>
-                {/* Map Background (only after animation completes) */}
-                {showMap && eventDetails?.latitude && eventDetails?.longitude && (
-                    <View style={StyleSheet.absoluteFill}>
+            <AnimatedView style={[styles.cardContainer, animatedStyle]}>
+                {/* Map Background (only when expanded) */}
+                {expanded && eventDetails?.latitude && eventDetails?.longitude && (
+                    <View style={[StyleSheet.absoluteFill, { minHeight: 350 }]}>
                         <MapView
                             style={StyleSheet.absoluteFill}
                             initialRegion={{
@@ -320,18 +297,13 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                     </View>
                 )}
 
-                {/* Solid background when closed */}
-                {!expanded && (
-                    <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.primary, borderRadius: 25 }]} />
-                )}
-
-                {/* Fallback background when expanded but no map coords */}
-                {expanded && (!eventDetails?.latitude || !eventDetails?.longitude) && (
+                {/* Solid background when closed or no map */}
+                {(!expanded || !eventDetails?.latitude || !eventDetails?.longitude) && (
                     <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.primary, borderRadius: 25 }]} />
                 )}
 
                 {/* Main Content */}
-                <View style={styles.content}>
+                <View style={[styles.content, expanded && eventDetails?.latitude ? { minHeight: 350 } : undefined]}>
                     {/* Header Row */}
                     <View style={styles.headerRow}>
                         {/* Left: Event Info */}
@@ -382,64 +354,66 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                         </View>
                     </View>
 
-                    {/* Expanded Content - Always rendered, height animated */}
-                    <AnimatedView style={expandedContainerStyle}>
-                        {loading ? (
-                            <Typography variant="caption" style={styles.loadingText}>
-                                Chargement...
-                            </Typography>
-                        ) : (
-                            <View style={styles.expandedContent}>
-                                {/* Participants Section */}
-                                <View style={styles.participantsCard}>
-                                    <View style={styles.participantsHeader}>
-                                        <Papicons name="user" size={18} color={colors.primary} />
-                                        <Typography variant="body1" style={[styles.participantsTitle, { color: colors.primary }]}>
-                                            Inscrits
-                                        </Typography>
+                    {/* Expanded Content with Collapsible */}
+                    <Collapsible collapsed={!expanded} duration={280} easing="easeOutCubic">
+                        <View style={styles.expandedContent}>
+                            {loading ? (
+                                <Typography variant="caption" style={styles.loadingText}>
+                                    Chargement...
+                                </Typography>
+                            ) : (
+                                <>
+                                    {/* Participants Section */}
+                                    <View style={styles.participantsCard}>
+                                        <View style={styles.participantsHeader}>
+                                            <Papicons name="user" size={18} color={colors.primary} />
+                                            <Typography variant="body1" style={[styles.participantsTitle, { color: colors.primary }]}>
+                                                Inscrits
+                                            </Typography>
+                                        </View>
+
+                                        {participants.length > 0 ? (
+                                            <ScrollView
+                                                horizontal
+                                                showsHorizontalScrollIndicator={false}
+                                                nestedScrollEnabled
+                                                contentContainerStyle={{ flexGrow: 1 }}
+                                            >
+                                                <View style={{ flexDirection: 'row', gap: 10, paddingLeft: 4 }}>
+                                                    {participants.map((participant) => (
+                                                        <View key={participant.id} style={styles.participantItem}>
+                                                            <View style={[styles.participantAvatar, { backgroundColor: getProfileColorByName(participant.login) }]}>
+                                                                <Papicons name="user" size={20} color="#FFFFFF" />
+                                                            </View>
+                                                            <Typography variant="caption" style={[styles.participantName, { color: getProfileColorByName(participant.login) }]}>
+                                                                {getFirstName(participant.login)}
+                                                            </Typography>
+                                                        </View>
+                                                    ))}
+                                                </View>
+                                            </ScrollView>
+                                        ) : (
+                                            <Typography variant="caption" style={styles.noParticipants}>
+                                                Aucun inscrit pour le moment
+                                            </Typography>
+                                        )}
                                     </View>
 
-                                    {participants.length > 0 ? (
-                                        <ScrollView
-                                            horizontal
-                                            showsHorizontalScrollIndicator={false}
-                                            nestedScrollEnabled
-                                            contentContainerStyle={{ flexGrow: 1 }}
-                                        >
-                                            <Stack direction="horizontal" gap={10} style={{ paddingLeft: 4 }}>
-                                                {participants.map((participant) => (
-                                                    <View key={participant.id} style={styles.participantItem}>
-                                                        <View style={[styles.participantAvatar, { backgroundColor: getProfileColorByName(participant.login) }]}>
-                                                            <Papicons name="user" size={20} color="#FFFFFF" />
-                                                        </View>
-                                                        <Typography variant="caption" style={[styles.participantName, { color: getProfileColorByName(participant.login) }]}>
-                                                            {getFirstName(participant.login)}
-                                                        </Typography>
-                                                    </View>
-                                                ))}
-                                            </Stack>
-                                        </ScrollView>
-                                    ) : (
-                                        <Typography variant="caption" style={styles.noParticipants}>
-                                            Aucun inscrit pour le moment
-                                        </Typography>
+                                    {/* Open in Maps Button (Liquid Glass) */}
+                                    {eventDetails?.latitude && eventDetails?.longitude && (
+                                        <Pressable onPress={openInMaps} style={styles.mapsButtonContainer}>
+                                            <BlurView intensity={80} tint="light" style={styles.mapsButton}>
+                                                <Papicons name="link" size={15} color="#FFFFFF" />
+                                                <Typography variant="caption" style={styles.mapsButtonText}>
+                                                    Ouvrir dans maps
+                                                </Typography>
+                                            </BlurView>
+                                        </Pressable>
                                     )}
-                                </View>
-
-                                {/* Open in Maps Button (Liquid Glass) */}
-                                {eventDetails?.latitude && eventDetails?.longitude && (
-                                    <Pressable onPress={openInMaps} style={styles.mapsButtonContainer}>
-                                        <BlurView intensity={80} tint="light" style={styles.mapsButton}>
-                                            <Papicons name="link" size={15} color="#FFFFFF" />
-                                            <Typography variant="caption" style={styles.mapsButtonText}>
-                                                Ouvrir dans maps
-                                            </Typography>
-                                        </BlurView>
-                                    </Pressable>
-                                )}
-                            </View>
-                        )}
-                    </AnimatedView>
+                                </>
+                            )}
+                        </View>
+                    </Collapsible>
                 </View>
             </AnimatedView>
         </Pressable>
@@ -537,6 +511,7 @@ const styles = StyleSheet.create({
     },
     expandedContent: {
         gap: 12,
+        paddingTop: 12,
     },
     loadingText: {
         color: 'rgba(255, 255, 255, 0.8)',
