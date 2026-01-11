@@ -122,17 +122,20 @@ const NewsView = () => {
   useEffect(() => {
     if (isIntracomConnected()) {
       fetchIntracomEvents();
+    } else {
+      setIntracomEvents([]);
     }
-  }, []);
+  }, [isIntracomConnected()]);
 
   useFocusEffect(
     useCallback(() => {
       if (isIntracomConnected()) {
         fetchIntracomEvents();
+      } else {
+        setIntracomEvents([]);
       }
     }, [fetchIntracomEvents])
   );
-
   const sortedNews = useMemo(() => {
     return news.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }, [news]);
