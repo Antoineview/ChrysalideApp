@@ -4,7 +4,10 @@
     "strict": true,
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "useDefineForClassFields": false
   },
   "include": [
     "**/*.ts",
