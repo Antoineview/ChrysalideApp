@@ -26,6 +26,7 @@ const SearchContainer = ({ children, style }: { children: React.ReactNode, style
         style={[{
           width: Dimensions.get("window").width - 32,
           borderRadius: 300,
+          borderCurve: 'continuous',
           backgroundColor: colors.text + "16",
         }, style]}
       >
@@ -43,6 +44,7 @@ const SearchContainer = ({ children, style }: { children: React.ReactNode, style
       style={[{
         width: Dimensions.get("window").width - 32,
         borderRadius: 300,
+        borderCurve: 'continuous',
       }, style]}
     >
       {children}

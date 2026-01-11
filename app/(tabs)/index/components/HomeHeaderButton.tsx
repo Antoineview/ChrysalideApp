@@ -40,6 +40,7 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           style={{
             backgroundColor: item.color + 30,
             borderRadius: 50,
+            borderCurve: 'continuous',
             padding: 7
           }}
         >

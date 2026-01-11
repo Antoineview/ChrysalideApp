@@ -13,7 +13,6 @@ import Stack from "./Stack";
 import Typography from "./Typography";
 
 interface CompactGradeProps {
-  emoji: string;
   title: string;
   description: string;
   score: number;
@@ -29,7 +28,6 @@ interface CompactGradeProps {
 }
 
 export const CompactGrade = ({
-  emoji,
   title,
   description,
   score,
@@ -61,10 +59,6 @@ export const CompactGrade = ({
         borderColor: colors.border,
         backgroundColor: colors.card,
         borderWidth: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
       }}
     >
       <LinearGradient
@@ -90,26 +84,7 @@ export const CompactGrade = ({
           paddingVertical: 10,
         }}
       >
-        <View
-          style={[
-            variant === "home" && {
-              padding: 7,
-              paddingTop: 10,
-              borderRadius: 80,
-            },
-          ]}
-        >
-          {skeleton ? (
-            <SkeletonView style={{ width: 25, height: 25, borderRadius: 100 }} />
-          ) : (
-            <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={color + "22"}>
-              <Text style={{ fontSize: 15 }}>
-                {emoji}
-              </Text>
-            </Stack>
-          )}
 
-        </View>
         {title &&
           <Typography variant="body1" color={variant === "home" ? colors.text : adjust(color, theme.dark ? 0.2 : -0.4)} style={{ flex: 1 }} nowrap weight="semibold" skeleton={skeleton} skeletonWidth={80}>
             {capitalizeWords(title)}

@@ -84,11 +84,10 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
   );
 
   const subjectName = useMemo(() => getSubjectName(subject.name) || subject.name, [subject.name]);
-  const subjectEmoji = useMemo(() => getSubjectEmoji(subject.name), [subject.name]);
 
   const handlePressSubject = useCallback(() => {
     // @ts-expect-error navigation types
-    navigation.navigate('modals/SubjectInfo', {
+    navigation.navigate('(modals)/subject-info', {
       subject: subject
     });
   }, [navigation, subject]);
@@ -101,25 +100,19 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
         subjectInfo: {
           name: subjectName,
           color: subjectAdjustedColor,
-          emoji: subjectEmoji,
           originalName: subject.name
         },
         avgInfluence: getAvgInfluence(grade),
         avgClass: getAvgClassInfluence(grade),
       });
     },
-    [navigation, subjectName, subjectAdjustedColor, subjectEmoji, subject.name, grades]
+    [navigation, subjectName, subjectAdjustedColor, subject.name, grades]
   );
 
   return (
     <Stack style={{ width: "100%", marginBottom: subject.subjects ? 12 : 0 }} key={subject.id}>
       <TouchableOpacity style={{ width: '100%' }} activeOpacity={0.5} onPress={handlePressSubject}>
         <Stack direction='horizontal' hAlign='center' gap={10} padding={[4, 0]}>
-          <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={subjectAdjustedColor + "22"}>
-            <Text style={{ fontSize: 15 }}>
-              {subjectEmoji}
-            </Text>
-          </Stack>
 
           <Stack style={{ flex: 1 }}>
             <Typography numberOfLines={1} ellipsizeMode="tail" variant='title' color={subjectAdjustedColor}>

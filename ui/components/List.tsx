@@ -38,14 +38,8 @@ const MEMOIZATION_THRESHOLD = 10; // Use heavy memoization for 10+ items
 
 // Base styles - frozen for immutability and performance
 const BASE_CONTAINER_STYLE: ViewStyle = Object.freeze({
-  flex: 1,
   width: "100%",
   borderCurve: "continuous",
-  shadowColor: "#000000",
-  shadowOffset: { width: 0, height: 0 },
-  shadowOpacity: 0.10,
-  shadowRadius: 1.5,
-  elevation: 1,
 });
 
 const BASE_ITEM_STYLE: ViewStyle = Object.freeze({

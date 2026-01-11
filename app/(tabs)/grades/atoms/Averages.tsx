@@ -167,6 +167,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
                 height: 100,
                 overflow: "hidden",
                 borderRadius: 18,
+                borderCurve: "continuous",
               }}
             >
               <View

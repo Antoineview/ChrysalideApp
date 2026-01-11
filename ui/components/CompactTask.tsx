@@ -19,6 +19,7 @@ function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, descri
       style={{
         backgroundColor: color + 50,
         borderRadius: 20,
+        borderCurve: 'continuous',
         width: "100%",
         flex: 1,
         overflow: "hidden",

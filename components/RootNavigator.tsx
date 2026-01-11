@@ -42,10 +42,12 @@ export function RootNavigator() {
       <Stack.Screen
         name="(modals)/syllabus"
         options={{
-          headerShown: Platform.OS !== 'ios',
+          headerShown: false,
           headerTitle: "",
-          headerLargeTitle: false,
           presentation: "modal",
+          sheetAllowedDetents: undefined,
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 20,
         }}
       />
       <Stack.Screen
@@ -80,10 +82,16 @@ export function RootNavigator() {
       <Stack.Screen
         name="(modals)/grade"
         options={{
-          headerShown: Platform.OS !== 'ios',
+          headerShown: false,
           headerTitle: t("Modal_Grades_Title"),
           headerLargeTitle: false,
-          presentation: "modal",
+          presentation: "formSheet",
+          sheetAllowedDetents: "fitToContents",
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 50,
+          contentStyle: {
+            backgroundColor: theme.colors.background,
+          }
         }}
       />
       <Stack.Screen
@@ -165,6 +173,16 @@ export function RootNavigator() {
           headerTransparent: runsIOS26,
           headerLargeTitle: true,
           presentation: "modal"
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/subject-info"
+        options={{
+          headerShown: false,
+          presentation: "formSheet",
+          sheetAllowedDetents: [0.38],
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 50,
         }}
       />
     </Stack>

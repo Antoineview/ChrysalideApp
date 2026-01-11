@@ -1,11 +1,12 @@
 import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
+import { MenuView } from '@react-native-menu/menu';
 import { useFocusEffect, useTheme } from '@react-navigation/native';
 // Legacy import for SDK 54 compatibility
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, RefreshControl, View } from 'react-native';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
@@ -16,6 +17,7 @@ import AurigaAPI from '@/services/auriga';
 import { Syllabus } from '@/services/auriga/types';
 import Button from '@/ui/components/Button';
 import ChipButton from '@/ui/components/ChipButton';
+import Search from '@/ui/components/Search';
 import Stack from '@/ui/components/Stack';
 import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
@@ -37,6 +39,21 @@ const SyllabusView: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [parcours, setParcours] = useState<'all' | 'PC' | 'PA'>('all');
+  const [searchText, setSearchText] = useState<string>('');
+
+  // Semesters
+  const availableSemesters = useMemo(() => {
+    const semesters = new Set(syllabusList.map((s) => s.semester));
+    return Array.from(semesters).sort((a, b) => a - b);
+  }, [syllabusList]);
+
+  const [selectedSemester, setSelectedSemester] = useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (availableSemesters.length > 0 && selectedSemester === null) {
+      setSelectedSemester(availableSemesters[0]);
+    }
+  }, [availableSemesters, selectedSemester]);
 
   // Parcours options
   const parcoursOptions = [
@@ -83,26 +100,32 @@ const SyllabusView: React.FC = () => {
     setIsRefreshing(false);
   };
 
-  // Filter by parcours and group by semester
+  // Filter by parcours and search text, then group by semester/UE
   const groupedSyllabus = useMemo(() => {
-    // First filter by parcours
-    // Parcours codes (PC/PA) appear as standalone segments with underscores: _PC_ or _PA_
     const filtered = syllabusList.filter((s) => {
-      if (parcours === 'all') { return true; }
-
-      // Check for parcours pattern with underscores to avoid false matches
-      // e.g., "_PA_" should match but "AFP" (containing PA) should not
+      // Check for parcours pattern
       const hasPC = s.name.includes('_PC_') || s.name.endsWith('_PC');
       const hasPA = s.name.includes('_PA_') || s.name.endsWith('_PA');
 
-      if (parcours === 'PC') {
-        // Show items with PC or items without any parcours (for S05+ which have no PC/PA)
-        return hasPC || (!hasPC && !hasPA);
+      // Parcours filter
+      if (parcours === 'PC' && !(hasPC || (!hasPC && !hasPA))) {
+        return false;
+      }
+      if (parcours === 'PA' && !(hasPA || (!hasPC && !hasPA))) {
+        return false;
       }
 
-      if (parcours === 'PA') {
-        // Show items with PA or items without any parcours (for S05+ which have no PC/PA)
-        return hasPA || (!hasPC && !hasPA);
+      // (Removed strictly filtering by semester to allow scrolling freely)
+      /* if (selectedSemester !== null && s.semester !== selectedSemester) {
+        return false;
+      } */
+
+      // Search filter
+      if (searchText.trim() !== '') {
+        const lowerSearch = searchText.toLowerCase();
+        const subjectName = (s.caption?.name || s.name).toLowerCase();
+        const ueName = (s.UE || '').toLowerCase();
+        return subjectName.includes(lowerSearch) || ueName.includes(lowerSearch);
       }
 
       return true;
@@ -142,7 +165,7 @@ const SyllabusView: React.FC = () => {
           ueGroups: sortedUeGroups,
         };
       });
-  }, [syllabusList, parcours]);
+  }, [syllabusList, parcours, searchText]);
 
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
@@ -189,11 +212,15 @@ const SyllabusView: React.FC = () => {
     }
   };
 
-  const renderSemesterSection = ({ item }: { item: { semester: number; ueGroups: { name: string; items: Syllabus[] }[] } }) => (
+  const renderSemesterSection = ({ item, index }: { item: { semester: number; ueGroups: { name: string; items: Syllabus[] }[] }, index: number }) => (
     <Stack style={{ marginBottom: 16 }} gap={12}>
-      <Typography variant="h6" color="secondary" style={{ marginLeft: 4 }}>
-        Semestre {item.semester}
-      </Typography>
+      {index > 0 && (
+        <View style={{ overflow: 'hidden', height: 20, opacity: 0.3, marginTop: 16, marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
+          <Typography variant="caption" color="secondary" numberOfLines={1} style={{ textTransform: 'uppercase', fontSize: 12, width: '200%' }}>
+            {(t('Syllabus_Next_Semester') + "   ").repeat(20)}
+          </Typography>
+        </View>
+      )}
       {item.ueGroups.map((group) => (
         <UEGroup key={group.name} name={getUeName(group.name)}>
           {group.items.map((syllabus) => (
@@ -205,15 +232,68 @@ const SyllabusView: React.FC = () => {
   );
 
 
+  /* Scrollspy & Navigation */
+  const listRef = React.useRef<any>(null);
+
+  const handleScrollToIndex = (index: number) => {
+    listRef.current?.scrollToIndex({
+      index,
+      animated: true,
+      viewOffset: headerHeight + 20, // offset for header
+    });
+  };
+
+  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: any[] }) => {
+    if (viewableItems && viewableItems.length > 0) {
+      // Find the first visible item that is a semester section
+      // Since data is groupedSyllabus, items ARE semesters.
+      const firstItem = viewableItems[0];
+      if (firstItem && firstItem.item && typeof firstItem.item.semester === 'number') {
+        setSelectedSemester(firstItem.item.semester);
+      }
+    }
+  }, []);
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 10, // Updates as soon as 10% of new section is visible (or use 50 for center)
+  }).current;
+
   return (
     <View style={{ flex: 1 }}>
       <TabHeader
         onHeightChanged={setHeaderHeight}
         title={
-          <TabHeaderTitle
-            leading={t("Tab_Syllabus")}
-            chevron={false}
-          />
+          <MenuView
+            onPressAction={({ nativeEvent }) => {
+              const actionId = nativeEvent.event;
+              if (actionId.startsWith("semester:")) {
+                const semester = parseInt(actionId.replace("semester:", ""), 10);
+                setSelectedSemester(semester);
+                // Scroll to this semester
+                const index = groupedSyllabus.findIndex(s => s.semester === semester);
+                if (index !== -1) {
+                  handleScrollToIndex(index);
+                }
+              }
+            }}
+            actions={
+              availableSemesters.map((sem) => ({
+                id: "semester:" + sem,
+                title: t("Grades_Semester") + " " + sem,
+                state: selectedSemester === sem ? "on" : "off",
+                image: Platform.select({
+                  ios: sem + ".circle"
+                }),
+              }))
+            }
+          >
+            <TabHeaderTitle
+              leading={t("Grades_Semester")}
+              number={selectedSemester?.toString()}
+              color={colors.primary}
+              chevron={availableSemesters.length > 1}
+            />
+          </MenuView>
         }
         trailing={
           // Only show parcours filter if at least one syllabus has PC/PA
@@ -244,9 +324,19 @@ const SyllabusView: React.FC = () => {
             </ChipButton>
           ) : undefined
         }
+        bottom={
+          <Search
+            placeholder={t('Syllabus_Search_Placeholder')}
+            color={colors.primary}
+            onTextChange={(text) => setSearchText(text)}
+          />
+        }
       />
 
       <LegendList
+        ref={listRef}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
         data={groupedSyllabus}
         renderItem={renderSemesterSection}
         keyExtractor={(item) => `semester - ${item.semester} `}

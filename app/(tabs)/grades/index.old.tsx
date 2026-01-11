@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
 import { useAccountStore } from "@/stores/account";
+import { AvailablePatterns } from "@/ui/components/Pattern/Pattern";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Grade from "@/ui/components/Grade";
@@ -121,7 +122,7 @@ export default function TabOneScreen() {
   }, []);
 
   const [sorting, setSorting] = useState("alphabetical");
-  const [currentAlgorithm, setCurrentAlgorithm] = useState("subject");
+  const [currentAlgorithm, setCurrentAlgorithm] = useState<"subject" | "weighted" | "median">("subject");
 
   const [periods, setPeriods] = useState<Period[]>([]);
   const [newSubjects, setSubjects] = useState<Array<SharedSubject>>([]);
@@ -145,7 +146,7 @@ export default function TabOneScreen() {
     setPeriods(result);
 
     const currentPeriodFound = getCurrentPeriod(result)
-    setCurrentPeriod(currentPeriodFound)
+    setCurrentPeriod(currentPeriodFound ?? undefined)
   };
 
   useEffect(() => {
@@ -189,7 +190,9 @@ export default function TabOneScreen() {
     }
     const grades = newSubjects
       .flatMap(subject => subject.grades)
-      .filter(grade =>
+      .filter((grade): grade is SharedGrade =>
+        grade !== undefined &&
+        grade !== null &&
         grade.studentScore?.value !== undefined &&
         !grade.studentScore.disabled &&
         !isNaN(grade.studentScore.value)
@@ -219,7 +222,6 @@ export default function TabOneScreen() {
       if (!subjectMap.has(cleanedName)) {
         subjectMap.set(cleanedName, {
           color: getSubjectColor(subject.name),
-          emoji: getSubjectEmoji(subject.name),
           name: getSubjectName(subject.name),
           originalName: subject.name
         });
@@ -233,7 +235,6 @@ export default function TabOneScreen() {
     const cleanedName = subjectName.toLocaleLowerCase().trim().replace(/\s+/g, ' ').replace(/[^\w\s]/gi, '');
     return subjectData.get(cleanedName) || {
       color: getSubjectColor(subjectName),
-      emoji: getSubjectEmoji(subjectName),
       name: getSubjectName(subjectName),
       originalName: subjectName
     };
@@ -249,19 +250,19 @@ export default function TabOneScreen() {
         const bAvg = b.studentAverage?.value ?? 0;
         return bAvg - aAvg;
       } else if (sorting === "date") {
-        const aGrades = a.grades.filter(g => g.givenAt);
-        const bGrades = b.grades.filter(g => g.givenAt);
-        const aMostRecentDate = aGrades.length > 0 ? Math.max(...aGrades.map(g => g.givenAt.getTime())) : 0;
-        const bMostRecentDate = bGrades.length > 0 ? Math.max(...bGrades.map(g => g.givenAt.getTime())) : 0;
+        const aGrades = (a.grades ?? []).filter(g => g.givenAt);
+        const bGrades = (b.grades ?? []).filter(g => g.givenAt);
+        const aMostRecentDate = aGrades.length > 0 ? Math.max(...aGrades.map(g => g.givenAt?.getTime() ?? 0)) : 0;
+        const bMostRecentDate = bGrades.length > 0 ? Math.max(...bGrades.map(g => g.givenAt?.getTime() ?? 0)) : 0;
         return bMostRecentDate - aMostRecentDate;
       }
       return 0;
     });
 
     const result = sortedSubjects.flatMap((subject) => {
-      const grades = subject.grades
-        .slice() // Create a shallow copy to avoid mutating the original array
-        .sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
+      const grades = (subject.grades ?? [])
+        .slice()
+        .sort((a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0));
 
       return [
         { type: "header", subject, ui: { isHeader: true, key: "su:" + subject.id + "(" + currentPeriod?.name + ")" } },
@@ -288,7 +289,7 @@ export default function TabOneScreen() {
         isLast={uiLast}
         isFirst={uiFirst}
         title={item.description ? item.description : t('Grade_NoDescription', { subject: subjectInfo.name })}
-        date={item.givenAt.getTime()}
+        date={item.givenAt ? item.givenAt.getTime() : 0}
         score={(item.studentScore?.value ?? 0)}
         disabled={item.studentScore?.disabled}
         status={item.studentScore?.status}
@@ -310,11 +311,10 @@ export default function TabOneScreen() {
     return (
       <Subject
         color={subjectInfo.color}
-        emoji={subjectInfo.emoji}
         name={subjectInfo.name}
         average={item.studentAverage?.value ?? 0}
-        disabled={item.studentAverage.disabled}
-        status={item.studentAverage.status}
+        disabled={item.studentAverage?.disabled}
+        status={item.studentAverage?.status}
         outOf={item.outOf?.value ?? 20}
       />
     );
@@ -334,10 +334,14 @@ export default function TabOneScreen() {
     return null;
   }, [renderItemSubject, renderItemGrade]);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   const recentGrades = useMemo(() => {
-    return newSubjects.flatMap(subject => subject.grades).sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).slice(0, 6);
+    return newSubjects
+      .flatMap(subject => subject.grades)
+      .filter((g): g is SharedGrade => g !== undefined && g !== null && !!g.givenAt)
+      .sort((a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0))
+      .slice(0, 6);
   }, [newSubjects]);
 
   const LatestGradeItem = useCallback(({ item }: { item: SharedGrade }) => {
@@ -350,7 +354,7 @@ export default function TabOneScreen() {
       >
         <CompactGrade
           key={item.id + "_compactGrade"}
-          emoji={subjectInfo.emoji}
+
           title={subjectInfo.name}
           description={item.description}
           score={item.studentScore?.value ?? 0}
@@ -358,7 +362,7 @@ export default function TabOneScreen() {
           disabled={item.studentScore?.disabled}
           color={subjectInfo.color}
           status={item.studentScore?.status}
-          date={item.givenAt}
+          date={item.givenAt ?? new Date()}
           onPress={() => {
             navigation.navigate('(modals)/grade', {
               grade: item,
@@ -433,7 +437,7 @@ export default function TabOneScreen() {
         engine="FlatList"
         backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
         foregroundColor="#29947A"
-        pattern={"cross"}
+        pattern={AvailablePatterns.CROSS}
         initialNumToRender={2}
         removeClippedSubviews={true}
         onFullyScrolled={handleFullyScrolled}
@@ -563,7 +567,7 @@ export default function TabOneScreen() {
               const selectedSorting = actionId.replace("sort:", "");
               setSorting(selectedSorting);
             } else if (actionId.startsWith("algorithm:")) {
-              const selectedAlgorithm = actionId.replace("algorithm:", "");
+              const selectedAlgorithm = actionId.replace("algorithm:", "") as "subject" | "weighted" | "median";
               setCurrentAlgorithm(selectedAlgorithm);
             }
           }}
@@ -596,7 +600,7 @@ export default function TabOneScreen() {
               const selectedSorting = actionId.replace("sort:", "");
               setSorting(selectedSorting);
             } else if (actionId.startsWith("algorithm:")) {
-              const selectedAlgorithm = actionId.replace("algorithm:", "");
+              const selectedAlgorithm = actionId.replace("algorithm:", "") as "subject" | "weighted" | "median";
               setCurrentAlgorithm(selectedAlgorithm);
             }
           }}

@@ -7,7 +7,6 @@ import { useBottomTabBarHeight } from 'react-native-bottom-tabs'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import MapView, { Marker } from 'react-native-maps'
 
 import News from '@/database/models/News'
 import { useNews } from '@/database/useNews'
@@ -27,10 +26,11 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition'
 import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
-import { isIntracomConnected, getIntracomToken } from '@/app/(modals)/login-intracom'
+import { isIntracomConnected, getIntracomToken } from '@/app/(modals)/news'
+
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur'
+import ViewContainer from '@/ui/components/ViewContainer'
 
 // Events Intracom
 interface IntracomEvent {
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   headerBtn: {
     width: "100%",
     flexDirection: "row",
-    borderCurve: "circular",
+    borderCurve: "continuous",
     borderRadius: 20,
     padding: 10,
     gap: 8
@@ -110,7 +110,7 @@ const NewsView = () => {
   const { t } = useTranslation();
 
   const onPress = () => {
-    router.push("/(modals)/login-intracom");
+    router.push("/(modals)/news");
   };
 
   const theme = useTheme()
@@ -134,7 +134,6 @@ const NewsView = () => {
 
   const [intracomEvents, setIntracomEvents] = useState<IntracomEvent[]>([]);
   const [intracomLoading, setIntracomLoading] = useState(false);
-  const [expandedEventId, setExpandedEventId] = useState<number | null>(null);
 
   const fetchIntracomEvents = useCallback(async () => {
     const token = getIntracomToken();
@@ -291,12 +290,7 @@ const NewsView = () => {
                     contentContainerStyle={{ gap: 10 }}
                   >
                     {intracomEvents.filter((event) => event.state === "OPEN").map((event) => (
-                      <IntracomEventCard
-                        key={event.id}
-                        event={event}
-                        isExpanded={expandedEventId === event.id}
-                        onToggleExpand={() => setExpandedEventId(expandedEventId === event.id ? null : event.id)}
-                      />
+                      <IntracomEventCard key={event.id} event={event} />
                     ))}
                   </ScrollView>
                 </View>
@@ -405,9 +399,10 @@ function truncateString(str: string, maxLength: number): string {
   return str.slice(0, maxLength) + "...";
 }
 // Intracom Event Card
-const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: IntracomEvent; isExpanded: boolean; onToggleExpand: () => void }) => {
+const IntracomEventCard = ({ event }: { event: IntracomEvent }) => {
   const theme = useTheme();
   const colors = theme.colors as any;
+  const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
   const [participants, setParticipants] = useState<IntracomParticipant[]>([]);
@@ -576,10 +571,10 @@ const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: Intra
   };
 
   const handlePress = () => {
-    if (!isExpanded) {
+    if (!expanded) {
       fetchEventDetails();
     }
-    onToggleExpand();
+    setExpanded(!expanded);
   };
 
   const openInMaps = () => {
@@ -589,6 +584,7 @@ const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: Intra
     }
   };
 
+  // Utiliser les heures du slot si disponibles, sinon fallback
   const displayStartTime = slotTimes ? formatTime(slotTimes.start) : formatTime(event.date);
   const displayEndTime = slotTimes ? formatTime(slotTimes.end) : getEndTime(event.date);
 
@@ -598,6 +594,8 @@ const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: Intra
         style={{
           backgroundColor: colors.card,
           borderRadius: 16,
+          borderCurve: 'continuous',
+          padding: 14,
           width: '100%',
           borderWidth: 1,
           borderColor: colors.border,
@@ -605,7 +603,7 @@ const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: Intra
         }}
       >
         {/* Partie principale */}
-        <View style={{ flexDirection: 'row', marginLeft: 14, marginRight: 14, marginTop: 14, marginBottom: isExpanded ? 0 : 14 }}>
+        <View style={{ flexDirection: 'row' }}>
           {/* Contenu principal à gauche */}
           <View style={{ flex: 1 }}>
             <Stack direction="horizontal" gap={6} style={{ marginBottom: 8, alignItems: 'center' }}>
@@ -613,6 +611,7 @@ const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: Intra
                 style={{
                   backgroundColor: colors.primary + "20",
                   borderRadius: 50,
+                  borderCurve: 'continuous',
                   paddingHorizontal: 12,
                   paddingVertical: 3,
                 }}
@@ -657,87 +656,32 @@ const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: Intra
             }}
           />
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="caption" style={{ color: colors.text, fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30 }}>
+            <Typography variant="caption" style={{ color: colors.text, fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
               {displayStartTime}
             </Typography>
             <Papicons name="ArrowDown" size={20} color={colors.text + "60"} style={{ marginVertical: 4 }} />
-            <Typography variant="caption" style={{ color: colors.text, fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30 }}>
+            <Typography variant="caption" style={{ color: colors.text, fontSize: 25, fontFamily: "Inter-Variable", fontWeight: "bold", lineHeight: 30, }}>
               {displayEndTime}
             </Typography>
           </View>
         </View>
 
         {/* Partie expandée */}
-        {isExpanded && (
-          <View style={{
-            borderRadius: 16,
-            overflow: 'hidden',
-            position: 'relative',
-            height: 350,
-            marginTop: 14,
-          }}>
+        {expanded && (
+          <View style={{ marginTop: 14 }}>
             {loading ? (
               <Typography variant="caption" style={{ color: colors.text + "80", textAlign: 'center' }}>
                 Chargement...
               </Typography>
             ) : (
               <>
-                {/* Section Map */}
-                {eventDetails?.latitude && eventDetails?.longitude && (
-                  <><View
-                    style={{
-                      zIndex: 0,
-                      width: '100%',
-                      height: 290,
-                      top: 60,
-                      borderRadius: 16,
-                      backgroundColor: colors.border,
-                      position: 'relative',
-                    }}
-                  >
-
-                    <MapView
-                      style={StyleSheet.absoluteFillObject}
-                      initialRegion={{
-                        latitude: eventDetails.latitude,
-                        longitude: eventDetails.longitude,
-                        latitudeDelta: 0.005,
-                        longitudeDelta: 0.005,
-                      }}
-                      scrollEnabled={false}
-                      zoomEnabled={false}
-                      rotateEnabled={false}
-                      pitchEnabled={false}
-                      mapType="standard"
-                    >
-                      <Marker
-                        coordinate={{
-                          latitude: eventDetails.latitude,
-                          longitude: eventDetails.longitude,
-                        }} />
-                    </MapView>
-                  </View>
-                  </>
-                )}
-                <LinearGradient
-                  colors={[colors.card, colors.card + '20']}
-                  start={[0.5, 0.1]}
-                  end={[0.5, 0.35]}
-                  style={StyleSheet.absoluteFillObject}
-                />
-
                 {/* Section Inscrits */}
                 <View
                   style={{
-                    position: 'absolute',
-                    zIndex: 2,
-                    top: 10,
-                    left: 10,
-                    right: 10,
                     backgroundColor: colors.overground,
                     borderRadius: 16,
                     padding: 14,
-                    margin: 4,
+                    marginBottom: 12,
                   }}
                 >
                   <Stack direction="horizontal" gap={6} style={{ marginBottom: 12, alignItems: 'center' }}>
@@ -747,23 +691,24 @@ const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: Intra
                     </Typography>
                   </Stack>
 
-                  {participants.length >= 5 ? (
+                  {participants.length > 0 ? (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       <Stack direction="horizontal" gap={16}>
                         {participants.map((participant) => (
                           <View key={participant.id} style={{ alignItems: 'center' }}>
                             <View
                               style={{
-                                width: 30,
-                                height: 30,
+                                width: 50,
+                                height: 50,
                                 borderRadius: 25,
+                                backgroundColor: getProfileColorByName(participant.login),
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 borderWidth: 3,
-                                borderColor: getProfileColorByName(participant.login),
+                                borderColor: getProfileColorByName(participant.login) + '40',
                               }}
                             >
-                              <Papicons name="user" size={18} color={getProfileColorByName(participant.login)} />
+                              <Papicons name="user" size={24} color="#FFFFFF" />
                             </View>
                             <Typography
                               variant="caption"
@@ -781,75 +726,87 @@ const IntracomEventCard = ({ event, isExpanded, onToggleExpand }: { event: Intra
                       </Stack>
                     </ScrollView>
                   ) : (
-                    <Stack direction="horizontal" gap={16}>
-                      {participants.map((participant) => (
-                        <View key={participant.id} style={{ alignItems: 'center' }}>
-                          <View
-                            style={{
-                              width: 30,
-                              height: 30,
-                              borderRadius: 25,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              borderWidth: 3,
-                              borderColor: getProfileColorByName(participant.login),
-                            }}
-                          >
-                            <Papicons name="user" size={18} color={getProfileColorByName(participant.login)} />
-                          </View>
-                          <Typography
-                            variant="caption"
-                            style={{
-                              color: getProfileColorByName(participant.login),
-                              fontFamily: "Inter-Variable",
-                              fontWeight: "bold",
-                              marginTop: 4,
-                            }}
-                          >
-                            {getFirstName(participant.login)}
-                          </Typography>
-                        </View>
-                      ))}
-                    </Stack>
+                    <Typography variant="caption" style={{ color: colors.text + "60" }}>
+                      Aucun inscrit pour le moment
+                    </Typography>
                   )}
                 </View>
 
-                <Pressable
-                  onPress={openInMaps}
-                  style={{
-                    position: 'absolute',
-                    bottom: 20, // Monté à 20 pour ne pas être trop bas
-                    left: '50%',
-                    transform: [{ translateX: -75 }],
-                    zIndex: 3, // Le ZIndex le plus haut pour garantir le clic
-                  }}
-                >
-                  <LiquidGlassView
-                    glassType="regular"
-                    glassOpacity={0.1}
-                    style={{
-                      paddingHorizontal: 16,
-                      paddingVertical: 8,
-                      borderRadius: 20,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 6,
-                    }}
+                {/* Section Map */}
+                {eventDetails?.latitude && eventDetails?.longitude && (
+                  <Pressable
+                    onPress={openInMaps}
+                    style={{ borderRadius: 16, overflow: 'hidden' }}
                   >
-                    <Papicons name="MapPin" size={16} color={colors.primary} />
-                    <Typography variant="caption" style={{ color: colors.text, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
-                      Ouvrir dans maps
-                    </Typography>
-                  </LiquidGlassView>
-                </Pressable>
-
-
-
+                    <View
+                      style={{
+                        width: '100%',
+                        height: 180,
+                        borderRadius: 16,
+                        backgroundColor: colors.border,
+                        position: 'relative',
+                      }}
+                    >
+                      {/* Image statique de la carte via MapBox Static API */}
+                      <View
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: colors.overground,
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: 30,
+                            backgroundColor: colors.primary + '20',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginBottom: 8,
+                          }}
+                        >
+                          <Papicons name="MapPin" size={28} color={colors.primary} />
+                        </View>
+                        <Typography variant="body2" style={{ color: colors.text, opacity: 0.7, fontFamily: "Inter-Variable" }}>
+                          {eventDetails.address}
+                        </Typography>
+                        <Typography variant="caption" style={{ color: colors.text, opacity: 0.5, fontFamily: "Inter-Variable" }}>
+                          {eventDetails.town}
+                        </Typography>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 10,
+                        left: '50%',
+                        transform: [{ translateX: -75 }],
+                        backgroundColor: colors.card,
+                        paddingHorizontal: 16,
+                        paddingVertical: 8,
+                        borderRadius: 20,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 6,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                      }}
+                    >
+                      <Papicons name="Compass" size={16} color={colors.primary} />
+                      <Typography variant="caption" style={{ color: colors.text, fontFamily: "Inter-Variable", fontWeight: "bold" }}>
+                        Ouvrir dans maps
+                      </Typography>
+                    </View>
+                  </Pressable>
+                )}
               </>
             )}
-
-
-
           </View>
         )}
       </View>
