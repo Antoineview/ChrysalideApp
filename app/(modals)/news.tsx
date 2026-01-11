@@ -57,6 +57,15 @@ export default function NewsModal() {
                             Cela nous permettra d'afficher les forums et salons disponibles près de ton campus.
                         </Typography>
                     </StackLayout>
+
+                    <StackLayout gap={10}>
+                        <Button
+                            title="Se connecter"
+                            onPress={() => router.push("/(modals)/login-intracom")}
+                            style={{ backgroundColor: "#0078D4" }}
+                            size="large"
+                        />
+                    </StackLayout>
                 </StackLayout>
             </View>
 

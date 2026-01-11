@@ -102,6 +102,10 @@ const GradesView: React.FC = () => {
     setPeriodsLoading(true);
 
     const result = await managerToUse.getGradesPeriods();
+    if (!result) {
+      setPeriodsLoading(false);
+      return;
+    }
     const currentPeriodFound = getCurrentPeriod(result);
 
     // sort by time, then put Semestre and Trimestre on top
