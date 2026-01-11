@@ -1,19 +1,19 @@
-import { isIntracomConnected, resetIntracomToken } from "./login-intracom";
-import { Stack, useRouter } from "expo-router";
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { GetNewsServices, NewsService } from "../(onboarding)/utils/constants";
-import { View, Image, Button, Pressable } from "react-native";
+import { Image, View } from "react-native";
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import ViewContainer from "@/ui/components/ViewContainer";
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import StackLayout from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { Papicons } from "@getpapillon/papicons";
+import ViewContainer from "@/ui/components/ViewContainer";
+
+import { GetNewsServices, NewsService } from "../(onboarding)/utils/constants";
+import { isIntracomConnected, resetIntracomToken } from "./login-intracom";
 
 export default function NewsModal() {
     const router = useRouter();
@@ -116,8 +116,8 @@ export default function NewsModal() {
                                     </View>
                                 </View>
                             </AnimatedPressable>
-                            ))
-                        </Reanimated.View>))}
+                        </Reanimated.View>
+                    ))}
                 </View>
             </View><OnboardingBackButton />
         </ViewContainer></>
