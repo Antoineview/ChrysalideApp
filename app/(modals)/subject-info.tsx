@@ -33,37 +33,36 @@ const SubjectInfo = () => {
   const outOf = subject?.outOf?.value ?? 20;
 
   return (
-    <>
-      <LinearGradient
-        colors={[subjectColor, colors.background]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 300,
-          width: "100%",
-          zIndex: -9,
-          opacity: 0.4,
-          borderTopLeftRadius: 50,
-          borderTopRightRadius: 50
-        }}
-      />
+    <View style={{ overflow: "hidden", backgroundColor: colors.background, padding: 0, margin: 0 }}>
+      <View style={{ overflow: "hidden" }}>
+        <LinearGradient
+          colors={[subjectColor, colors.background]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 300,
+            width: "100%",
+            zIndex: -9,
+            opacity: 0.4,
+          }}
+        />
 
-      <TableFlatList
-        contentInsetAdjustmentBehavior="never"
-        engine='FlatList'
-        ignoreHeaderHeight={true}
-        scrollEnabled={false}
-        style={{ backgroundColor: "transparent", zIndex: 1 }}
-
-        ListHeaderComponent={
+        <View
+          style={{
+            backgroundColor: "transparent",
+            overflow: "hidden",
+            paddingBottom: 0,
+          }}
+        >
           <View
             style={{
               alignItems: "center",
               justifyContent: "center",
               gap: 16,
-              marginVertical: 20,
+              marginTop: 16,
+              marginBottom: 0,
               width: "100%",
             }}
           >
@@ -82,8 +81,8 @@ const SubjectInfo = () => {
 
             <Stack
               card
-              width={"100%"}
-              style={{ alignItems: "center", justifyContent: "center", paddingVertical: 8 }}
+              width={"90%"}
+              style={{ alignItems: "center", justifyContent: "center", marginTop: 8, padding: 12, marginBottom: 100 }}
               onPress={() => {
                 const data = storage.getString("auriga_syllabus");
                 const allSyllabus: Syllabus[] = data ? JSON.parse(data) : [];
@@ -128,11 +127,9 @@ const SubjectInfo = () => {
               </Stack>
             </Stack>
           </View>
-        }
-
-        sections={[]}
-      />
-    </>
+        </View>
+      </View>
+    </View>
   );
 };
 
