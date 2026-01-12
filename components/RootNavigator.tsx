@@ -140,9 +140,6 @@ export function RootNavigator() {
           }
         }}
       />
-
-
-
       <Stack.Screen
         name="(features)/(news)/specific"
         options={{
@@ -152,7 +149,6 @@ export function RootNavigator() {
           headerLargeTitle: false,
         }}
       />
-
       <Stack.Screen
         name="(features)/soon"
         options={{
@@ -162,9 +158,6 @@ export function RootNavigator() {
           sheetAllowedDetents: "fitToContents"
         }}
       />
-
-
-
       <Stack.Screen
         name="(features)/attendance"
         options={{
