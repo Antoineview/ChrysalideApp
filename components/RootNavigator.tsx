@@ -86,7 +86,7 @@ export function RootNavigator() {
           headerTitle: t("Modal_Grades_Title"),
           headerLargeTitle: false,
           presentation: "formSheet",
-          sheetAllowedDetents: "fitToContents",
+          sheetAllowedDetents: Platform.OS == "ios" ? "fitToContents" : [0.42, 0.7],
           sheetGrabberVisible: true,
           sheetCornerRadius: 50,
           contentStyle: {
@@ -180,7 +180,7 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           presentation: "formSheet",
-          sheetAllowedDetents: [0.38],
+          sheetAllowedDetents: Platform.OS == "ios" ? "fitToContents" : [0.35],
           sheetGrabberVisible: true,
           sheetCornerRadius: 50,
         }}
