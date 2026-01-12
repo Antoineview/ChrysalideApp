@@ -1,5 +1,6 @@
 import { Papicons } from '@getpapillon/papicons'
 import { useFocusEffect, useTheme } from '@react-navigation/native'
+import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
 import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next';
@@ -9,10 +10,12 @@ import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import { getIntracomToken, isIntracomConnected } from '@/app/(modals)/login-intracom'
+import { getIntracomToken } from '@/app/(modals)/login-intracom'
 import News from '@/database/models/News'
+import { getIntracomEventsFromCache, saveIntracomEventsToDatabase } from '@/database/useIntracomEvents'
 import { useNews } from '@/database/useNews'
 import { getManager, subscribeManagerUpdate } from '@/services/shared'
+import { useAccountStore } from '@/stores/account'
 import AnimatedPressable from '@/ui/components/AnimatedPressable'
 import Avatar from '@/ui/components/Avatar'
 import { Dynamic } from '@/ui/components/Dynamic'
@@ -30,7 +33,6 @@ import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 
 import IntracomCard from './components/IntracomCard'
-import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
 
 // Events Intracom
 interface IntracomEvent {
@@ -43,6 +45,12 @@ interface IntracomEvent {
   nbNewStudents: number;
   maxStudents: number;
   state: "OPEN" | "CLOSED";
+  // Location fields (optional, fetched from event details)
+  address?: string;
+  zipcode?: string;
+  town?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 const INTRACOM_EVENTS_URL = "https://intracom.epita.fr/api/Students/Events?EventType=[]&Restrict=true&Research=&PageSize=20&PageNumber=1";
@@ -84,17 +92,23 @@ const NewsView = () => {
   }));
 
   const news = useNews();
+  const lastUsedAccount = useAccountStore((s) => s.lastUsedAccount);
 
   const [intracomEvents, setIntracomEvents] = useState<IntracomEvent[]>([]);
   const [intracomLoading, setIntracomLoading] = useState(false);
 
   const fetchIntracomEvents = useCallback(async () => {
     const token = getIntracomToken();
-    if (!token) { return; }
+    const accountId = lastUsedAccount || 'default';
 
-    console.log("[Intracom] URL:", INTRACOM_EVENTS_URL);
-    console.log("[Intracom] Token:", token);
-    console.log("[Intracom] Bearer:", `Bearer ${token}`);
+    // Always try to load from cache first
+    const cachedEvents = await getIntracomEventsFromCache(accountId);
+    if (cachedEvents.length > 0) {
+      setIntracomEvents(cachedEvents);
+    }
+
+    // If no token, don't try to fetch from API
+    if (!token) { return; }
 
     try {
       setIntracomLoading(true);
@@ -112,29 +126,58 @@ const NewsView = () => {
       }
 
       const data = await response.json();
-      setIntracomEvents(data.elemPage || []);
+      const events: IntracomEvent[] = data.elemPage || [];
+
+      // Fetch details for each event (location data)
+      const eventsWithDetails = await Promise.all(
+        events.map(async (event) => {
+          try {
+            const detailsRes = await fetch(`https://intracom.epita.fr/api/Events/${event.id}`, {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (detailsRes.ok) {
+              const details = await detailsRes.json();
+              return {
+                ...event,
+                address: details.address,
+                zipcode: details.zipcode,
+                town: details.town,
+                latitude: details.latitude,
+                longitude: details.longitude,
+              };
+            }
+          } catch {
+            // If fetching details fails, just return the event without location
+          }
+          return event;
+        })
+      );
+
+      setIntracomEvents(eventsWithDetails);
+
+      // Save to database (including location details)
+      if (eventsWithDetails.length > 0) {
+        await saveIntracomEventsToDatabase(eventsWithDetails, accountId);
+      }
     } catch (error) {
-      console.error("[Intracom] Erreur lors de la sync:", error);
+      warn(`[Intracom] Erreur lors de la sync: ${error}`);
+      // On error, keep showing cached events (already loaded above)
     } finally {
       setIntracomLoading(false);
     }
-  }, []);
+  }, [lastUsedAccount]);
 
   useEffect(() => {
-    if (isIntracomConnected()) {
-      fetchIntracomEvents();
-    } else {
-      setIntracomEvents([]);
-    }
-  }, [isIntracomConnected()]);
+    fetchIntracomEvents();
+  }, [fetchIntracomEvents]);
 
   useFocusEffect(
     useCallback(() => {
-      if (isIntracomConnected()) {
-        fetchIntracomEvents();
-      } else {
-        setIntracomEvents([]);
-      }
+      fetchIntracomEvents();
     }, [fetchIntracomEvents])
   );
   const sortedNews = useMemo(() => {
@@ -238,7 +281,7 @@ const NewsView = () => {
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
           ListHeaderComponent={
             <View style={{ paddingTop: headerHeight }}>
-              {isIntracomConnected() && intracomEvents.length > 0 && (
+              {intracomEvents.length > 0 && (
                 <View style={{ marginBottom: 16 }}>
                   <Typography variant="h5" style={{ marginBottom: 10, color: colors.text }}>
                     Événements Intracom
@@ -256,7 +299,7 @@ const NewsView = () => {
             </View>
           }
           ListEmptyComponent={
-            !isIntracomConnected() || intracomEvents.length === 0 ? (
+            intracomEvents.length === 0 ? (
               <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Stack
                   hAlign="center"

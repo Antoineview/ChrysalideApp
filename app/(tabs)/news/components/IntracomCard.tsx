@@ -28,6 +28,12 @@ interface IntracomEvent {
     nbNewStudents: number;
     maxStudents: number;
     state: "OPEN" | "CLOSED";
+    // Location fields (optional, fetched from event details)
+    address?: string;
+    zipcode?: string;
+    town?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 interface IntracomEventDetails {
@@ -102,7 +108,6 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
     const [expanded, setExpanded] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
     const [participants, setParticipants] = useState<IntracomParticipant[]>([]);
     const [slotTimes, setSlotTimes] = useState<{ start: string; end: string } | null>(null);
 
@@ -214,8 +219,8 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
         return login;
     };
 
-    // Fetch event details when expanded
-    const fetchEventDetails = useCallback(async () => {
+    // Fetch slot info when expanded (location is already in event prop)
+    const fetchSlotInfo = useCallback(async () => {
         const token = getIntracomToken();
         if (!token) {
             return;
@@ -223,25 +228,12 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
         setLoading(true);
         try {
-            const [detailsRes, slotsRes] = await Promise.all([
-                fetch(`https://intracom.epita.fr/api/Events/${event.id}`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }),
-                fetch(`https://intracom.epita.fr/api/Events/${event.id}/SlotInfos`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }),
-            ]);
-
-            if (detailsRes.ok) {
-                const details: IntracomEventDetails = await detailsRes.json();
-                setEventDetails(details);
-            }
+            const slotsRes = await fetch(`https://intracom.epita.fr/api/Events/${event.id}/SlotInfos`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
 
             if (slotsRes.ok) {
                 const slots: IntracomSlotInfo[] = await slotsRes.json();
@@ -285,7 +277,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
         if (!expanded) {
             // Defer fetch until animation completes for smoother open
             InteractionManager.runAfterInteractions(() => {
-                fetchEventDetails();
+                fetchSlotInfo();
             });
         }
         setExpanded(!expanded);
@@ -296,8 +288,9 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
     };
 
     const openInMaps = () => {
-        if (eventDetails?.latitude && eventDetails?.longitude) {
-            const url = `https://maps.apple.com/?ll=${eventDetails.latitude},${eventDetails.longitude}&q=${encodeURIComponent(eventDetails.address + ', ' + eventDetails.town)}`;
+        if (event.latitude && event.longitude) {
+            const address = event.address ? `${event.address}, ${event.town}` : event.name;
+            const url = `https://maps.apple.com/?ll=${event.latitude},${event.longitude}&q=${encodeURIComponent(address)}`;
             Linking.openURL(url);
         }
     };
@@ -308,14 +301,14 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
     return (
         <Pressable onPress={handlePress}>
             <AnimatedView style={[styles.cardContainer, { backgroundColor: COLORS.cardBg, borderColor: colors.border }, animatedStyle, expanded && { minHeight: 400 }]}>
-                {/* Map Background (only when expanded) */}
-                {expanded && eventDetails?.latitude && eventDetails?.longitude && (
+                {/* Map Background (only when expanded and location available) */}
+                {expanded && event.latitude && event.longitude && (
                     <View style={[StyleSheet.absoluteFill, styles.mapContainer]}>
                         <MapView
                             style={StyleSheet.absoluteFill}
                             initialRegion={{
-                                latitude: eventDetails.latitude,
-                                longitude: eventDetails.longitude,
+                                latitude: event.latitude,
+                                longitude: event.longitude,
                                 latitudeDelta: 0.01,
                                 longitudeDelta: 0.01,
                             }}
@@ -438,7 +431,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                 <Collapsible collapsed={!expanded} duration={280} easing="easeOutCubic">
                     <View style={styles.actionButtons}>
                         {/* Open in Maps Button (Liquid Glass) */}
-                        {eventDetails?.latitude && eventDetails?.longitude && (
+                        {event.latitude && event.longitude && (
                             <Pressable onPress={openInMaps} style={styles.mapsButtonContainer}>
                                 <LiquidGlassView
                                     glassType="regular"
