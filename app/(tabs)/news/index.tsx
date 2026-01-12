@@ -236,7 +236,6 @@ const NewsView = () => {
                   width: 42,
                   height: 42,
                   borderRadius: 30,
-                  marginRight: 16,
                 }}
                 hAlign='center'
                 vAlign='center'
