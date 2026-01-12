@@ -42,6 +42,7 @@ export async function ClearDatabaseForAccount(accountId: string) {
     "kids",
     "balances",
     "canteentransactions",
+    "intracom_events",
   ];
 
   await safeWrite(db, async () => {

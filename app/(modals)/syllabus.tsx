@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, StatusBar, View } from "react-native";
+import { ActivityIndicator, Platform, StatusBar, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import { Syllabus } from "@/services/auriga/types";
@@ -35,7 +35,7 @@ export default function SyllabusModal() {
   const { colors, dark } = useTheme();
   const params = useLocalSearchParams<{ syllabusData: string }>();
 
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(Platform.OS === 'android');
 
   const syllabus: Syllabus | null = React.useMemo(() => {
     try {

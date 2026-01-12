@@ -1,4 +1,5 @@
 import { Papicons } from '@getpapillon/papicons';
+import { useTheme } from '@react-navigation/native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useState } from 'react';
@@ -27,6 +28,12 @@ interface IntracomEvent {
     nbNewStudents: number;
     maxStudents: number;
     state: "OPEN" | "CLOSED";
+    // Location fields (optional, fetched from event details)
+    address?: string;
+    zipcode?: string;
+    town?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 interface IntracomEventDetails {
@@ -80,22 +87,27 @@ interface IntracomCardProps {
 
 const AnimatedView = Reanimated.createAnimatedComponent(View);
 
-// Colors from Figma
-const COLORS = {
-    primaryDark: '#004462',
-    primaryBlue: '#0095d6',
-    primaryBlueDark: '#0194d5',
-    badgeBg: 'rgba(1, 148, 213, 0.15)',
+// Theme-aware colors
+const getColors = (isDark: boolean) => ({
+    primaryDark: isDark ? '#8dcfec' : '#004462',
+    primaryBlue: isDark ? '#4db8e8' : '#0095d6',
+    primaryBlueDark: isDark ? '#4db8e8' : '#0194d5',
+    badgeBg: isDark ? 'rgba(77, 184, 232, 0.2)' : 'rgba(1, 148, 213, 0.15)',
     registerBg: 'rgba(4, 255, 0, 0.15)',
-    gradientEnd: '#8dcfec',
+    gradientStart: isDark ? '#1a3a4a' : '#FFFFFF',
+    gradientEnd: isDark ? '#0d2530' : '#8dcfec',
+    cardBg: isDark ? '#1E1E1E' : '#FFFFFF',
     white: '#FFFFFF',
-    dashedBorder: 'rgba(0, 68, 98, 0.5)',
-};
+    buttonText: isDark ? '#FFFFFF' : '#004462',
+    dashedBorder: isDark ? 'rgba(141, 207, 236, 0.5)' : 'rgba(0, 68, 98, 0.5)',
+});
 
 const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
+    const { dark, colors } = useTheme();
+    const COLORS = getColors(dark);
+
     const [expanded, setExpanded] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [eventDetails, setEventDetails] = useState<IntracomEventDetails | null>(null);
     const [participants, setParticipants] = useState<IntracomParticipant[]>([]);
     const [slotTimes, setSlotTimes] = useState<{ start: string; end: string } | null>(null);
 
@@ -127,37 +139,54 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
             FORUM_BAC: "Forum BAC",
             SALON: "Salon",
             JPO: "JPO",
+            IMMERSIVE_DAY: "JI",
         };
         return types[type] || type;
     };
 
-    // Parse event name to extract title and location
+    // Parse event name to extract place name and city
+    // After stripping event types and dates, format is typically: "CITY - PLACE NAME"
     const parseEventName = (name: string) => {
         const cleanName = name
             .replace(/\s*-?\s*Présentiel\s*-?\s*/gi, ' ')
             .replace(/\s*-?\s*Forum CPGE\s*-?\s*/gi, ' ')
             .replace(/\s*-?\s*Forum Lycée\s*-?\s*/gi, ' ')
             .replace(/\s*-?\s*Forum BAC\+?\s*-?\s*/gi, ' ')
+            .replace(/\s*-?\s*FORUM LYCEE\s*-?\s*/gi, ' ')
+            .replace(/\s*-?\s*FORUM CPGE\s*-?\s*/gi, ' ')
+            .replace(/\s*-?\s*FORUM BAC\+?\s*-?\s*/gi, ' ')
+            // Remove dates in format DD/MM/YYYY or DD/MM/YY
+            .replace(/\s*-?\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*-?\s*/g, ' ')
             .trim()
-            .replace(/\s+/g, ' ');
+            .replace(/\s+/g, ' ')
+            .replace(/^-\s*/, '') // Remove leading dash if any
+            .replace(/\s*-$/, ''); // Remove trailing dash if any
 
+        // After cleaning, expected format: "CITY - PLACE NAME"
         if (cleanName.includes(" - ")) {
             const parts = cleanName.split(" - ").filter(p => p.trim() !== '');
+            if (parts.length >= 2) {
+                // Format: CITY - PLACE NAME
+                return {
+                    city: parts[0].trim(),
+                    placeName: parts.slice(1).join(" - ").trim(),
+                };
+            }
             return {
-                title: parts[0].trim(),
-                location: parts.slice(1).join(" - ").trim() || null,
+                city: null,
+                placeName: parts[0]?.trim() || null,
             };
         }
 
         const match = cleanName.match(/^(.+?)\s*\((.+)\)$/);
         if (match) {
-            return { title: match[1].trim(), location: match[2].trim() };
+            return { city: match[2].trim(), placeName: match[1].trim() };
         }
 
-        return { title: cleanName, location: null };
+        return { city: null, placeName: cleanName || null };
     };
 
-    const { title: eventTitle, location: eventLocation } = parseEventName(event.name);
+    const { placeName, city } = parseEventName(event.name);
 
     // Format time from date string
     const formatTime = (dateString: string) => {
@@ -190,8 +219,8 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
         return login;
     };
 
-    // Fetch event details when expanded
-    const fetchEventDetails = useCallback(async () => {
+    // Fetch slot info when expanded (location is already in event prop)
+    const fetchSlotInfo = useCallback(async () => {
         const token = getIntracomToken();
         if (!token) {
             return;
@@ -199,25 +228,12 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
         setLoading(true);
         try {
-            const [detailsRes, slotsRes] = await Promise.all([
-                fetch(`https://intracom.epita.fr/api/Events/${event.id}`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }),
-                fetch(`https://intracom.epita.fr/api/Events/${event.id}/SlotInfos`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }),
-            ]);
-
-            if (detailsRes.ok) {
-                const details: IntracomEventDetails = await detailsRes.json();
-                setEventDetails(details);
-            }
+            const slotsRes = await fetch(`https://intracom.epita.fr/api/Events/${event.id}/SlotInfos`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
 
             if (slotsRes.ok) {
                 const slots: IntracomSlotInfo[] = await slotsRes.json();
@@ -261,7 +277,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
         if (!expanded) {
             // Defer fetch until animation completes for smoother open
             InteractionManager.runAfterInteractions(() => {
-                fetchEventDetails();
+                fetchSlotInfo();
             });
         }
         setExpanded(!expanded);
@@ -272,8 +288,9 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
     };
 
     const openInMaps = () => {
-        if (eventDetails?.latitude && eventDetails?.longitude) {
-            const url = `https://maps.apple.com/?ll=${eventDetails.latitude},${eventDetails.longitude}&q=${encodeURIComponent(eventDetails.address + ', ' + eventDetails.town)}`;
+        if (event.latitude && event.longitude) {
+            const address = event.address ? `${event.address}, ${event.town}` : event.name;
+            const url = `https://maps.apple.com/?ll=${event.latitude},${event.longitude}&q=${encodeURIComponent(address)}`;
             Linking.openURL(url);
         }
     };
@@ -283,15 +300,15 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
     return (
         <Pressable onPress={handlePress}>
-            <AnimatedView style={[styles.cardContainer, animatedStyle, expanded && { minHeight: 400 }]}>
-                {/* Map Background (only when expanded) */}
-                {expanded && eventDetails?.latitude && eventDetails?.longitude && (
+            <AnimatedView style={[styles.cardContainer, { backgroundColor: COLORS.cardBg, borderColor: colors.border }, animatedStyle, expanded && { minHeight: 400 }]}>
+                {/* Map Background (only when expanded and location available) */}
+                {expanded && event.latitude && event.longitude && (
                     <View style={[StyleSheet.absoluteFill, styles.mapContainer]}>
                         <MapView
                             style={StyleSheet.absoluteFill}
                             initialRegion={{
-                                latitude: eventDetails.latitude,
-                                longitude: eventDetails.longitude,
+                                latitude: event.latitude,
+                                longitude: event.longitude,
                                 latitudeDelta: 0.01,
                                 longitudeDelta: 0.01,
                             }}
@@ -305,7 +322,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
 
                 {/* Content Wrapper with Shared Gradient */}
                 <LinearGradient
-                    colors={[COLORS.white, COLORS.gradientEnd]}
+                    colors={[COLORS.gradientStart, COLORS.gradientEnd]}
                     locations={[0.18, 1]}
                     style={styles.gradientWrapper}
                 >
@@ -315,49 +332,54 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                         <View style={styles.eventInfo}>
                             {/* Type Badge + Date */}
                             <View style={styles.badgeRow}>
-                                <View style={styles.typeBadge}>
-                                    <Typography variant="caption" style={styles.badgeText}>
+                                <View style={[styles.typeBadge, { backgroundColor: COLORS.badgeBg }]}>
+                                    <Typography variant="caption" style={[styles.badgeText, { color: COLORS.primaryBlue }]}>
                                         {getTypeLabel(event.type)}
                                     </Typography>
                                 </View>
                                 <View style={styles.dateRow}>
                                     <Papicons name="Calendar" size={18} color={COLORS.primaryBlueDark} />
-                                    <Typography variant="caption" style={styles.dateText}>
+                                    <Typography variant="caption" style={[styles.dateText, { color: COLORS.primaryBlueDark }]}>
                                         {formatDate(event.date)}
                                     </Typography>
                                 </View>
                             </View>
 
-                            {/* Title */}
-                            <Typography variant="h6" style={styles.title} numberOfLines={2}>
-                                {eventTitle}
+                            {/* Title - Place Name (e.g., Lycée Leon Blum) */}
+                            <Typography variant="h6" style={[styles.title, { color: COLORS.primaryDark }]} numberOfLines={2}>
+                                {placeName || event.name}
                             </Typography>
 
-                            {/* Location */}
-                            {eventLocation && (
+                            {/* Location - City (e.g., Villefranche de Lauraguais) */}
+                            {city && (
                                 <View style={styles.locationRow}>
-                                    <Papicons name="MapPin" size={18} color={COLORS.primaryBlueDark} />
-                                    <Typography variant="caption" style={styles.dateText}>
-                                        {eventLocation}
+                                    <Papicons name="MapPin" size={15} color={COLORS.primaryBlueDark} />
+                                    <Typography variant="caption" style={[styles.dateText, { color: COLORS.primaryBlueDark, flex: 1, flexShrink: 1 }]}>
+                                        {city}
                                     </Typography>
                                 </View>
                             )}
                         </View>
 
                         {/* Right: Time Range */}
-                        <View style={styles.timeSection}>
+                        <LiquidGlassView
+                            glassType="regular"
+                            glassTintColor="transparent"
+                            glassOpacity={0}
+                            style={styles.timeSection}
+                        >
                             <View style={styles.timeWrapper}>
-                                <Typography variant="h6" style={styles.timeText}>
+                                <Typography variant="h6" style={[styles.timeText, { color: COLORS.primaryDark }]}>
                                     {displayStartTime}
                                 </Typography>
                             </View>
                             <Papicons name="ArrowDown" size={24} color={COLORS.primaryDark} />
                             <View style={styles.timeWrapper}>
-                                <Typography variant="h6" style={styles.timeText}>
+                                <Typography variant="h6" style={[styles.timeText, { color: COLORS.primaryDark }]}>
                                     {displayEndTime}
                                 </Typography>
                             </View>
-                        </View>
+                        </LiquidGlassView>
                     </View>
 
                     {/* Expanded Content */}
@@ -369,13 +391,13 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                         <View style={styles.participantsSection}>
                             <View style={styles.participantsHeader}>
                                 <Papicons name="user" size={18} color={COLORS.primaryDark} />
-                                <Typography variant="body1" style={styles.participantsTitle}>
+                                <Typography variant="body1" style={[styles.participantsTitle, { color: COLORS.primaryDark }]}>
                                     Inscrits
                                 </Typography>
                             </View>
 
                             {loading ? (
-                                <Typography variant="caption" style={styles.loadingText}>
+                                <Typography variant="caption" style={[styles.loadingText, { color: COLORS.primaryDark }]}>
                                     Chargement...
                                 </Typography>
                             ) : participants.length > 0 ? (
@@ -397,7 +419,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                                     ))}
                                 </ScrollView>
                             ) : (
-                                <Typography variant="caption" style={styles.noParticipants}>
+                                <Typography variant="caption" style={[styles.noParticipants, { color: COLORS.primaryDark }]}>
                                     Aucun inscrit pour le moment
                                 </Typography>
                             )}
@@ -409,7 +431,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                 <Collapsible collapsed={!expanded} duration={280} easing="easeOutCubic">
                     <View style={styles.actionButtons}>
                         {/* Open in Maps Button (Liquid Glass) */}
-                        {eventDetails?.latitude && eventDetails?.longitude && (
+                        {event.latitude && event.longitude && (
                             <Pressable onPress={openInMaps} style={styles.mapsButtonContainer}>
                                 <LiquidGlassView
                                     glassType="regular"
@@ -418,8 +440,8 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                                     glassOpacity={0}
                                     style={styles.mapsButton}
                                 >
-                                    <Papicons name="link" size={15} color={COLORS.white} />
-                                    <Typography variant="caption" style={styles.mapsButtonText}>
+                                    <Papicons name="link" size={15} color={COLORS.buttonText} />
+                                    <Typography variant="caption" style={[styles.mapsButtonText, { color: COLORS.buttonText }]}>
                                         Ouvrir dans maps
                                     </Typography>
                                 </LiquidGlassView>
@@ -438,8 +460,8 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event }) => {
                             glassOpacity={0}
                             style={styles.registerButton}
                         >
-                            <Papicons name="check" size={24} color={COLORS.white} />
-                            <Typography variant="body1" style={styles.registerText}>
+                            <Papicons name="check" size={24} color={COLORS.buttonText} />
+                            <Typography variant="body1" style={[styles.registerText, { color: COLORS.buttonText }]}>
                                 M&apos;inscrire !
                             </Typography>
                         </LiquidGlassView>
@@ -456,12 +478,12 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         borderCurve: 'continuous',
         overflow: 'hidden',
+        borderWidth: 0.5,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.15,
         shadowRadius: 3.3,
         elevation: 3,
-        backgroundColor: COLORS.white,
     },
     mapContainer: {
         minHeight: 550,
@@ -479,7 +501,7 @@ const styles = StyleSheet.create({
     },
     eventInfo: {
         flex: 1,
-        gap: 7,
+        gap: 10,
         justifyContent: 'space-between',
         alignSelf: 'stretch',
     },
@@ -489,13 +511,11 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     typeBadge: {
-        backgroundColor: COLORS.badgeBg,
         borderRadius: 15,
         paddingHorizontal: 10,
         paddingVertical: 5,
     },
     badgeText: {
-        color: COLORS.primaryBlue,
         fontWeight: '700',
         fontSize: 15,
         lineHeight: 15,
@@ -507,13 +527,11 @@ const styles = StyleSheet.create({
         gap: 5,
     },
     dateText: {
-        color: COLORS.primaryBlueDark,
         fontWeight: '700',
         fontSize: 15,
-        lineHeight: 15,
+        lineHeight: 18,
     },
     title: {
-        color: COLORS.primaryDark,
         fontWeight: '600',
         fontSize: 18,
         lineHeight: 22,
@@ -523,10 +541,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5,
+        flex: 1,
     },
     timeSection: {
-        borderWidth: 2,
-        borderColor: COLORS.primaryDark,
         borderRadius: 15,
         paddingHorizontal: 16,
         paddingVertical: 10,
@@ -534,13 +551,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignSelf: 'stretch',
         gap: 7,
+        overflow: 'hidden',
     },
     timeWrapper: {
         alignItems: 'center',
         justifyContent: 'center',
     },
     timeText: {
-        color: COLORS.primaryDark,
         fontWeight: '700',
         fontSize: 18,
         lineHeight: 18,
@@ -557,7 +574,6 @@ const styles = StyleSheet.create({
         gap: 2,
     },
     participantsTitle: {
-        color: COLORS.primaryDark,
         fontWeight: '700',
         fontSize: 18,
         lineHeight: 18,
@@ -586,12 +602,10 @@ const styles = StyleSheet.create({
         lineHeight: 12,
     },
     loadingText: {
-        color: COLORS.primaryDark,
         textAlign: 'center',
         opacity: 0.6,
     },
     noParticipants: {
-        color: COLORS.primaryDark,
         opacity: 0.5,
     },
     actionButtons: {
@@ -614,7 +628,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     mapsButtonText: {
-        color: COLORS.white,
+        color: '#FFFFFF',
         fontWeight: '500',
         fontSize: 12,
         lineHeight: 12,
@@ -638,7 +652,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     registerText: {
-        color: COLORS.white,
+        color: '#FFFFFF',
         fontWeight: '500',
         fontSize: 19,
         lineHeight: 19,
