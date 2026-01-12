@@ -41,6 +41,7 @@ ios/
 !ios/Papillon
 !ios/Papillon.xcodeproj/xcshareddata/xcschemes
 ios/Podfile
+!ios/ci_scripts/
 android/**
 android/*
 !android/app/
