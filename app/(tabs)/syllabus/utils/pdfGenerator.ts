@@ -1,8 +1,14 @@
 import { Syllabus } from "@/services/auriga/types";
 import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getUeName } from "@/utils/ueParams";
 
 import { cleanHtml, parseDeltaToText } from "./textHelpers";
+
+
+const sanitizeId = (text: string | number | undefined | null) => {
+  if (!text) { return "unknown-id"; }
+  return String(text).replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase();
+};
 
 export const generateFullPdfHtml = (
   semesters: {
@@ -29,7 +35,7 @@ export const generateFullPdfHtml = (
   </svg>`;
 
   // Helper to calculate stats
-  const calculateStats = (activities: any[]) => {
+  const calculateStats = (syllabus: any) => {
     const stats = {
       lecture: 0,
       tutorial: 0,
@@ -38,13 +44,18 @@ export const generateFullPdfHtml = (
       exam: 0,
       total: 0,
     };
-    if (!activities) {
+
+    if (!syllabus) {
       return stats;
     }
 
-    activities.forEach(a => {
+    // Total comes from syllabus duration (seconds -> hours)
+    stats.total = syllabus.duration ? syllabus.duration / 3600 : 0;
+
+    const activities = syllabus.activities || [];
+
+    activities.forEach((a: any) => {
       const h = a.duration ? a.duration / 3600 : 0;
-      stats.total += h;
       // Map types to categories if possible
       const type = (a.type || "").toLowerCase();
       if (type.includes("cour") || type.includes("cm")) {
@@ -53,14 +64,18 @@ export const generateFullPdfHtml = (
         stats.tutorial += h;
       } else if (type.includes("tp")) {
         stats.practical += h;
-      } else if (type.includes("perso")) {
-        stats.personal += h;
       } else if (type.includes("exam") || type.includes("ds")) {
         stats.exam += h;
-      } else if (h > 0) {
-        stats.lecture += h;
-      } // Default fallback
+      } else if (type.includes("perso")) {
+        // Explicit personal work in activities (rare but possible)
+        // We will add it to the sum to subtract later, or just ignore if we trust total - others
+      }
     });
+
+    // Calculate personal work as residual
+    const facedTime = stats.lecture + stats.tutorial + stats.practical + stats.exam;
+    stats.personal = Math.max(0, stats.total - facedTime);
+
     return stats;
   };
 
@@ -89,7 +104,7 @@ export const generateFullPdfHtml = (
           color: #1C1C1E; 
           margin: 0; 
           padding: 0;
-          background: #F2F2F7;
+          background: #FFFFFF;
           font-size: 10px; /* Reduced base font size */
           -webkit-print-color-adjust: exact;
         }
@@ -102,7 +117,7 @@ export const generateFullPdfHtml = (
           box-sizing: border-box;
           position: relative;
           page-break-after: always;
-          background: #F2F2F7;
+          background: #FFFFFF;
           overflow: hidden;
           border-bottom: 1px solid transparent; 
         }
@@ -116,7 +131,7 @@ export const generateFullPdfHtml = (
           box-sizing: border-box;
           position: relative;
           page-break-after: always;
-          background: #F2F2F7;
+          background: #FFFFFF;
           overflow: visible;
         }
         .page-auto .footer {
@@ -129,14 +144,14 @@ export const generateFullPdfHtml = (
            right: auto;
         }
 
-        /* Modern Card - More compact */
+        /* Modern Card - Matching App Style */
         .card {
           background: white;
-          border-radius: 12px;
-          padding: 12px;
+          border-radius: 20px;
+          padding: 16px;
           margin-bottom: 12px;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-          border: 1px solid #E5E5EA;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+          border: 0.5px solid #E5E5EA;
         }
 
         /* Headers */
@@ -278,9 +293,13 @@ export const generateFullPdfHtml = (
                 ${group.items
                   .map(
                     item => `
-                    <div style="margin-left: 20px; padding: 4px 0; border-bottom: 1px solid #F2F2F7; display: flex; justify-content: space-between;">
-                       <a href="#course-${item.code || item.id}" style="text-decoration: none; color: #007AFF;">${cleanHtml(item.caption?.name || item.name)}</a>
-                       <span style="color: #AEAEB2;">${item.code || ""}</span>
+                    <div style="margin-left: 20px; border-bottom: 1px solid #F2F2F7; position: relative;">
+                       <a href="#course-${sanitizeId(item.code || item.id)}" style="text-decoration: none; color: inherit; display: block; width: 100%;">
+                           <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                               <span style="color: #007AFF; font-weight: 500;">${cleanHtml(item.caption?.name || item.name)}</span>
+                               <span style="color: #AEAEB2;">${item.code || ""}</span>
+                           </div>
+                       </a>
                     </div>
                 `
                   )
@@ -307,7 +326,7 @@ export const generateFullPdfHtml = (
 
           const itemRows = group.items
             .map(item => {
-              const stats = calculateStats(item.activities || []);
+              const stats = calculateStats(item);
               const coef = item.coeff !== undefined ? item.coeff : ((item.exams?.reduce((acc, e) => acc + (e.weighting || 0), 0) || 0) / 100);
               groupCoef += coef;
               const subjColor = getSubjectColor(
@@ -382,26 +401,44 @@ export const generateFullPdfHtml = (
       .flatMap(sem =>
         sem.ueGroups.flatMap(group =>
           group.items.map(item => {
-            const stats = calculateStats(item.activities || []);
+            const stats = calculateStats(item);
             const coef = item.coeff !== undefined ? item.coeff : ((item.exams?.reduce((acc, e) => acc + (e.weighting || 0), 0) || 0) / 100);
             const sColor = getSubjectColor(item.caption?.name || item.name);
-            const sEmoji = getSubjectEmoji(item.caption?.name || item.name);
+            const examCount = item.exams?.length || 0;
+            const hoursTotal = Math.round(stats.total);
+            const hasCoeff = coef > 0;
+            const gradientStyle = hasCoeff
+              ? `background: linear-gradient(135deg, ${sColor}00 0%, ${sColor}20 100%), #FFFFFF;`
+              : `background: #FFFFFF;`;
 
             return `
-           <div class="page" id="course-${item.code || item.id}">
-              <div class="card" style="margin-bottom: 20px;">
-                 <div class="course-header" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
-                    <div class="course-icon" style="background-color: ${sColor};">
-                      ${sEmoji}
+           <div class="page" id="course-${sanitizeId(item.code || item.id)}">
+              <div class="card" style="margin-bottom: 20px; ${gradientStyle}">
+                 <div class="course-header" style="border-bottom:none; margin-bottom:0; padding-bottom:0; display: flex; align-items: center;">
+                    <div class="course-title-group" style="flex: 1;">
+                       <h1 class="course-title" style="color: #000; font-size: 22px; margin-bottom: 4px;">${cleanHtml(item.caption?.name || item.name)}</h1>
+                       
+                       <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
+                          ${examCount > 0 ? `
+                          <div style="background-color: ${sColor}15; padding: 4px 10px; border-radius: 12px;">
+                            <span style="color: ${sColor}; font-weight: 600; font-size: 11px;">
+                              ${examCount} Évaluation${examCount > 1 ? 's' : ''}
+                            </span>
+                          </div>` : ''}
+                          
+                          ${hoursTotal > 0 ? `
+                          <div style="display: flex; align-items: center; gap: 4px;">
+                              <span style="font-size: 12px; font-weight: 500; color: #000;">${hoursTotal}h</span>
+                              <span style="color: #8E8E93; font-size: 12px;">🕒</span>
+                          </div>` : ''}
+                       </div>
                     </div>
-                    <div class="course-title-group">
-                       <h1 class="course-title" style="color: ${sColor};">${cleanHtml(item.caption?.name || item.name)}</h1>
-                       <div class="course-subtitle">${group.name} • ${item.code || "CODE"}</div>
-                    </div>
-                    <div style="text-align:right;">
-                      <div style="font-size:18px; font-weight:700; color:${sColor};">${coef > 0 ? coef : "-"}</div>
-                      <div style="font-size:10px; color:#8E8E93; text-transform:uppercase;">Coefficient</div>
-                    </div>
+
+                    ${coef > 0 ? `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-left: 16px; margin-left: auto;">
+                      <div style="font-size: 24px; font-weight: 700; color: ${sColor}; line-height: 1;">${coef}</div>
+                      <div style="font-size: 9px; color: ${sColor}; text-transform: uppercase; font-weight: 600; margin-top: 2px;">COEFF</div>
+                    </div>` : ''}
                  </div>
               </div>
 
@@ -470,13 +507,46 @@ export const generateFullPdfHtml = (
               }
                     </div>
 
-                    <!-- Info -->
-                    <div class="card">
-                       <h4>Informations</h4>
-                       <div class="info-row"><span class="info-label">Semestre</span><span class="info-value">S${sem.semester}</span></div>
-                       <div class="info-row"><span class="info-label">UE</span><span class="info-value">${group.name}</span></div>
-                       <div class="info-row"><span class="info-label">Seuil</span><span class="info-value">${item.minScore !== undefined ? item.minScore : 6}</span></div>
-                       ${item.coeff !== undefined ? `<div class="info-row"><span class="info-label">Coefficient</span><span class="info-value">${item.coeff}</span></div>` : ""}
+                    <!-- Info Grid -->
+                    <div class="card" style="padding: 0; overflow: hidden; position: relative; border-radius: 20px; border: 0.5px solid #E5E5EA;">
+                         <!-- Vertical Divider -->
+                         <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #E5E5EA;"></div>
+                         
+                         <!-- Row 1 -->
+                         <div style="display: flex; border-bottom: 1px solid #E5E5EA;">
+                             <!-- UE -->
+                             <div style="flex: 1; padding: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                  <div style="color: #8E8E93; margin-bottom: 4px; font-size: 10px; font-weight: 500; text-transform: uppercase;">UE</div>
+                                  <div style="background: ${sColor}15; color: ${sColor}; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 11px;">
+                                      ${getUeName(item.UE)}
+                                  </div>
+                             </div>
+                             <!-- Coefficient -->
+                             <div style="flex: 1; padding: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                  <div style="color: #8E8E93; margin-bottom: 4px; font-size: 10px; font-weight: 500; text-transform: uppercase;">Coefficient</div>
+                                  <div style="background: ${sColor}15; color: ${sColor}; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 11px;">
+                                      ${item.coeff ? 'x' + item.coeff : 'Aucun'}
+                                  </div>
+                             </div>
+                         </div>
+
+                         <!-- Row 2 -->
+                         <div style="display: flex;">
+                             <!-- Duration -->
+                             <div style="flex: 1; padding: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                  <div style="color: #8E8E93; margin-bottom: 4px; font-size: 10px; font-weight: 500; text-transform: uppercase;">Durée</div>
+                                  <div style="background: ${sColor}15; color: ${sColor}; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 11px;">
+                                      ${formatHours(stats.total)}
+                                  </div>
+                             </div>
+                             <!-- Min Score -->
+                             <div style="flex: 1; padding: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                  <div style="color: #8E8E93; margin-bottom: 4px; font-size: 10px; font-weight: 500; text-transform: uppercase;">Note Seuil</div>
+                                  <div style="background: ${sColor}15; color: ${sColor}; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 11px;">
+                                      ${item.minScore !== undefined ? item.minScore.toFixed(2) + '/20' : '—'}
+                                  </div>
+                             </div>
+                         </div>
                     </div>
 
                     <!-- Evals -->
