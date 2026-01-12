@@ -293,13 +293,11 @@ export const generateFullPdfHtml = (
                 ${group.items
                   .map(
                     item => `
-                    <div style="margin-left: 20px; border-bottom: 1px solid #F2F2F7; position: relative;">
-                       <a href="#course-${sanitizeId(item.code || item.id)}" style="text-decoration: none; color: inherit; display: block; width: 100%;">
-                           <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                               <span style="color: #007AFF; font-weight: 500;">${cleanHtml(item.caption?.name || item.name)}</span>
-                               <span style="color: #AEAEB2;">${item.code || ""}</span>
-                           </div>
+                    <div style="margin-left: 20px; border-bottom: 1px solid #F2F2F7; padding: 8px 0; display: flex; justify-content: space-between;">
+                       <a href="#course-${sanitizeId(item.code || item.id)}" style="color: #007AFF; font-weight: 500; text-decoration: none;">
+                           ${cleanHtml(item.caption?.name || item.name)}
                        </a>
+                       <span style="color: #AEAEB2;">${item.code || ""}</span>
                     </div>
                 `
                   )
@@ -412,9 +410,9 @@ export const generateFullPdfHtml = (
               : `background: #FFFFFF;`;
 
             return `
-           <div class="page" id="course-${sanitizeId(item.code || item.id)}">
+           <div class="page">
               <div class="card" style="margin-bottom: 20px; ${gradientStyle}">
-                 <div class="course-header" style="border-bottom:none; margin-bottom:0; padding-bottom:0; display: flex; align-items: center;">
+                 <div class="course-header" id="course-${sanitizeId(item.code || item.id)}" style="border-bottom:none; margin-bottom:0; padding-bottom:0; display: flex; align-items: center;">
                     <div class="course-title-group" style="flex: 1;">
                        <h1 class="course-title" style="color: #000; font-size: 22px; margin-bottom: 4px;">${cleanHtml(item.caption?.name || item.name)}</h1>
                        
