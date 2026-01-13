@@ -321,7 +321,7 @@ export default function AttendanceLoginScreen() {
                 </StackLayout>
 
                 <StackLayout
-                    style={{ flex: 1, padding: 20, paddingBottom: insets.bottom + 20, justifyContent: 'space-between' }}
+                    style={{ flex: 1, padding: 10, paddingBottom: insets.bottom + 20, justifyContent: 'space-between' }}
                     gap={16}
                 >
                     <StackLayout gap={16}>
@@ -331,7 +331,7 @@ export default function AttendanceLoginScreen() {
                     </StackLayout>
 
                     <StackLayout gap={10}>
-                        <Button title="Se connecter" onPress={handleLogin} style={{ backgroundColor: "#0078D4" }} size="large" />
+                        <Button title="Se connecter" onPress={handleLogin} style={{ backgroundColor: "#0078D4", width: 300 }} size="large" />
                     </StackLayout>
                 </StackLayout>
             </View>

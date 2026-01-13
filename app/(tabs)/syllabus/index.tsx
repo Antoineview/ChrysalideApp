@@ -239,7 +239,7 @@ const SyllabusView: React.FC = () => {
     listRef.current?.scrollToIndex({
       index,
       animated: true,
-      viewOffset: headerHeight + 20, // offset for header
+      viewOffset: headerHeight, // offset for header
     });
   };
 
