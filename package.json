@@ -21,7 +21,7 @@
     "@aramir/react-native-barcode": "^1.0.1",
     "@babel/plugin-proposal-decorators": "^7.27.1",
     "@bottom-tabs/react-navigation": "^0.11.2",
-    "@callstack/liquid-glass": "^0.4.1",
+    "@callstack/liquid-glass": "^0.7.0",
     "@eslint/js": "^9.35.0",
     "@expo/metro-config": "~54.0.2",
     "@expo/ngrok": "^4.1.3",
