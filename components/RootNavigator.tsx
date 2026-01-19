@@ -111,6 +111,13 @@ export function RootNavigator() {
         }}
       />
       <Stack.Screen
+        name="(modals)/login-intracom"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
         name="(modals)/course"
         options={{
           headerShown: Platform.OS !== 'ios',
