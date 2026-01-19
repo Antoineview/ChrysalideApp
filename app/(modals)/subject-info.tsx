@@ -1,22 +1,19 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useRoute, useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-import { useRouter } from "expo-router";
-
 import ModalOverhead, { ModalOverHeadScore } from "@/components/ModalOverhead";
-import Subject from "@/database/models/Subject";
 import { extractSubjectCode, storage } from "@/services/auriga";
 import { Syllabus } from "@/services/auriga/types";
+import { Subject } from "@/services/shared/grade";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import i18n from "@/utils/i18n";
 import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 const SubjectInfo = () => {
@@ -25,10 +22,9 @@ const SubjectInfo = () => {
   const theme = useTheme();
   const colors = theme.colors;
 
-  const subject: Subject = (params as any)?.subject;
-  const subjectColor = getSubjectColor(subject?.name);
-  const subjectName = getSubjectName(subject?.name);
-  const subjectEmoji = getSubjectEmoji(subject?.name);
+  const subject = (params as { subject?: Subject })?.subject;
+  const subjectColor = getSubjectColor(subject?.name || "");
+  const subjectName = getSubjectName(subject?.name || "");
 
   const outOf = subject?.outOf?.value ?? 20;
 
@@ -69,7 +65,10 @@ const SubjectInfo = () => {
             <ModalOverhead
               subject={subjectName}
               color={subjectColor}
-              overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: subject.grades.length })}
+              overtitle={i18n.t("Grades_SubjectInfo_NbGrades", {
+                number: (subject?.grades?.length || 0) +
+                  (subject?.subjects?.reduce((acc: number, s: Subject) => acc + (s.grades?.length || 0), 0) || 0)
+              })}
               overhead={
                 <ModalOverHeadScore
                   color={subjectColor}
@@ -92,11 +91,11 @@ const SubjectInfo = () => {
                 const foundSyllabus = allSyllabus.find(s => {
                   const syllabusCode = extractSubjectCode(s.name);
 
-                  if (subjectCode.startsWith(syllabusCode + "_") || subjectCode === syllabusCode) return true;
+                  if (subjectCode.startsWith(syllabusCode + "_") || subjectCode === syllabusCode) { return true; }
 
-                  if (s.caption?.name === subject.name || s.caption?.name === subjectName) return true;
+                  if (s.caption?.name === subject.name || s.caption?.name === subjectName) { return true; }
 
-                  if (s.name === subject.name) return true;
+                  if (s.name === subject.name) { return true; }
 
                   return false;
                 });
