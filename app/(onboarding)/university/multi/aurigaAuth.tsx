@@ -1,8 +1,8 @@
 import CookieManager from '@react-native-cookies/cookies';
 import { useTheme } from "@react-navigation/native";
 import * as Crypto from 'expo-crypto';
-import { Stack, useLocalSearchParams,useRouter } from "expo-router";
-import React, {useRef, useState } from "react";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useRef, useState } from "react";
 import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewNavigation } from 'react-native-webview';
@@ -189,7 +189,7 @@ export default function AurigaLoginScreen() {
     }
 
     const startSync = async (accessToken: string) => {
-        if (isSyncing) {return;}
+        if (isSyncing) { return; }
 
         // For refresh: run sync in background and go back immediately
         if (isRefresh) {
@@ -352,7 +352,7 @@ export default function AurigaLoginScreen() {
                 color: "#00D600"
             });
 
-            router.push("/(tabs)" as any);
+            router.replace("/(tabs)" as any);
 
         } catch (error) {
             console.error("Auriga Sync Error:", error);
