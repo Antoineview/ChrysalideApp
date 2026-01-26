@@ -19,7 +19,7 @@ import { colorCheck } from '@/utils/colorCheck';
 
 interface SubjectInfo {
   name: string;
-  originalName: string;
+  originalName?: string;
   color: string;
 }
 
@@ -131,16 +131,17 @@ export default function GradesModal() {
                   const data = storage.getString("auriga_syllabus");
                   const allSyllabus: Syllabus[] = data ? JSON.parse(data) : [];
 
-                  const subjectCode = extractSubjectCode(subjectInfo.originalName);
+                  const nameToUse = subjectInfo.originalName || subjectInfo.name || grade.subjectName;
+                  const subjectCode = extractSubjectCode(nameToUse);
 
                   const foundSyllabus = allSyllabus.find(s => {
                     const syllabusCode = extractSubjectCode(s.name);
 
                     if (subjectCode.startsWith(syllabusCode + "_") || subjectCode === syllabusCode) { return true; }
 
-                    if (s.caption?.name === subjectInfo.originalName || s.caption?.name === subjectInfo.name) { return true; }
+                    if (s.caption?.name === nameToUse || s.caption?.name === subjectInfo.name) { return true; }
 
-                    if (s.name === subjectInfo.originalName) { return true; }
+                    if (s.name === nameToUse) { return true; }
 
                     return false;
                   });
