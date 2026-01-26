@@ -34,6 +34,7 @@ export const useHomeHeaderData = () => {
   const attendancesPeriodsRef = useRef<Period[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [chats, setChats] = useState<Chat[]>([]);
+  const [lastAbsence, setLastAbsence] = useState<any>(null);
 
   const absencesCount = useMemo(() => {
     if (!attendances) {
@@ -62,19 +63,40 @@ export const useHomeHeaderData = () => {
       const periods = await manager.getAttendancePeriods();
       const currentPeriod = getCurrentPeriod(periods);
 
-      if (!currentPeriod) {
-        // No periods available (e.g., Auriga doesn't provide period data)
-        attendancesPeriodsRef.current = periods;
+      attendancesPeriodsRef.current = periods;
+
+      if (currentPeriod) {
+        const fetchedAttendances = await manager.getAttendanceForPeriod(
+          currentPeriod.name
+        );
+        setAttendances(fetchedAttendances);
+      } else {
         setAttendances([]);
-        return;
       }
 
-      const fetchedAttendances = await manager.getAttendanceForPeriod(
-        currentPeriod.name
-      );
+      // Fetch all absences for all periods to find the last one
+      const allPromises = periods.map(p => manager.getAttendanceForPeriod(p.name));
+      const allResults = await Promise.all(allPromises);
 
-      attendancesPeriodsRef.current = periods;
-      setAttendances(fetchedAttendances);
+      const allAbsences: any[] = [];
+      allResults.flat().forEach(att => {
+        if (att.absences) {
+          att.absences.forEach((abs: any) => {
+            // Ensure we have date objects or timestamps
+            if (!abs.from) abs.from = abs.date || abs.startDate; // Fallback properties if needed, usually 'from' is correct in mapped
+            allAbsences.push(abs);
+          });
+        }
+      });
+
+      // Sort by date descending
+      allAbsences.sort((a, b) => new Date(b.from).getTime() - new Date(a.from).getTime());
+
+      if (allAbsences.length > 0) {
+        setLastAbsence(allAbsences[0]);
+      } else {
+        setLastAbsence(null);
+      }
     };
 
     const updateDiscussions = async (manager: AccountManager) => {
@@ -88,6 +110,10 @@ export const useHomeHeaderData = () => {
       updateDiscussions(manager);
     });
 
+    const manager = getManager();
+    updateAttendance(manager);
+    updateDiscussions(manager);
+
     return () => unsubscribe();
   }, []);
 
@@ -96,6 +122,7 @@ export const useHomeHeaderData = () => {
     attendancesPeriods: attendancesPeriodsRef.current,
     attendances,
     absencesCount,
+    lastAbsence,
     chats,
   };
 };
