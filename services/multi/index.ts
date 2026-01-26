@@ -242,7 +242,7 @@ export class Multi implements SchoolServicePlugin {
         (subjectsMap[subjectKey] as any)._syllabusCoeff = matchingSyllabus?.coeff;
       }
 
-      const gradeItem: SharedGrade = {
+      const gradeItem: SharedGrade & { _gradeCode?: string } = {
         id: String(g.code),
         subjectId: subjectKey,
         subjectName: subjectName,
@@ -253,6 +253,7 @@ export class Multi implements SchoolServicePlugin {
         coefficient: coefficient,
         createdByAccount: this.accountId,
         alphaMark: g.alphaMark, // VA, NV for validation grades
+        _gradeCode: gradeFullCode, // Store grade code pattern for rattrapage matching
       };
 
       subjectsMap[subjectKey].grades?.push(gradeItem);
@@ -266,15 +267,17 @@ export class Multi implements SchoolServicePlugin {
       // Group grades by their base exam type (EXA_1, EXA, etc.)
       const gradesByExam: Record<string, SharedGrade[]> = {};
       sGrades.forEach(grade => {
+        // Use stored grade code pattern for exam type detection
+        const gradeCode = (grade as any)._gradeCode || '';
         // Extract exam type from description (e.g., "Examen Final" -> EXF, "Examen" -> EXA)
         const isRattrapage = grade.description?.toLowerCase().includes('rattrapage') ||
-          grade.id.includes('_EXF') || grade.id.includes('_EXF_');
+          gradeCode.includes('_EXF') || gradeCode.includes('_EXF_');
         const isExam = grade.description?.toLowerCase().includes('examen') ||
-          grade.id.includes('_EXA') || grade.id.includes('_EXA_');
+          gradeCode.includes('_EXA') || gradeCode.includes('_EXA_');
 
         if (isRattrapage || isExam) {
           // Extract base exam identifier (e.g., "EXA_1" -> "EXA_1", "EXF_1" -> "EXA_1")
-          const examMatch = grade.id.match(/_EX[AF](_\d+)?/);
+          const examMatch = gradeCode.match(/_EX[AF](_\d+)?$/);
           const baseExam = examMatch ? examMatch[0].replace('_EXF', '_EXA') : '_EXA';
 
           if (!gradesByExam[baseExam]) {

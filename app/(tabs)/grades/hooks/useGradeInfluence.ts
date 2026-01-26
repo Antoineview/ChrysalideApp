@@ -1,15 +1,24 @@
-import { useCallback,useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { Grade, Subject } from "@/services/shared/grade";
 import { getSubjectAverageByProperty as getSubjectAverageByPropertyHelper } from "@/utils/grades/algorithms/helpers";
 import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
+
+// Helper to get all grades from a subject (including nested subjects for modules/UEs)
+const getAllGradesFromSubject = (subject: Subject): Grade[] => {
+  if (subject.subjects && subject.subjects.length > 0) {
+    // Module with nested subjects - flatten grades from all nested subjects
+    return subject.subjects.flatMap(s => s.grades || []);
+  }
+  return subject.grades || [];
+};
 
 export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: string) => Subject | undefined) => {
   // Pre-calculate subject averages to avoid re-computing them for every grade
   const subjectAverages = useMemo(() => {
     const avgs: Record<string, number> = {};
     subjects.forEach(subject => {
-      avgs[subject.id] = getSubjectAverage(subject.grades);
+      avgs[subject.id] = getSubjectAverage(getAllGradesFromSubject(subject));
     });
     return avgs;
   }, [subjects]);
@@ -17,7 +26,7 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
   const subjectClassAverages = useMemo(() => {
     const avgs: Record<string, number> = {};
     subjects.forEach(subject => {
-      avgs[subject.id] = getSubjectAverageByPropertyHelper(subject.grades, "averageScore");
+      avgs[subject.id] = getSubjectAverageByPropertyHelper(getAllGradesFromSubject(subject), "averageScore");
     });
     return avgs;
   }, [subjects]);
@@ -50,20 +59,20 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
     const subjectId = grade.subjectId;
     const currentSubjectAvg = subjectAverages[subjectId];
 
-    if (currentSubjectAvg === undefined || currentSubjectAvg === -1) {return 0;}
+    if (currentSubjectAvg === undefined || currentSubjectAvg === -1) { return 0; }
 
     // Calculate what the subject average would be without this grade
     // We need to find the subject and filter the grade out
     const subject = getSubjectById(subjectId);
-    if (!subject) {return 0;}
+    if (!subject) { return 0; }
 
-    const newSubjectAvg = getSubjectAverage(subject.grades.filter(g => g.id !== grade.id));
+    const newSubjectAvg = getSubjectAverage(getAllGradesFromSubject(subject).filter(g => g.id !== grade.id));
 
     // If the subject average doesn't change (or becomes invalid), the influence is 0 (or based on removing the subject)
     // But wait, if the subject average becomes -1 (invalid), it means the subject no longer counts towards the global average.
-    
+
     let newGlobalAverage = 0;
-    
+
     if (newSubjectAvg === -1) {
       // Subject is removed from global average
       let total = 0;
@@ -98,12 +107,12 @@ export const useGradeInfluence = (subjects: Subject[], getSubjectById: (id: stri
     const subjectId = grade.subjectId;
     const currentSubjectAvg = subjectClassAverages[subjectId];
 
-    if (currentSubjectAvg === undefined || currentSubjectAvg === -1) {return 0;}
+    if (currentSubjectAvg === undefined || currentSubjectAvg === -1) { return 0; }
 
     const subject = getSubjectById(subjectId);
-    if (!subject) {return 0;}
+    if (!subject) { return 0; }
 
-    const newSubjectAvg = getSubjectAverageByPropertyHelper(subject.grades.filter(g => g.id !== grade.id), "averageScore");
+    const newSubjectAvg = getSubjectAverageByPropertyHelper(getAllGradesFromSubject(subject).filter(g => g.id !== grade.id), "averageScore");
 
     let newGlobalAverage = 0;
 
