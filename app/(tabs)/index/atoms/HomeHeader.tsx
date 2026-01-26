@@ -15,16 +15,14 @@ import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
 const HomeHeader = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { attendancesPeriods, attendances, absencesCount } = useHomeHeaderData();
+  const { attendancesPeriods, attendances, absencesCount, lastAbsence } = useHomeHeaderData();
 
   const HomeHeaderButtons: HomeHeaderButtonItem[] = useMemo(() => [
     {
       title: t("Home_Attendance_Title"),
       icon: "chair",
       color: "#D62B94",
-      description: absencesCount > 0 ?
-        (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular"))
-        : t("Home_Attendance_Button_Description_None"),
+      description: lastAbsence ? lastAbsence.subjectName : t("Home_Attendance_Button_Description_None"),
       onPress: () => {
         if (!AbsencesAPI.isLoggedIn()) {
           router.push("/(modals)/login-attendance");
@@ -41,7 +39,7 @@ const HomeHeader = () => {
         });
       }
     }
-  ], [absencesCount, attendancesPeriods, attendances, t]);
+  ], [absencesCount, attendancesPeriods, attendances, t, lastAbsence]);
 
   return (
     <View style={{ paddingHorizontal: 0, paddingVertical: 12, width: "100%", flex: 1 }}>

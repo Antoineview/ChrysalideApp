@@ -117,28 +117,59 @@ export default function AttendanceView() {
         }
       });
 
-      allAbsences.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+      allAbsences.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+
+      const mappedAbsencesRaw = allAbsences.map(abs => {
+        const from = new Date(abs.startDate);
+        const to = new Date(from.getTime() + 60 * 60 * 1000);
+
+        return {
+          id: String(abs.slotId) || Math.random().toString(),
+          createdByAccount: "auriga",
+          from: from,
+          to: to,
+          timeMissed: 60,
+          justified: !!abs.justificatory,
+          reason: abs.justificatory || abs.subjectName,
+          subjectName: abs.subjectName,
+          original: abs
+        }
+      });
+
+      const consolidated: any[] = [];
+      if (mappedAbsencesRaw.length > 0) {
+        let current = mappedAbsencesRaw[0];
+        for (let i = 1; i < mappedAbsencesRaw.length; i++) {
+          const next = mappedAbsencesRaw[i];
+
+          const isSameSubject = current.subjectName === next.subjectName;
+          const isSameJustification = current.justified === next.justified;
+          const isSameDay = current.from.toDateString() === next.from.toDateString();
+
+          if (isSameSubject && isSameJustification && isSameDay) {
+            // Merge: keep earliest start time, default end time extends
+            // Sum durations: 1h + 1h = 2h (120 min)
+            current.to = new Date(Math.max(current.to.getTime(), next.to.getTime()));
+            current.timeMissed += next.timeMissed;
+          } else {
+            consolidated.push(current);
+            current = next;
+          }
+        }
+        consolidated.push(current);
+      }
+
+      consolidated.sort((a, b) => b.from.getTime() - a.from.getTime());
 
       const mappedAttendance: Attendance = {
         id: String(levelData.semesterId),
         kidId: "me",
         createdByAccount: "auriga",
-        absences: allAbsences.map((abs: any) => ({
-          id: String(abs.slotId) || Math.random().toString(),
-          createdByAccount: "auriga",
-          from: new Date(abs.startDate),
-          to: new Date(new Date(abs.startDate).getTime() + 90 * 60 * 1000),
-          timeMissed: 90,
-          justified: !!abs.justificatory,
-          reason: abs.justificatory || abs.subjectName,
-          subjectName: abs.subjectName,
-        })),
+        absences: consolidated,
         delays: [],
         punishments: [],
         observations: []
       };
-
-      mappedAttendance.absences.forEach(a => a.timeMissed = 90);
 
       setAttendances([mappedAttendance]);
     } else {
