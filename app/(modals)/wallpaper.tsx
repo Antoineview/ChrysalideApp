@@ -1,8 +1,10 @@
 import { Papicons } from "@getpapillon/papicons"
 import { MenuView } from "@react-native-menu/menu"
+import { HeaderBackButton } from "@react-navigation/elements"
 import { useTheme } from "@react-navigation/native"
 import { Directory, File, Paths } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from "react"
 import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
 
@@ -12,6 +14,7 @@ import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
 import Icon from "@/ui/components/Icon"
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader"
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
 
@@ -118,7 +121,7 @@ const WallpaperModal = () => {
         aspect: [4, 3],
         quality: 1,
       }).then((result) => {
-        if (result.canceled) {return;}
+        if (result.canceled) { return; }
 
         const asset = result.assets[0];
         const sourceFile = new File(asset.uri);
@@ -208,79 +211,29 @@ const WallpaperModal = () => {
           />
         }
       />
+      <NativeHeaderSide side="Left">
+        <HeaderBackButton
+          tintColor={runsIOS26 ? colors.text : colors.primary}
+          onPress={() => router.back()}
 
-      <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + hasCustomWallpaper ? "true" : "false"}>
+          style={{
+            marginLeft: runsIOS26 ? 3 : -32,
+          }}
+        />
+
+      </NativeHeaderSide>
+      <NativeHeaderSide side="Right" key={currentWallpaper?.id + ":" + "upload:" + hasCustomWallpaper ? "true" : "false"}>
         <NativeHeaderPressable onPress={() => uploadCustomWallpaper()}>
           <Icon size={28} fill={hasCustomWallpaper ? colors.primary : undefined}>
             <Papicons name="Gallery" />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
-
-      <NativeHeaderSide side="Right" key={currentWallpaper?.id + ":" + wallpaperDirectory.exists}>
-        <MenuView
-          actions={[
-            {
-              id: "background:clear",
-              title: "Supprimer le fond d'écran personnalisé",
-              imageColor: "#FF0000",
-              image: Platform.select({
-                ios: "trash.fill"
-              }),
-              attributes: { "destructive": true, "disabled": !currentWallpaper }
-            },
-            {
-              id: "background:downloads",
-              title: "Téléchargements",
-              imageColor: colors.text,
-              image: Platform.select({
-                ios: "square.and.arrow.down"
-              }),
-              displayInline: false,
-              subactions: [
-                {
-                  title: "Taille des téléchargements",
-                  subtitle: (wallpaperDirectory.info().size / (1024 * 1024)).toFixed(2) + " MB"
-                },
-                {
-                  id: "downloads:clear",
-                  title: "Vider les téléchargements",
-                  imageColor: "#FF0000",
-                  image: Platform.select({
-                    ios: "trash.fill"
-                  }),
-                  attributes: { "destructive": true, "disabled": !wallpaperDirectory.exists }
-                }
-              ]
-            },
-          ]}
-          onPressAction={({ nativeEvent }) => {
-            const action = nativeEvent.event;
-            if (action === "downloads:clear") {
-              wallpaperDirectory.delete();
-              mutateProperty("personalization", {
-                wallpaper: undefined
-              })
-            }
-            if (action === "background:clear") {
-              mutateProperty("personalization", {
-                wallpaper: undefined
-              })
-            }
-          }}
-        >
-          <NativeHeaderPressable>
-            <Icon size={28}>
-              <Papicons name="Gears" />
-            </Icon>
-          </NativeHeaderPressable>
-        </MenuView>
-      </NativeHeaderSide>
     </>
   )
 }
 
-const WallpaperImage = ({ item, onPress, selectedId, isDownloading }: { item: WallpaperCollection, onPress: () => void, selectedId: string, isDownloading: boolean }) => {
+const WallpaperImage = ({ item, onPress, selectedId, isDownloading }: { item: Wallpaper, onPress: () => void, selectedId: string, isDownloading: boolean }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const { colors } = useTheme();
 
