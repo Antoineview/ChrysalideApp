@@ -107,6 +107,7 @@ const GradesView: React.FC = () => {
       return;
     }
     const currentPeriodFound = getCurrentPeriod(result);
+    console.log("currentPeriodFound", currentPeriodFound);
 
     // sort by time, then put Semestre and Trimestre on top
     const sortedResult = [...result].sort((a, b) => {
@@ -295,7 +296,7 @@ const GradesView: React.FC = () => {
 
   // header
   const ListHeader = useMemo(() => ((sortedGrades.length > 0 && searchText.length === 0) ? (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{ marginBottom: 16, opacity: 1 }}>
       <Averages
         grades={grades}
         color={colors.primary}
