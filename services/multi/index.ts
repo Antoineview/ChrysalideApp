@@ -258,15 +258,57 @@ export class Multi implements SchoolServicePlugin {
       subjectsMap[subjectKey].grades?.push(gradeItem);
     });
 
-    // Calculate weighted averages per subject, handling VA/NV grades
+    // Calculate weighted averages per subject, handling VA/NV grades and rattrapage
     Object.values(subjectsMap).forEach(s => {
       const sGrades = s.grades || [];
+
+      // Handle rattrapage (EXF) replacing original exam (EXA) if better
+      // Group grades by their base exam type (EXA_1, EXA, etc.)
+      const gradesByExam: Record<string, SharedGrade[]> = {};
+      sGrades.forEach(grade => {
+        // Extract exam type from description (e.g., "Examen Final" -> EXF, "Examen" -> EXA)
+        const isRattrapage = grade.description?.toLowerCase().includes('rattrapage') ||
+          grade.id.includes('_EXF') || grade.id.includes('_EXF_');
+        const isExam = grade.description?.toLowerCase().includes('examen') ||
+          grade.id.includes('_EXA') || grade.id.includes('_EXA_');
+
+        if (isRattrapage || isExam) {
+          // Extract base exam identifier (e.g., "EXA_1" -> "EXA_1", "EXF_1" -> "EXA_1")
+          const examMatch = grade.id.match(/_EX[AF](_\d+)?/);
+          const baseExam = examMatch ? examMatch[0].replace('_EXF', '_EXA') : '_EXA';
+
+          if (!gradesByExam[baseExam]) {
+            gradesByExam[baseExam] = [];
+          }
+          gradesByExam[baseExam].push(grade);
+        } else {
+          // Non-exam grade, use unique key
+          gradesByExam[grade.id] = [grade];
+        }
+      });
+
+      // For each exam group, keep only the best grade
+      const effectiveGrades: SharedGrade[] = [];
+      Object.values(gradesByExam).forEach(examGrades => {
+        if (examGrades.length === 1) {
+          effectiveGrades.push(examGrades[0]);
+        } else {
+          // Multiple grades (e.g., EXA and EXF) - keep the best one
+          const bestGrade = examGrades.reduce((best, current) => {
+            const bestScore = best.studentScore?.value ?? 0;
+            const currentScore = current.studentScore?.value ?? 0;
+            return currentScore > bestScore ? current : best;
+          });
+          effectiveGrades.push(bestGrade);
+        }
+      });
+
       let totalWeightedScore = 0;
       let totalWeight = 0;
       let allValidation = true; // True if all grades are VA/NV
       let hasNV = false; // True if any grade is NV
 
-      sGrades.forEach(grade => {
+      effectiveGrades.forEach(grade => {
         if (grade.alphaMark) {
           // This is a validation grade (VA/NV)
           if (grade.alphaMark === "NV") {

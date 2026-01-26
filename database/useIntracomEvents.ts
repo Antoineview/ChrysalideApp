@@ -52,6 +52,12 @@ export async function saveIntracomEventsToDatabase(
                             nbNewStudents: event.nbNewStudents,
                             maxStudents: event.maxStudents,
                             state: event.state,
+                            // Include location fields if available
+                            ...(event.address && { address: event.address }),
+                            ...(event.zipcode && { zipcode: event.zipcode }),
+                            ...(event.town && { town: event.town }),
+                            ...(event.latitude && { latitude: event.latitude }),
+                            ...(event.longitude && { longitude: event.longitude }),
                         });
                     });
                 } else {
@@ -69,6 +75,12 @@ export async function saveIntracomEventsToDatabase(
                             maxStudents: event.maxStudents,
                             state: event.state,
                             createdByAccount: accountId,
+                            // Include location fields if available
+                            ...(event.address && { address: event.address }),
+                            ...(event.zipcode && { zipcode: event.zipcode }),
+                            ...(event.town && { town: event.town }),
+                            ...(event.latitude && { latitude: event.latitude }),
+                            ...(event.longitude && { longitude: event.longitude }),
                         });
                     });
                 }

@@ -253,19 +253,32 @@ const GradesView: React.FC = () => {
 
     const lowerSearchText = searchText.toLowerCase();
 
-    return sortedSubjects.filter((subject) => {
-      const subjectName = getSubjectName(subject.name).toLowerCase();
-      if (subjectName.includes(lowerSearchText)) {
-        return true;
-      }
+    return sortedSubjects
+      .map((subject) => {
+        const subjectName = getSubjectName(subject.name).toLowerCase();
+        const subjectNameMatches = subjectName.includes(lowerSearchText);
 
-      // Also search in grades descriptions
-      const matchingGrades = (subject.grades ?? []).filter((grade) => {
-        return grade.description?.toLowerCase().includes(lowerSearchText);
-      });
+        // If subject name matches, show the whole subject with all grades
+        if (subjectNameMatches) {
+          return subject;
+        }
 
-      return matchingGrades.length > 0;
-    });
+        // Otherwise, filter grades to only show matching ones
+        const matchingGrades = (subject.grades ?? []).filter((grade) => {
+          return grade.description?.toLowerCase().includes(lowerSearchText);
+        });
+
+        if (matchingGrades.length > 0) {
+          // Return a copy of subject with only matching grades
+          return {
+            ...subject,
+            grades: matchingGrades,
+          };
+        }
+
+        return null;
+      })
+      .filter((subject): subject is Subject => subject !== null);
   }, [searchText, sortedSubjects]);
 
   // Refresh

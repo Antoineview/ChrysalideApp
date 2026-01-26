@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Platform, StatusBar, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import { Syllabus } from "@/services/auriga/types";
@@ -66,6 +66,19 @@ export default function SyllabusModal() {
     }
     return 0;
   }, [syllabus?.duration]);
+
+  const activitiesHours = React.useMemo(() => {
+    if (!syllabus?.activities) { return 0; }
+    const totalActivitySeconds = syllabus.activities.reduce(
+      (sum, activity) => sum + (activity.duration || 0),
+      0
+    );
+    return Math.round(totalActivitySeconds / 3600);
+  }, [syllabus?.activities]);
+
+  const studentWorkHours = React.useMemo(() => {
+    return Math.max(0, totalHours - activitiesHours);
+  }, [totalHours, activitiesHours]);
 
   const rawDescription = syllabus?.caption?.goals?.fr || syllabus?.caption?.name;
   const description = React.useMemo(() => cleanHtml(rawDescription), [rawDescription]);
@@ -145,7 +158,6 @@ export default function SyllabusModal() {
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
       <LinearGradient
         colors={[rawSubjectColor, colors.background]}
         style={{
@@ -234,7 +246,7 @@ export default function SyllabusModal() {
               {/* Horizontal Divider */}
               <View style={{ height: 1, backgroundColor: colors.border, width: "100%" }} />
 
-              {/* Row 2: Duration & Min Score */}
+              {/* Row 2: Duration & Student Work */}
               <Stack direction="horizontal" width={"100%"}>
                 {/* Duration */}
                 <Stack
@@ -247,15 +259,39 @@ export default function SyllabusModal() {
                     <Papicons name={"Clock"} />
                   </Icon>
                   <Typography color="secondary">
-                    Durée
+                    Durée totale
                   </Typography>
                   <ContainedNumber color={subjectColor} denominator="h">
                     {totalHours}
                   </ContainedNumber>
                 </Stack>
-                {/* Min Score */}
+                {/* Student Work */}
                 <Stack
                   width={"50%"}
+                  vAlign="center"
+                  hAlign="center"
+                  padding={12}
+                >
+                  <Icon papicon opacity={0.5}>
+                    <Papicons name={"Homework"} />
+                  </Icon>
+                  <Typography color="secondary">
+                    Travail étudiant
+                  </Typography>
+                  <ContainedNumber color={subjectColor} denominator="h">
+                    {studentWorkHours}
+                  </ContainedNumber>
+                </Stack>
+              </Stack>
+
+              {/* Horizontal Divider */}
+              <View style={{ height: 1, backgroundColor: colors.border, width: "100%" }} />
+
+              {/* Row 3: Min Score */}
+              <Stack direction="horizontal" width={"100%"}>
+                {/* Min Score */}
+                <Stack
+                  width={"100%"}
                   vAlign="center"
                   hAlign="center"
                   padding={12}
