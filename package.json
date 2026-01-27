@@ -90,8 +90,8 @@
     "pawdirecte": "^1.9.2",
     "pawnote": "^1.6.1",
     "pawrd": "^0.6.1",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-i18next": "^15.5.2",
     "react-native": "0.81.4",
     "react-native-bottom-tabs": "^0.11.2",
@@ -122,7 +122,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@types/react": "~19.1.10",
+    "@types/react": "~19.2.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
     "eslint-plugin-unused-imports": "^4.1.4",
@@ -130,7 +130,7 @@
     "jest-expo": "~54.0.12",
     "prettier": "^3.6.0",
     "react-native-svg-transformer": "^1.5.2",
-    "react-test-renderer": "19.0.0",
+    "react-test-renderer": "19.2.4",
     "typescript": "~5.9.2"
   },
   "private": true,
