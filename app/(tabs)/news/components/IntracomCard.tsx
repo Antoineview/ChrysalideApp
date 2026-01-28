@@ -3,7 +3,7 @@ import { useTheme } from '@react-navigation/native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useState } from 'react';
-import { Alert, InteractionManager, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, InteractionManager, Linking, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Collapsible from 'react-native-collapsible';
 import MapView, { Marker } from 'react-native-maps';
 import Reanimated, {
@@ -17,8 +17,8 @@ import Typography from '@/ui/components/Typography';
 import { getProfileColorByName } from '@/utils/chats/colors';
 import { fetchIntracomProfile, getIntracomProfile, registerForEvent } from '@/utils/intracom';
 
-// Types
-interface IntracomEvent {
+
+export interface IntracomEvent {
     id: number;
     title?: string;
     date: string | number;
@@ -76,11 +76,13 @@ interface IntracomCardProps {
     event: IntracomEvent;
     readOnly?: boolean;
     hideRegisterButton?: boolean;
+    borderRadius?: number;
+    style?: StyleProp<ViewStyle>;
 }
 
 const AnimatedView = Reanimated.createAnimatedComponent(View);
 
-// Design specific colors
+
 const INTRACOM_PALETTE = {
     "Forum": { primary: "#0194D5", light: "#0194D5" },
     "Conférence": { primary: "#8E44AD", light: "#9B59B6" },
@@ -112,15 +114,7 @@ const getEventColors = (type?: string | number, typeName?: string) => {
     return INTRACOM_PALETTE.default;
 };
 
-const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hideRegisterButton = false }) => {
-    // Theme hook not effectively used for design colors but kept for potential needs
-    // const { dark } = useTheme();
-
-    // We force the design colors regardless of theme for the card internal look, 
-    // as it follows a specific brand design (blue card).
-    // But we might want to respect some dark mode aspects if needed.
-    // However, the Figma design provided is very specific about colors.
-
+const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hideRegisterButton = false, borderRadius = 25, style }) => {
     const [expanded, setExpanded] = useState(false);
     const [loading, setLoading] = useState(false);
     const [participants, setParticipants] = useState<IntracomParticipant[]>(() => {
@@ -139,7 +133,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
     const [isRegistered, setIsRegistered] = useState(false);
     const [registering, setRegistering] = useState(false);
 
-    // Check if user is registered
+
     React.useEffect(() => {
         const checkRegistration = async () => {
             const profile = await getIntracomProfile();
@@ -195,7 +189,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
 
 
 
-    // Sync state with props if they update (e.g. background fetch completion)
+
     React.useEffect(() => {
         if (event.participants) {
             try { setParticipants(JSON.parse(event.participants)); } catch { }
@@ -208,22 +202,22 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
     const theme = useTheme();
     const { dark } = theme;
 
-    // Derived colors
+
     const colors = getEventColors(event.type, event.typeName);
 
-    // Dynamic Styles
+
     const pillBg = dark ? '#262626' : 'white';
     const contentColor = dark ? 'white' : colors.primary;
     const nameColor = dark ? 'white' : 'black';
 
-    // Animation values
+
     const scale = useSharedValue(1);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
     }));
 
-    // Format date as DD/MM/YY
+
     const formatDate = (dateValue: string | number) => {
         try {
             const date = new Date(dateValue);
@@ -236,7 +230,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
         }
     };
 
-    // Get event type label
+
     const getTypeLabel = (type: string | number) => {
         let key = type;
         if (typeof key !== 'string') {
@@ -256,7 +250,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
         return types[key as string] || key;
     };
 
-    // Parse event name to extract place name and city
+
     const parseEventName = (name: string, knownCity?: string) => {
         let cleanName = name
             .replace(/\s*-?\s*Présentiel\s*-?\s*/gi, ' ')
@@ -322,7 +316,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
     const { placeName, city: parsedCity } = parseEventName(event.name, event.town);
     const city = event.town || parsedCity;
 
-    // Format time from date string
+
     const formatTime = (dateValue: string | number) => {
         try {
             const date = new Date(dateValue);
@@ -332,7 +326,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
         }
     };
 
-    // End time fallback (2h after start)
+
     const getEndTime = (dateValue: string | number) => {
         try {
             const date = new Date(dateValue);
@@ -343,7 +337,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
         }
     };
 
-    // Get first name from login
+
     const getFirstName = (login: string) => {
         const parts = login.split('.');
         if (parts.length > 0) {
@@ -353,7 +347,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
         return login;
     };
 
-    // Fetch slot info when expanded
+
     const fetchSlotInfo = useCallback(async () => {
         const token = getIntracomToken();
         if (!token) {
@@ -407,7 +401,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
         }
     }, [event.id]);
 
-    // Fetch on mount (only if missing)
+
     React.useEffect(() => {
         if (participants.length === 0 && !slotTimes) {
             fetchSlotInfo();
@@ -444,7 +438,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
 
     return (
         <Pressable onPress={handlePress} disabled={readOnly}>
-            <AnimatedView style={[styles.cardContainer, animatedStyle, { backgroundColor: colors.primary }, expanded && { height: 444 }]}>
+            <AnimatedView style={[styles.cardContainer, { borderRadius: borderRadius }, style, animatedStyle, { backgroundColor: colors.primary }, expanded && { height: 444 }]}>
                 {expanded && event.latitude && event.longitude && (
                     <View style={[StyleSheet.absoluteFill, { borderRadius: 25, overflow: 'hidden', borderCurve: 'continuous' }]}>
                         <MapView
@@ -477,11 +471,9 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
                 />
 
                 <View style={styles.contentContainer}>
-                    {/* Top Section */}
+
                     <View style={styles.topSection}>
-                        {/* Left Info Column */}
                         <View style={styles.leftInfoColumn}>
-                            {/* Header: Badge & Date */}
                             <View style={styles.headerRow}>
                                 <View style={[styles.typeBadge, { backgroundColor: pillBg }]}>
                                     <Typography variant="body2" style={[styles.badgeText, { color: contentColor }]}>
@@ -496,12 +488,10 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
                                 </View>
                             </View>
 
-                            {/* Title */}
                             <Typography variant="h5" style={styles.title} numberOfLines={readOnly ? 0 : 1}>
                                 {placeName || event.name}
                             </Typography>
 
-                            {/* Location */}
                             {city && !readOnly && (
                                 <View style={styles.locationRow}>
                                     <Papicons name="MapPin" size={18} color="white" />
@@ -512,10 +502,8 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
                             )}
                         </View>
 
-                        {/* Vertical Separator */}
                         <View style={styles.separator} />
 
-                        {/* Right Time Column */}
                         <View style={styles.rightTimeColumn}>
                             {event.bonus !== undefined && event.bonus > 0 ? (
                                 <View style={{ alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -534,10 +522,8 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
                         </View>
                     </View>
 
-                    {/* Expanded Content */}
                     <Collapsible collapsed={!expanded}>
                         <View style={styles.expandedContent}>
-                            {/* Inscrits Section */}
                             <View style={[styles.inscritsContainer, { backgroundColor: pillBg }]}>
                                 <View style={styles.inscritsHeader}>
                                     <Papicons name="user" size={14} color={contentColor} />
@@ -568,7 +554,6 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
                                 </View>
                             </View>
 
-                            {/* Action Buttons - Only show small map button if NOT registered */}
                             {!isRegistered && (
                                 <View style={styles.actionButtonsContainer}>
                                     <Pressable onPress={openInMaps} style={styles.mapButtonWrapper}>
@@ -591,7 +576,6 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
                     </Collapsible>
                 </View>
 
-                {/* Register/Action Button (Absolute Bottom) */}
                 {expanded && (isRegistered || !hideRegisterButton) && (
                     <View style={styles.absoluteRegisterButtonContainer}>
                         {isRegistered ? (

@@ -3,6 +3,7 @@ import { LegendList } from '@legendapp/list';
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React, { useEffect } from 'react';
+import { View } from 'react-native';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -13,6 +14,7 @@ import HomeTopBar from './atoms/HomeTopBar';
 import Wallpaper from './atoms/Wallpaper';
 import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useHomeData } from './hooks/useHomeData';
+import HomeIntracomWidget from './widgets/intracom';
 import HomeTimeTableWidget from './widgets/timetable';
 
 const HomeScreen = () => {
@@ -38,6 +40,7 @@ const HomeScreen = () => {
   useHomeData();
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
+  const renderIntracom = React.useCallback(() => <HomeIntracomWidget />, []);
 
   const data: HomeWidgetItem[] = React.useMemo(() => [
     {
@@ -46,7 +49,13 @@ const HomeScreen = () => {
       redirect: "(tabs)/calendar",
       render: renderTimeTable
     },
-  ], [renderTimeTable]);
+    {
+      icon: <Papicons name={"newspaper"} />,
+      title: "Prochain event",
+      redirect: "(tabs)/news",
+      render: renderIntracom
+    },
+  ], [renderTimeTable, renderIntracom]);
 
   return (
     <>
@@ -57,6 +66,7 @@ const HomeScreen = () => {
         keyExtractor={(item) => item.title}
         ListHeaderComponent={<HomeHeader />}
         style={{ flex: 1 }}
+        ItemSeparatorComponent={() => <React.Fragment><View style={{ height: 16 }} /></React.Fragment>}
         contentContainerStyle={{
           paddingBottom: insets.bottom + bottomTabBarHeight,
           paddingHorizontal: 16,

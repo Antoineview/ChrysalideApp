@@ -16,7 +16,6 @@ const IntracomBonusWidget = ({ bonusRecords }: IntracomBonusWidgetProps) => {
 
     const bonus = bonusRecords.length > 0 ? bonusRecords[0].total : null;
 
-    // Create a data item compatible with HomeHeaderButton
     const item: HomeHeaderButtonItem = {
         title: "Points bonus",
         icon: "star", // or 'award' if available, 'star' is safe

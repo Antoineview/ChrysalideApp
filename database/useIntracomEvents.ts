@@ -103,7 +103,7 @@ export async function saveIntracomEventsToDatabase(
                 .get<IntracomEvent>("intracom_events")
                 .query(
                     Q.where("createdByAccount", accountId),
-                    Q.where("date", Q.gte(new Date().getTime() - 86400000)) // Only check relevant events (last 24h onwards)
+                    // Q.where("date", Q.gte(new Date().getTime() - 86400000)) // Only check relevant events (last 24h onwards)
                 )
                 .fetch();
 

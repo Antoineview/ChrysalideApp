@@ -208,10 +208,8 @@ const NewsView = () => {
       setIntracomEvents(eventsWithDetails);
 
       // Save to database (including location details)
-      if (eventsWithDetails.length > 0) {
-        await saveIntracomEventsToDatabase(eventsWithDetails, accountId);
-        await cleanupOldIntracomEvents(accountId);
-      }
+      await saveIntracomEventsToDatabase(eventsWithDetails, accountId);
+      await cleanupOldIntracomEvents(accountId);
 
       // 4. Fetch Bonus Points & History
       if (token) {
