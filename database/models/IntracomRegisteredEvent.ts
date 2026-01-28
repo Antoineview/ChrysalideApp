@@ -3,8 +3,8 @@
 import { Model } from "@nozbe/watermelondb";
 import { field } from "@nozbe/watermelondb/decorators";
 
-export default class IntracomEvent extends Model {
-    static table = "intracom_events";
+export default class IntracomRegisteredEvent extends Model {
+    static table = "intracom_registered_events";
 
     @field("eventId") eventId: number;
     @field("date") date: number;

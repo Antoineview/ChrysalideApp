@@ -4,7 +4,7 @@ import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
 import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next';
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native'
+import { FlatList, ScrollView, View } from 'react-native'
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { getIntracomToken } from '@/app/(modals)/login-intracom'
 import News from '@/database/models/News'
-import { getIntracomEventsFromCache, saveIntracomEventsToDatabase } from '@/database/useIntracomEvents'
+import { cleanupOldIntracomEvents, fetchIntracomBonus, getIntracomEventsFromCache, getRegisteredIntracomEventsFromCache, saveIntracomEventsToDatabase, saveRegisteredIntracomEvents } from '@/database/useIntracomEvents'
 import { useNews } from '@/database/useNews'
 import { getManager, subscribeManagerUpdate } from '@/services/shared'
 import { useAccountStore } from '@/stores/account'
@@ -32,6 +32,7 @@ import { getProfileColorByName } from '@/utils/chats/colors'
 import { getInitials } from '@/utils/chats/initials'
 import { warn } from '@/utils/logger/logger'
 
+import IntracomBonusWidget from './components/IntracomBonusWidget'
 import IntracomCard from './components/IntracomCard'
 
 // Events Intracom
@@ -51,20 +52,13 @@ interface IntracomEvent {
   town?: string;
   latitude?: number;
   longitude?: number;
+  slotTimes?: string;
+  participants?: string;
+  bonus?: number;
 }
 
 const INTRACOM_EVENTS_URL = "https://intracom.epita.fr/api/Students/Events?EventType=[]&Restrict=true&Research=&PageSize=20&PageNumber=1";
 
-const styles = StyleSheet.create({
-  headerBtn: {
-    width: "100%",
-    flexDirection: "row",
-    borderCurve: "continuous",
-    borderRadius: 20,
-    padding: 10,
-    gap: 8
-  }
-});
 
 const NewsView = () => {
 
@@ -95,6 +89,8 @@ const NewsView = () => {
   const lastUsedAccount = useAccountStore((s) => s.lastUsedAccount);
 
   const [intracomEvents, setIntracomEvents] = useState<IntracomEvent[]>([]);
+  const [registeredIntracomEvents, setRegisteredIntracomEvents] = useState<IntracomEvent[]>([]);
+
   const [intracomLoading, setIntracomLoading] = useState(false);
 
   const fetchIntracomEvents = useCallback(async () => {
@@ -106,6 +102,12 @@ const NewsView = () => {
     if (cachedEvents.length > 0) {
       setIntracomEvents(cachedEvents);
     }
+
+    const cachedRegistered = await getRegisteredIntracomEventsFromCache(accountId);
+    if (cachedRegistered.length > 0) {
+      setRegisteredIntracomEvents(cachedRegistered);
+    }
+
 
     // If no token, don't try to fetch from API
     if (!token) { return; }
@@ -128,10 +130,13 @@ const NewsView = () => {
       const data = await response.json();
       const events: IntracomEvent[] = data.elemPage || [];
 
-      // Fetch details for each event (location data)
+      // Fetch details for each event (location + slots)
       const eventsWithDetails = await Promise.all(
         events.map(async (event) => {
+          let updatedEvent = { ...event };
+
           try {
+            // 1. Fetch Location Details
             const detailsRes = await fetch(`https://intracom.epita.fr/api/Events/${event.id}`, {
               headers: {
                 "Authorization": `Bearer ${token}`,
@@ -141,8 +146,8 @@ const NewsView = () => {
 
             if (detailsRes.ok) {
               const details = await detailsRes.json();
-              return {
-                ...event,
+              updatedEvent = {
+                ...updatedEvent,
                 address: details.address,
                 zipcode: details.zipcode,
                 town: details.town,
@@ -150,10 +155,53 @@ const NewsView = () => {
                 longitude: details.longitude,
               };
             }
+
+            // 2. Fetch Slot Infos (Participants & Times)
+            const slotsRes = await fetch(`https://intracom.epita.fr/api/Events/${event.id}/SlotInfos`, {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (slotsRes.ok) {
+              const slots: any[] = await slotsRes.json();
+              const allParticipants: any[] = [];
+              let firstStart: string | null = null;
+              let lastEnd: string | null = null;
+
+              slots.forEach((slotInfo) => {
+                slotInfo.jobs?.forEach((job: any) => {
+                  job.slots?.forEach((slot: any) => {
+                    if (!firstStart || slot.startTime < firstStart) {
+                      firstStart = slot.startTime;
+                    }
+                    if (!lastEnd || slot.endTime > lastEnd) {
+                      lastEnd = slot.endTime;
+                    }
+                    slot.groups?.forEach((group: any) => {
+                      group.participants?.forEach((participant: any) => {
+                        if (!allParticipants.find(p => p.id === participant.id)) {
+                          allParticipants.push(participant);
+                        }
+                      });
+                    });
+                  });
+                });
+              });
+
+              if (allParticipants.length > 0) {
+                updatedEvent.participants = JSON.stringify(allParticipants);
+              }
+              if (firstStart && lastEnd) {
+                updatedEvent.slotTimes = JSON.stringify({ start: firstStart, end: lastEnd });
+              }
+            }
+
           } catch {
-            // If fetching details fails, just return the event without location
+            // On error, return partial event
           }
-          return event;
+          return updatedEvent;
         })
       );
 
@@ -162,7 +210,80 @@ const NewsView = () => {
       // Save to database (including location details)
       if (eventsWithDetails.length > 0) {
         await saveIntracomEventsToDatabase(eventsWithDetails, accountId);
+        await cleanupOldIntracomEvents(accountId);
       }
+
+      // 4. Fetch Bonus Points & History
+      if (token) {
+        await fetchIntracomBonus(token);
+        // 5. Fetch Registered Events
+        const registeredRes = await fetch(`https://intracom.epita.fr/api/Students/RegisteredEvents?EventType=[]&Research=&PageSize=20&PageNumber=1`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (registeredRes.ok) {
+          const registeredData = await registeredRes.json();
+          const registeredEvents: IntracomEvent[] = registeredData.elemPage || [];
+
+          // Filter to only keep OPEN events logic as per user request for sync
+          // "The inscrits events should only be the ones which have the OPEN state."
+          // "database removes the events that are not open anymore on each sync"
+          const openRegisteredEvents = registeredEvents.filter(e => e.state === 'OPEN');
+
+          // Fetch details for each registered event (location + slots)
+          const registeredEventsWithDetails = await Promise.all(
+            openRegisteredEvents.map(async (event) => {
+              let updatedEvent = { ...event };
+              try {
+                // Address
+                const detailsRes = await fetch(`https://intracom.epita.fr/api/Events/${event.id}`, {
+                  headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (detailsRes.ok) {
+                  const d = await detailsRes.json();
+                  updatedEvent = { ...updatedEvent, address: d.address, zipcode: d.zipcode, town: d.town, latitude: d.latitude, longitude: d.longitude };
+                }
+
+                // Participants/Slots
+                const slotsRes = await fetch(`https://intracom.epita.fr/api/Events/${event.id}/SlotInfos`, {
+                  headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (slotsRes.ok) {
+                  const s = await slotsRes.json();
+                  const allParticipants: any[] = [];
+                  let firstStart: string | null = null;
+                  let lastEnd: string | null = null;
+                  s.forEach((slotInfo: any) => {
+                    slotInfo.jobs?.forEach((job: any) => {
+                      job.slots?.forEach((slot: any) => {
+                        if (!firstStart || slot.startTime < firstStart) { firstStart = slot.startTime; }
+                        if (!lastEnd || slot.endTime > lastEnd) { lastEnd = slot.endTime; }
+                        slot.groups?.forEach((group: any) => {
+                          group.participants?.forEach((participant: any) => {
+                            if (!allParticipants.find(p => p.id === participant.id)) { allParticipants.push(participant); }
+                          });
+                        });
+                      });
+                    });
+                  });
+                  if (allParticipants.length > 0) { updatedEvent.participants = JSON.stringify(allParticipants); }
+                  if (firstStart && lastEnd) { updatedEvent.slotTimes = JSON.stringify({ start: firstStart, end: lastEnd }); }
+                }
+              } catch { }
+              return updatedEvent;
+            })
+          );
+
+          setRegisteredIntracomEvents(registeredEventsWithDetails);
+          // Persist
+          await saveRegisteredIntracomEvents(registeredEventsWithDetails, accountId);
+        }
+
+      }
+
     } catch (error) {
       warn(`[Intracom] Erreur lors de la sync: ${error}`);
       // On error, keep showing cached events (already loaded above)
@@ -269,6 +390,8 @@ const NewsView = () => {
                 setIsManuallyLoading(true)
                 fetchNews()
                 fetchIntracomEvents()
+                const token = getIntracomToken();
+                if (token) { fetchIntracomBonus(token); }
               }}
               progressViewOffset={headerHeight}
             />
@@ -279,7 +402,25 @@ const NewsView = () => {
           renderItem={({ item }) => <NewsItem item={item} />}
           scrollIndicatorInsets={{ top: headerHeight - insets.top }}
           ListHeaderComponent={
-            <View style={{ paddingTop: headerHeight }}>
+            <View style={{ paddingTop: headerHeight, gap: 16 }}>
+              <IntracomBonusWidget />
+              {registeredIntracomEvents.length > 0 && (
+                <View style={{ marginBottom: 0 }}>
+                  <Typography variant="h5" style={{ marginBottom: 10, color: colors.text }}>
+                    Inscrits
+                  </Typography>
+                  <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ gap: 10 }}
+                  >
+                    {registeredIntracomEvents.map((event) => (
+                      <IntracomCard key={`reg-${event.id}`} event={event} hideRegisterButton />
+                    ))}
+                  </ScrollView>
+
+                </View>
+              )}
+
               {intracomEvents.length > 0 && (
                 <View style={{ marginBottom: 16 }}>
                   <Typography variant="h5" style={{ marginBottom: 10, color: colors.text }}>

@@ -8,11 +8,15 @@ import Event from '@/database/models/Event';
 import { Grade, Period, PeriodGrades } from '@/database/models/Grades';
 import Homework from "@/database/models/Homework";
 import Ical from '@/database/models/Ical';
+import IntracomBonus from '@/database/models/IntracomBonus';
 import IntracomEvent from '@/database/models/IntracomEvent';
+import IntracomProfile from '@/database/models/IntracomProfile';
+import IntracomRegisteredEvent from '@/database/models/IntracomRegisteredEvent';
 import News from '@/database/models/News';
 import Subject from '@/database/models/Subject';
 import Course from '@/database/models/Timetable';
 
+import migrations from './migrations';
 import { Balance } from './models/Balance';
 import CanteenHistoryItem from './models/CanteenHistory';
 import Kid from './models/Kid';
@@ -20,6 +24,7 @@ import { mySchema } from './schema';
 
 const adapter = new SQLiteAdapter({
   schema: mySchema,
+  migrations,
 });
 
 export const database = new Database({
@@ -45,6 +50,9 @@ export const database = new Database({
     Kid,
     Balance,
     CanteenHistoryItem,
-    IntracomEvent
+    IntracomEvent,
+    IntracomRegisteredEvent,
+    IntracomBonus,
+    IntracomProfile
   ],
 });
