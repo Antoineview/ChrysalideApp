@@ -16,6 +16,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
 import { colorCheck } from '@/utils/colorCheck';
+import { Platform } from "react-native";
 
 interface SubjectInfo {
   name: string;
@@ -102,7 +103,7 @@ export default function GradesModal() {
               card
               direction="horizontal"
               width={"90%"}
-              style={{ marginTop: 8, alignItems: 'stretch' }}
+              style={{ marginTop: 8, marginBottom: Platform.OS === "ios" && Platform.isPad ? 40 : 0, alignItems: 'stretch' }}
             >
               <Stack
                 width={"50%"}
