@@ -568,44 +568,63 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
                                 </View>
                             </View>
 
-                            {/* Action Buttons */}
-                            <View style={styles.actionButtonsContainer}>
-                                <Pressable onPress={openInMaps} style={styles.mapButtonWrapper}>
-                                    <LiquidGlassView
-                                        glassType="regular"
-                                        glassTintColor="transparent"
-                                        glassOpacity={0}
-                                        isInteractive={true}
-                                        style={styles.mapButton}
-                                    >
-                                        <View style={styles.mapIconContainer}>
-                                            <Papicons name="MapPin" size={12} color={contentColor} />
-                                        </View>
-                                        <Typography variant="caption" style={[styles.mapButtonText, { color: contentColor }]}>Ouvrir dans maps</Typography>
-                                    </LiquidGlassView>
-                                </Pressable>
-                            </View>
+                            {/* Action Buttons - Only show small map button if NOT registered */}
+                            {!isRegistered && (
+                                <View style={styles.actionButtonsContainer}>
+                                    <Pressable onPress={openInMaps} style={styles.mapButtonWrapper}>
+                                        <LiquidGlassView
+                                            glassType="regular"
+                                            glassTintColor="transparent"
+                                            glassOpacity={0}
+                                            isInteractive={true}
+                                            style={styles.mapButton}
+                                        >
+                                            <View style={styles.mapIconContainer}>
+                                                <Papicons name="MapPin" size={12} color={contentColor} />
+                                            </View>
+                                            <Typography variant="caption" style={[styles.mapButtonText, { color: contentColor }]}>Ouvrir dans maps</Typography>
+                                        </LiquidGlassView>
+                                    </Pressable>
+                                </View>
+                            )}
                         </View>
                     </Collapsible>
                 </View>
 
-                {/* Register Button (Absolute Bottom) */}
-                {expanded && !hideRegisterButton && (
+                {/* Register/Action Button (Absolute Bottom) */}
+                {expanded && (isRegistered || !hideRegisterButton) && (
                     <View style={styles.absoluteRegisterButtonContainer}>
-                        <Pressable style={styles.registerButtonWrapper} onPress={handleRegister} disabled={isRegistered || registering}>
-                            <LiquidGlassView
-                                glassType="regular"
-                                glassTintColor="transparent"
-                                glassOpacity={0}
-                                isInteractive={true}
-                                style={[styles.registerButton, isRegistered && { backgroundColor: '#4CAF50' }]} // Green if registered? Or just disable
-                            >
-                                <Papicons name={isRegistered ? "check" : "add"} size={18} color={contentColor} />
-                                <Typography variant="h5" style={[styles.registerButtonText, { color: contentColor }]}>
-                                    {registering ? "Inscription..." : isRegistered ? "Déjà inscrit" : "M'inscrire !"}
-                                </Typography>
-                            </LiquidGlassView>
-                        </Pressable>
+                        {isRegistered ? (
+                            <Pressable style={styles.registerButtonWrapper} onPress={openInMaps}>
+                                <LiquidGlassView
+                                    glassType="regular"
+                                    glassTintColor="transparent"
+                                    glassOpacity={0}
+                                    isInteractive={true}
+                                    style={[styles.registerButton, { backgroundColor: 'rgba(255, 255, 255, 0.2)' }]}
+                                >
+                                    <Papicons name="MapPin" size={18} color={contentColor} />
+                                    <Typography variant="h5" style={[styles.registerButtonText, { color: contentColor }]}>
+                                        Ouvrir dans maps
+                                    </Typography>
+                                </LiquidGlassView>
+                            </Pressable>
+                        ) : (
+                            <Pressable style={styles.registerButtonWrapper} onPress={handleRegister} disabled={registering}>
+                                <LiquidGlassView
+                                    glassType="regular"
+                                    glassTintColor="transparent"
+                                    glassOpacity={0}
+                                    isInteractive={true}
+                                    style={styles.registerButton}
+                                >
+                                    <Papicons name="add" size={18} color={contentColor} />
+                                    <Typography variant="h5" style={[styles.registerButtonText, { color: contentColor }]}>
+                                        {registering ? "Inscription..." : "M'inscrire !"}
+                                    </Typography>
+                                </LiquidGlassView>
+                            </Pressable>
+                        )}
                     </View>
                 )}
             </AnimatedView>
