@@ -174,7 +174,7 @@ const IntracomCard: React.FC<IntracomCardProps> = ({ event, readOnly = false, hi
             }
 
             // 2. Register
-            const result = await registerForEvent(event.id, token, profile);
+            const result = await registerForEvent(event.id, token, profile, event);
 
             if (result.success) {
                 Alert.alert("Succès", "Inscription résussie !");

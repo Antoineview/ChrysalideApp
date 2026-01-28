@@ -2,6 +2,7 @@ import { database } from "@/database";
 import IntracomProfile from "@/database/models/IntracomProfile";
 
 
+
 const INTRACOM_API_URL = "https://intracom.epita.fr/api";
 
 export const getIntracomProfile = async (): Promise<IntracomProfile | null> => {
@@ -72,12 +73,13 @@ export const registerForEvent = async (
     eventId: number,
     token: string,
     profile: IntracomProfile,
+    eventDetails: any, // Pass the event object to save it
     bonus: number = 0,
     present: boolean = false
 ): Promise<{ success: boolean; message?: string }> => {
     try {
-        // 1. Fetch Slot Infos to find correct group
-        const slotRes = await fetch(`${INTRACOM_API_URL}/Events/${eventId}/SlotInfos`, {
+        // 1. Fetch Available Slot Group directly
+        const slotRes = await fetch(`${INTRACOM_API_URL}/Students/Event/${eventId}/AvailableSlotGroup`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -85,108 +87,88 @@ export const registerForEvent = async (
         });
 
         if (!slotRes.ok) {
-            return { success: false, message: "Impossible de récupérer les créneaux." };
+            console.log("DEBUG: Failed to fetch AvailableSlotGroup", slotRes.status);
+            return { success: false, message: "Impossible de récupérer votre groupe de créneau." };
         }
 
-        const slotsData = await slotRes.json();
-        console.log("DEBUG: Slots Data:", JSON.stringify(slotsData, null, 2));
+        const availableSlots = await slotRes.json();
+        console.log("DEBUG: AvailableSlotGroup response:", JSON.stringify(availableSlots, null, 2));
 
-        // 2. Find matching group
-        // Logic: specific groupSlug matching semester (e.g. "prepa-spe-s3") OR generic (e.g. "prepa-spe")
-        // The user prompt says: "from slot infos match the corresponding groupslug to the one in the profile "semester" by removing -sx from it"
-        // Example: profile.semester = "prepa-spe-s3" -> match groupSlug "prepa-spe" or "prepa-spe-s3"
-
-        let matchingGroup = null;
-        const targetSlugFull = profile.semester.trim();
-        const targetSlugShort = targetSlugFull.replace(/-s\d+$/i, '');
-
-        console.log(`DEBUG: content of profile.semester: '${profile.semester}'`);
-        console.log(`DEBUG: MATCHING ATTEMPT: Checking for slugs '${targetSlugFull}' OR '${targetSlugShort}'`);
-
-        // Flatten all available groups
-        const allGroups: { group: any; job: any; slot: any }[] = [];
-        slotsData?.forEach((slotItem: any) => {
-            slotItem.jobs?.forEach((job: any) => {
-                job.slots?.forEach((slot: any) => {
-                    slot.groups?.forEach((group: any) => {
-                        allGroups.push({ group, job, slot });
-                    });
-                });
-            });
-        });
-
-        console.log(`DEBUG: Found ${allGroups.length} total groups available.`);
-
-        // Priority Matching
-        // 1. Exact Match on Semester (e.g. "prepa-spe-s3")
-        let match = allGroups.find(item => item.group.groupSlug.trim() === targetSlugFull);
-        if (match) {
-            console.log(`DEBUG: Exact match found: ${targetSlugFull}`);
-        }
-
-        // 2. Short Match (e.g. "prepa-spe")
-        if (!match) {
-            match = allGroups.find(item => item.group.groupSlug.trim() === targetSlugShort);
-            if (match) {
-                console.log(`DEBUG: Short match found: ${targetSlugShort}`);
-            }
-        }
-
-        // 3. Wildcard Match ("students")
-        if (!match) {
-            match = allGroups.find(item => item.group.groupSlug.trim().toLowerCase() === "students");
-            if (match) {
-                console.log(`DEBUG: Wildcard 'students' match found`);
-            }
-        }
-
-        matchingGroup = match ? match.group : null;
-
-        if (!matchingGroup) {
-            console.log("DEBUG: Registration failed - No matching group found");
-            console.log("DEBUG: Target Slug Full:", targetSlugFull);
-            console.log("DEBUG: Target Slug Short:", targetSlugShort);
-
-            // Safe logging of available groups
-            const availableGroups: string[] = [];
-            slotsData?.forEach((s: any) => s.jobs?.forEach((j: any) => j.slots?.forEach((sl: any) => sl.groups?.forEach((g: any) => availableGroups.push(g.groupSlug)))));
-            console.log("DEBUG: Available Groups:", availableGroups);
-
+        if (!availableSlots || availableSlots.length === 0) {
             return {
                 success: false,
-                message: `Aucun créneau trouvé pour votre semestre (${profile.semester}).`
+                message: `Aucun créneau disponible trouvé pour votre profil.`
             };
         }
 
-        // 3. Register
-        const payload = {
-            studentId: parseInt(profile.studentId),
-            slotGroupId: matchingGroup.id,
-            present: present,
-            bonus: bonus,
-            registerGroupSlug: profile.semester,
-            registerRegionSlug: profile.campus,
-            creatorLogin: profile.login
+        const targetGroup = availableSlots[0];
+
+        const tryRegistration = async (idToUse: number) => {
+            console.log(`DEBUG: Attempting registration with ID: ${idToUse}`);
+
+            // NOTE based on user input:
+            // POST /api/Participants/Register/{groupId} (or slotId)
+            // Empty body (Content-Length: 0)
+            const registerRes = await fetch(`${INTRACOM_API_URL}/Participants/Register/${idToUse}`, {
+                method: 'POST',
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+                // body: undefined // explicitly no body
+            });
+
+            const resText = await registerRes.text();
+            console.log(`DEBUG: Registration Response (${registerRes.status}):`, resText);
+
+            return { ok: registerRes.ok, status: registerRes.status, text: resText };
         };
 
-        console.log("DEBUG: Registration Payload:", JSON.stringify(payload, null, 2));
+        // 2. Try with Group ID (targetGroup.id)
+        let attempt = await tryRegistration(targetGroup.id);
 
-        const registerRes = await fetch(`${INTRACOM_API_URL}/Participants/Register/${eventId}`, {
-            method: 'POST',
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload)
-        });
+        // Retry logic
+        if (!attempt.ok) {
+            console.log("DEBUG: First attempt with Group ID failed. Retrying with Slot ID...");
+            attempt = await tryRegistration(targetGroup.slotId);
+        }
 
-        const resText = await registerRes.text();
-        console.log(`DEBUG: Registration Response (${registerRes.status}):`, resText);
+        if (attempt.ok) {
+            // 4. Save to Local DB
+            if (eventDetails) {
+                try {
+                    await database.write(async () => {
+                        const existing = await database.get<IntracomRegisteredEvent>('intracom_registered_events').query().fetch();
+                        const exists = existing.find(e => e.eventId === eventId); // Basic check, better to use proper query if possible
 
-        if (registerRes.ok) {
+                        if (!exists) {
+                            await database.get<IntracomRegisteredEvent>('intracom_registered_events').create(e => {
+                                e.eventId = eventId;
+                                e.date = new Date(eventDetails.eventDate || Date.now()).getTime();
+                                e.type = eventDetails.type;
+                                e.name = eventDetails.title;
+                                e.campusSlug = eventDetails.campus;
+                                e.registeredStudents = eventDetails.nbNewStudents || 0; // approximate
+                                e.nbNewStudents = eventDetails.nbNewStudents || 0;
+                                e.maxStudents = 999; // Unknown
+                                e.state = eventDetails.state;
+                                e.createdByAccount = eventDetails.suggestionCreatorLogin || "unknown";
+                                e.address = eventDetails.address;
+                                e.zipcode = eventDetails.zipcode;
+                                e.town = eventDetails.town;
+                                e.latitude = eventDetails.latitude;
+                                e.longitude = eventDetails.longitude;
+                            });
+                            console.log("DEBUG: Event saved to local DB");
+                        }
+                    });
+                } catch (dbError) {
+                    console.error("Error saving registered event to DB:", dbError);
+                }
+            }
             return { success: true };
         }
-        return { success: false, message: `Erreur inscription: ${registerRes.status} - ${resText}` };
+
+        return { success: false, message: `Erreur inscription: ${attempt.status} - ${attempt.text}` };
 
 
     } catch (error) {
